@@ -46,6 +46,13 @@ INSTALLED_APPS = [
     'djcelery',
     
     'main',
+    'repository',
+    'software',
+    'author',
+    'licence',
+    'instrument',
+    'administration',
+    'registration',
     
     
 ]

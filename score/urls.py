@@ -23,6 +23,12 @@ urlpatterns = [
     url(r'^$', 'main.views.main', name="main"), # page d'accueil
 
     url(r'^main/', include('main.urls')),
+    url(r'^repository/', include('repository.urls')),
+    url(r'^instrument/', include('instrument.urls')),
+    url(r'^licence/', include('licence.urls')),
+    url(r'^author/', include('author.urls')),
+    url(r'^software/', include('software.urls')),
+    url(r'^administration/', include('administration.urls')),
 ]
 
 handler404 = 'main.errors.error404'
