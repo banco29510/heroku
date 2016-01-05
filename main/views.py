@@ -23,3 +23,9 @@ def main(request):
 #@cache_page(60 * 5) # cache pendant 5 minutes
 def cgu(request):
     return render(request, 'main/cgu.html', {})
+
+# Affiche la page pour l'utilisateur
+@login_required
+def profile(request):
+    return render(request, 'main/profile.html', {'user': request.user,})
+    

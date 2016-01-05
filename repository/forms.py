@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 from django import *
 from django.forms import ModelForm
 

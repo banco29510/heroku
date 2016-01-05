@@ -1,0 +1,22 @@
+{% extends "main/layout.html" %}
+{% load staticfiles %}
+
+{% block content %}
+
+
+    <h2><center><em>Liste des téléchargements</em></center></h2>
+
+
+  <ul>
+      {% for download in listDownload %}
+        <li>{{ download }}</li>
+      {% empty %}
+        <li>Pas de téléchargement</li>
+      {% endfor %}
+
+  </ul>
+
+
+<br /><br />
+
+ {% endblock %}

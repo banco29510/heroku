@@ -18,7 +18,8 @@ from django.contrib import admin
 from django.views.generic import TemplateView
 
 urlpatterns = [
-    url(r'^admin/', admin.site.urls),
+    url(r'^admin/', include(admin.site.urls)),
+    url('^', include('django.contrib.auth.urls')),
     
     url(r'^$', 'main.views.main', name="main"), # page d'accueil
 

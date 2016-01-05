@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 ##
 # \file views.py
 # \brief Liste des actions de base pour les logiciels

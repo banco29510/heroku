@@ -1,5 +1,8 @@
 wheel
 Django
+psutil
+django-debug-toolbar
+python-gitlab
 markdown
 git+https://github.com/praekelt/django-recaptcha
 unipath
@@ -19,3 +22,4 @@ django-registration-redux
 django-bootstrap3
 cffi
 pygit2
+redis

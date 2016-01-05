@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 from __future__ import absolute_import
 
 from django.http import HttpResponse, Http404, HttpResponseRedirect
@@ -24,7 +25,7 @@ from score.celery import *
 
 from repository.models import *
 
-#import pygit2 as pygit2
+import pygit2 as pygit2
 
 class GitMethods():
     local_branches = []

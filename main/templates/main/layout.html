@@ -137,8 +137,8 @@ iVBORw0KGgoAAAANSUhEUgAAAEAAAABACAMAAACdt4HsAAAAA3NCSVQICAjb4U/gAAAACXBIWXMAAAJk
         <a href="#" class="dropdown-toggle" data-toggle="dropdown">Utilisateur : {{ user.username | capfirst }}<b class="caret"></b></a>
         <ul class="dropdown-menu">
 
-          <li><a href="{ url 'main-editUser' }"><span class="glyphicon glyphicon-user" aria-hidden="true"></span> Modifier les informations</a></li>
-          <li><a href="{ url 'main-editUser' }"><span class="glyphicon glyphicon-download" aria-hidden="true"></span> Téléchargement</a></li>
+          <li><a href="{% url 'main-profile' %}"><span class="glyphicon glyphicon-user" aria-hidden="true"></span> Modifier les informations</a></li>
+          <li><a href="{% url 'repository-listDownload' %}"><span class="glyphicon glyphicon-download" aria-hidden="true"></span> Téléchargement</a></li>
           <li><a href="{% url 'logout' %}?next=/"><span class="glyphicon glyphicon-log-out" aria-hidden="true"></span> Déconnection</a></li>
         </ul>
       </li>

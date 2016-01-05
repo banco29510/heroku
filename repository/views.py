@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 from django.http import HttpResponse, Http404, HttpResponseRedirect
 from django.core.paginator import Paginator
 from django.contrib import messages
@@ -17,7 +18,7 @@ from django.views.generic.edit import *
 
 import pprint, tempfile, os, sys, json, datetime, time, mimetypes, zipfile, shutil
 
-#import pygit2 as pygit2
+import pygit2 as pygit2
 
 from repository.models import *
 from repository.forms import *
@@ -118,6 +119,10 @@ def newScore(request):
             password = form.cleaned_data['password']
 
 
+            #création du dépot
+            
+
+            # création du dépot dans la bdd
             repository = Repository()
             repository.name = name
             repository.scoreAuthor = scoreAuthor
@@ -125,6 +130,10 @@ def newScore(request):
             repository.login = login
             repository.password = password
             repository.save()
+            
+            # mise a jour du dépot
+            
+            
 
             return redirect('repository-search',)
 
@@ -140,7 +149,15 @@ def showRepositoryProduction(request, pk=None):
 
     repository = get_object_or_404(Repository, pk=pk)
     commits = Commit.objects.filter(repository=repository).order_by('-date')
-    files = File.objects.filter(commits__in = [commits[0]])
+    try:
+        commit = commits[0]
+    except:
+        commit = []
+    try:
+        files = File.objects.filter(commits__in = [commits[0]])
+    except:
+        files = []
+
 
     #updateDatabase.delay(username='banco29510@gmail.com', password='antoine', url='https://github.com/banco29510/score-essai.git')
 
@@ -151,35 +168,35 @@ def showRepositoryProduction(request, pk=None):
     #all_refs = repo.listall_references()
     #print(all_refs)
 
-    for branch in repo.listall_branches():
-        print(branch)
+    #for branch in repo.listall_branches():
+    #    print(branch)
 
         # change de branche
-        branch = repo.lookup_branch(branch)
-        ref = repo.lookup_reference(branch.name)
-        repo.checkout(ref)
+    #    branch = repo.lookup_branch(branch)
+    #    ref = repo.lookup_reference(branch.name)
+    #    repo.checkout(ref)
 
-        for remoteCommit in repo.walk(repo.head.target, pygit2.GIT_SORT_TOPOLOGICAL):
-            print(remoteCommit.id)
-            if len(Commit.objects.filter(hashCommit=remoteCommit.id, branch=branch.name)) == 0: # si le commit n'existe pas
-                commit = Commit()
-                commit.repository = repository
-                commit.hashCommit = remoteCommit.id
-                commit.message = remoteCommit.message
-                commit.date = datetime.datetime.utcfromtimestamp(remoteCommit.commit_time)
-                commit.branch = branch.name
-                commit.save()
+    #    for remoteCommit in repo.walk(repo.head.target, pygit2.GIT_SORT_TOPOLOGICAL):
+    #       print(remoteCommit.id)
+    #       if len(Commit.objects.filter(hashCommit=remoteCommit.id, branch=branch.name)) == 0: # si le commit n'existe pas
+    #            commit = Commit()
+    #            commit.repository = repository
+    #            commit.hashCommit = remoteCommit.id
+    #            commit.message = remoteCommit.message
+    #            commit.date = datetime.datetime.utcfromtimestamp(remoteCommit.commit_time)
+    #            commit.branch = branch.name
+    #            commit.save()
 
-                for entry in remoteCommit.tree:
-                    print(entry.id, entry.name)
-                    if len(File.objects.filter(hashFile=entry.id)) == 0: # si le fichier n'existe pas
-                        file = File(hashFile=entry.id, name=entry.name, size=os.path.getsize(temporary_folder+'/'+entry.name)).save()
+    #            for entry in remoteCommit.tree:
+    #                print(entry.id, entry.name)
+    #                if len(File.objects.filter(hashFile=entry.id)) == 0: # si le fichier n'existe pas
+    #                    file = File(hashFile=entry.id, name=entry.name, size=os.path.getsize(temporary_folder+'/'+entry.name)).save()
 
-                        dataFile = File.objects.get(hashFile=entry.id)
-                        dataFile.commits.add(commit) # ajout du commit
+    #                    dataFile = File.objects.get(hashFile=entry.id)
+    #                    dataFile.commits.add(commit) # ajout du commit
 
 
-    return render(request, 'repository/showRepositoryProduction.html', {'repository': repository, 'files': files, 'commit': commits[0],})
+    return render(request, 'repository/showRepositoryProduction.html', {'repository': repository, 'files': files, 'commit': commit,})
 
 ## Voir un fichier
 def showFile(request, pk=None, pk_commit=None):
@@ -259,9 +276,16 @@ def showRepositoryDeveloppement(request, pk=None):
 
     repository = get_object_or_404(Repository, pk=pk)
     commits = Commit.objects.filter(repository=repository).order_by('-date')
-    files = File.objects.filter(commits__in = [commits[0]])
+    try:
+        commit = commits[0]
+    except:
+        commit = []
+    try:
+        files = File.objects.filter(commits__in = [commits[0]])
+    except:
+        files = []
 
-    return render(request, 'repository/showRepositoryDeveloppement.html', {'repository': repository, 'files': files, 'commit': commits[0],})
+    return render(request, 'repository/showRepositoryDeveloppement.html', {'repository': repository, 'files': files, 'commit': commit,})
 
 ## ajoute un fichier
 @login_required
@@ -702,6 +726,7 @@ def deleteBranch(request, pk=None):
     return render(request, 'repository/deleteRepository.html', {'form': form, 'repository': repository,})
 
 ##
+@login_required
 def changeCommitVisibility(request, pk=None, boolean=True):
 
     commit = get_object_or_404(Commit, pk=pk)
@@ -715,4 +740,18 @@ def changeCommitVisibility(request, pk=None, boolean=True):
         messages.add_message(request, messages.INFO, 'Le commit est invisible.')
 
     return redirect('repository-search',)
-
+    
+    
+## affiche la liste des dépot demandé en téléchargement
+@login_required
+def listDownload(request):
+    listDownload = []
+    return render(request, 'repository/listDownload.html', {'user': request.user, 'listDownload': listDownload, })
+    
+    
+## affiche le formulaire pour tagger un commit
+@login_required
+def tagCommit(request, commit=None):
+    commit = get_object_or_404(Commit, pk=pk)
+    
+    return render(request, 'repository/tagCommit.html', {'user': request.user,})

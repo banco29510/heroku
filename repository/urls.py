@@ -37,6 +37,9 @@ urlpatterns = patterns('repository.views',
     url(r'^commits/(?P<pk>\d+)$', 'listCommits', name="repository-listCommits"),
     url(r'^listContributeurs/(?P<pk>\d+)$', 'listContributeurs', name="repository-listContributeurs"),
     url(r'^publishDemand$', 'publishDemand', name="repository-publishDemand"),
+    
+    url(r'^listDownload$', 'listDownload', name="repository-listDownload"),
+    url(r'^tagCommit/(?P<pk>\d+)$', 'tagCommit', name="repository-tagCommit"),
 
 
 )

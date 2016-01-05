@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 ##
 # \file forms.py
 # \brief Software forms

@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 ##
 # \file author.views.py
 # \brief Page de CRUD pour les auteurs

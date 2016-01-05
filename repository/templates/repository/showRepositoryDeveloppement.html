@@ -111,15 +111,17 @@
             <a href="{% url 'repository-publishDemand' %}">Demander la publication</a><br />
       {% endif %}
       {% if 0 == 0 %}
-            <a href="{ url 'repository-addFile' }" data-target="#modalTag" data-toggle="modal">Tagger</a><br />
+            <a href="{% url 'repository-tagCommit' 1 %}" data-target="#modalTag" data-toggle="modal">Tagger</a><br />
       {% else %}
-            <a href="{ url 'repository-addFile' }" data-target="#modalTag" data-toggle="modal">Modifier/suprimmer tag</a><br />
+            <a href="{% url 'repository-tagCommit' 1 %}" data-target="#modalTag" data-toggle="modal">Modifier/suprimmer tag</a><br />
       {% endif %}
       {% if user.is_staff  %}
             <a href="{% url 'repository-deleteCommit' repository.id %}">Suprimmer la version</a><br />
             <a href="{% url 'repository-restartRepositoryByOldCommit' repository.id %}">Couper/recommencer à la version</a><br />
             <a href="{% url 'repository-changeDeprecated' repository.id repository.id %}">Mettre la version en deprécié</a><br />
-            <a href="{% url 'repository-changeCommitVisibility' commit.id 0 %}">Désactiver l'accès à la version</a><br />
+            {% if commit.id %}
+              <a href="{% url 'repository-changeCommitVisibility' commit.id 0 %}">Désactiver l'accès à la version</a><br />
+            {% endif %}
             <br />
             <a href="{% url 'repository-editRepository' repository.id %}">Modifier le dépôt</a><br />
             <a href="{% url 'repository-deleteRepository' repository.id %}">Suprimmer le dépôt</a><br />

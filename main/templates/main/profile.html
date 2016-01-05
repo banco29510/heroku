@@ -1,0 +1,22 @@
+{% extends "main/layout.html" %}
+{% load staticfiles %}
+{% block title %} Compte utilisateur {% endblock %}
+{% block content %}
+
+
+    <h2><center><em>Utilisateur {{ user.username }} </em></center></h2>
+
+    <p>Nom d'utilisateur : {{ user.username }}</p>
+    <p>Email : {{ user.email }}</p>
+    <p>Dernière connexion : {{ user.last_login  }}</p>
+    
+    
+    <p><a href="#">Changer les informations</a></p>
+    <p><a href="#">Changer le mot de passe</a></p>
+
+
+
+
+<br /><br />
+
+ {% endblock %}

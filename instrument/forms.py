@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 ##
 # \file depot.forms.py
 # \brief Class depot forms
