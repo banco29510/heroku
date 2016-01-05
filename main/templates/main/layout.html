@@ -1,0 +1,193 @@
+{% load i18n %}
+
+
+<!DOCTYPE html>
+
+    <head>
+
+        <meta http-equiv="content-type" content="text/html;charset=utf-8" />
+        <meta name='description' content='Site de partage de partitions'>
+        <meta name='language' content='FR'>
+        <meta name='copyright' content=''>
+        <meta name='Classification' content='Association'>
+
+        <title>{% block title %} Accueil {% endblock %}</title>
+
+
+
+		<!-- jquery -->
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
+
+		<!-- jquery ui -->
+		<link rel="stylesheet" href="https://ajax.googleapis.com/ajax/libs/jqueryui/1.11.3/themes/smoothness/jquery-ui.css">
+        <script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.11.3/jquery-ui.min.js"></script>
+
+		<!--  bootstrap -->
+		<link href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.4/css/bootstrap.min.css" rel="stylesheet" type="text/css" media="screen" >
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.4/js/bootstrap.min.js"></script>
+
+        <!--  ckeditor -->
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/ckeditor/4.4.5/ckeditor.js"></script>
+
+         <!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
+         <!--[if lt IE 9]>
+            <script src="../../assets/js/html5shiv.js"></script>
+            <script src="../../assets/js/respond.min.js"></script>
+        <![endif]-->
+
+        <!-- prism.js -->
+        <link href="https://cdnjs.cloudflare.com/ajax/libs/prism/0.0.1/prism.min.css" rel="stylesheet" />
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/0.0.1/prism.min.js"></script>
+
+        <!-- chart.js -->
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/1.0.2/Chart.min.js"></script>
+
+
+
+        <!-- favicon -->
+        <link href="data:image/x-icon;base64,
+iVBORw0KGgoAAAANSUhEUgAAAEAAAABACAMAAACdt4HsAAAAA3NCSVQICAjb4U/gAAAACXBIWXMAAAJkAAACZAHsijAMAAAAGXRFWHRTb2Z0d2FyZQB3d3cuaW5rc2NhcGUub3Jnm+48GgAAARFQTFRF////AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABAQEAwMDAwMDAwMDAwMDAwMDAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAwMDAwMDAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICzgAShwAAAFp0Uk5TAAEEBwgJCgsMDhYXGB4fICEiIyQoKy8wNDU4OT4/SE1VV1ljam1vcHN0dXh/gZKTl5icnqCho6WoqausrrC1t7m9vr/Iy9ve4OHi4+Xn7O3w8fLz9PX3+/z+ogslsQAAAVtJREFUWMPt12s3AlEUBuAzQhk0DEqMFHJylygGiVxKKXd6//8P8WHWnLGsxpi9P5H3+37WzJyz154thEq22sG3edgeF/7RyghO0/QHcgBPaP0IwO2kT70O8IQEAKBS8MtBkJAEAKR933DMe4bGBBPoLYQB0DCYAOoGE0A9zgRgc4E3PSQw+P5FSIYExDkXMK+ZgIgurkoppZQFIqCS/l3ATH7dijCAIwB4rW0uaDRgtOseWm2KBBjesT/PMQG0TSaAHS7QidCAs9RKyWmDDA04FEKIzD2AXQYgjEugyAHEgI0SCxDRiw0eQL6JfQ0MWfMpBhA/eXFagAhYbbeHaMBwEzwgDyZQ9IB9EmB7wBoJWFb13VkSMHLjAnvEyTR959Qfx6ijLbZ19fh0uvQHpvM/0GdA0NL1KRUAQIK69rnRiYunmxZx9VXJ0ZZvlbLW4+sGrv/qd6ua9ao+APwi5O3BN+JcAAAAAElFTkSuQmCC" rel="icon" type="image/x-icon" />
+
+
+        <!-- Piwik -->
+<script type="text/javascript">
+  var _paq = _paq || [];
+  _paq.push(["setDocumentTitle", document.domain + "/" + document.title]);
+  _paq.push(["setCookieDomain", "*.localhost"]);
+  _paq.push(["setDomains", ["*.localhost"]]);
+  _paq.push(['trackPageView']);
+  _paq.push(['enableLinkTracking']);
+  (function() {
+    var u="//localhost/piwik/piwik/";
+    _paq.push(['setTrackerUrl', u+'piwik.php']);
+    _paq.push(['setSiteId', 1]);
+    var d=document, g=d.createElement('script'), s=d.getElementsByTagName('script')[0];
+    g.type='text/javascript'; g.async=true; g.defer=true; g.src=u+'piwik.js'; s.parentNode.insertBefore(g,s);
+  })();
+</script>
+<noscript><p><img src="//localhost/piwik/piwik/piwik.php?idsite=1" style="border:0;" alt="" /></p></noscript>
+<!-- End Piwik Code -->
+
+
+    </head>
+    <body>
+   
+<div class="navbar navbar-default">
+  <div class="navbar-header">
+    <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-responsive-collapse">
+      <span class="icon-bar"></span>
+      <span class="icon-bar"></span>
+      <span class="icon-bar"></span>
+    </button>
+    <a class="navbar-brand" href="{% url 'main' %}">La maison des partitions</a>
+  </div>
+
+  <div class="navbar-collapse collapse navbar-responsive-collapse">
+    <ul class="nav navbar-nav">
+
+      <li><a href="{% url 'main' %}">Accueil</a></li>
+
+      <li><a href="{% url 'repository-search' %}" class="" data-toggle="">Recherche d'une partition</a></li>
+
+	  {% if user.is_authenticated %}
+
+	  {% if user.is_staff %}
+
+        <ul class="nav navbar-nav navbar-right">
+            <li class="dropdown">
+                <a href="#" class="dropdown-toggle" data-toggle="dropdown">Données<b class="caret"></b></a>
+                <ul class="dropdown-menu">
+                   <li><a href="{% url 'instrument-list' %}">Instruments</a></li>
+		            <li><a href="{% url 'software-list' %}">Logiciels</a></li>
+		            <li><a href="{% url 'licence-list' %}">Licences</a></li>
+		            <li><a href="{% url 'author-list' %}">Auteurs</a></li>
+                </ul>
+            </li>
+        </ul>
+
+        <ul class="nav navbar-nav navbar-right">
+            <li class="dropdown">
+                <a href="#" class="dropdown-toggle" data-toggle="dropdown">Administration<b class="caret"></b></a>
+                <ul class="dropdown-menu">
+                     <li><a href="{% url 'administration-dashboard' %}"><span class="glyphicon glyphicon-dashboard" aria-hidden="true"></span> Panel administration</a></li>
+                     <li class="divider"></li>
+                     <li><a href="{% url 'admin:index' %}"><span class="glyphicon glyphicon-dashboard" aria-hidden="true"></span> Panel admin django</a></li>
+
+                </ul>
+            </li>
+        </ul>
+
+        <li><a href="{ url 'lilypondSoftware-main' }" class="" data-toggle="">Logiciel lilypond</a></li>
+
+	  {% endif %}
+	  
+	  {% else %}
+	    <li><a href="{% url 'login' %}">Connexion</a></li>
+		<li><a href="{ url 'main-register%}">Inscription</a></li>
+	  
+	  {% endif %}
+
+      </ul>
+
+    <ul class="nav navbar-nav navbar-right">
+      {% if user.is_authenticated %}
+
+      <li class="dropdown">
+
+        <a href="#" class="dropdown-toggle" data-toggle="dropdown">Utilisateur : {{ user.username | capfirst }}<b class="caret"></b></a>
+        <ul class="dropdown-menu">
+
+          <li><a href="{ url 'main-editUser' }"><span class="glyphicon glyphicon-user" aria-hidden="true"></span> Modifier les informations</a></li>
+          <li><a href="{ url 'main-editUser' }"><span class="glyphicon glyphicon-download" aria-hidden="true"></span> Téléchargement</a></li>
+          <li><a href="{% url 'logout' %}?next=/"><span class="glyphicon glyphicon-log-out" aria-hidden="true"></span> Déconnection</a></li>
+        </ul>
+      </li>
+      {% endif %}
+    </ul>
+
+	<form id='search_form' class="navbar-form navbar-right" action="{% url 'repository-search' %}" method="GET">{% csrf_token %}
+        <input id='name' name="name" class="form-control col-lg-8" placeholder="Recherche partition" type="text" value="">
+    </form>
+
+<script>
+    // pour utiliser la recherche
+    $('#id_nom').bind('keypress', function(e) {
+	    if(e.keyCode==13) // si appuie sur entree
+	    {
+            $( "#search_form" ).submit()
+        }
+    });
+</script>
+
+  </div>
+</div>
+
+<div class="col-md-12">
+    <div class="row">
+        <div class="col-md-12 .alert">
+            {% if messages %}
+                <a href="#" class="close" onclick="$('.alert').hide()">X</a>
+			    <ul class="list-unstyled">
+    				{% for message in messages %}
+    					<li {% if message.tags %} class="alert alert-{{ message.tags }}" {% endif %} >{{ message }}</li>
+   					{% endfor %}
+				</ul>
+
+			{% endif %}
+
+         </div>
+    </div>
+    			{% block content %} {% endblock %}
+</div>
+
+
+<footer class="footer" style="background-color:lightyellow;position:fixed;bottom:0;left:0;right:0;height:25px;">
+    <div class="container">
+        <center>
+            <a class="text-muted" href="{% url 'main-cgu' %}">CGU</a>
+        </center>
+    </div>
+</footer>
+
+    </body>
+</html>

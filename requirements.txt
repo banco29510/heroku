@@ -1,11 +1,9 @@
 wheel
-pymsql
 Django
 markdown
 git+https://github.com/praekelt/django-recaptcha
 unipath
 pillow
-pygit
 psutil
 django-admin-bootstrapped
 requests
@@ -19,3 +17,5 @@ celery
 django-celery
 django-registration-redux
 django-bootstrap3
+cffi
+pygit2

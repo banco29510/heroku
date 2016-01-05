@@ -1,0 +1,81 @@
+{% extends "main/layout.html" %}
+{% load staticfiles %}
+
+{% block content %}
+
+	<div class="">
+		<h1 class=""><center><ins>La maison des partitions (ALPHA)</ins></center></h1>
+	</div>
+    <h2><center><em>Site d'échange de partition communautaire</em></center></h2>
+
+
+    <center><img src="{% static "images/partition_accueil.jpg" %}" alt="partition_accueil" class="img-responsive" /></center>
+
+        <br />
+
+    <h4>Le principe de fonctionnement :</h4>
+
+        <p style="margin-top:2em">
+            Le site utilise le logiciel Git qui est un gestionnaire de versions essentiellement utilisé pour le développement des logiciels.
+            Il permet de 'stocker' les versions successives du travail des développeurs.
+            Le logiciel permet de revenir en arrière si besoin et de rendre possible le travail collaboratif en prenant en charge les éventuels erreurs de modifications succesives.
+            <br /><br />
+            Nous avons par la suite adapté son fonctionnement pour qu'il s'occupe des partitions de musiques.
+            <br /><br />
+            Le site n'est qu'un intermédiaire entre le logiciel Git et vous même. Le site apporte le confort d'utilisation en soignant son ergonomie et en réduisant au stricte minimum
+            les connaissances techniques.
+            <br /><br />
+            Le site repose sur ses contributeurs pour apporter les partitions, les améliorer ou bien les remettre à jour.
+            <br /><br />
+            Enfin, n'hésitez pas à visiter notre bugtracker pour nous apporter vos idées ou vos retours sur les bugs.
+
+
+
+
+        </p>
+
+	
+	<h3><center>Liste des partitions dernièrement modifiées :</center></h3>
+	
+	<table class="table table-striped table-hover ">
+  <thead>
+    <tr>
+        <th><center>Nom de la partition</center></th>
+        <th><center>Date de modification</center></th>
+
+    </tr>
+  </thead>
+  <tbody>
+     {% for commit in commits %}
+     <tr>
+        <td><center><a href="{% url 'repository-show' commit.repository.id|urlencode %}" >{{commit.repository.name | capfirst }}</a></center></td>
+        <td><center>{{ commit.date|date:"d F Y H:i" }}</center></td>
+
+
+    {% empty %}
+   			<td colspan=2 ><center>Aucune partition n'a été modifié dernièrement</center></td>
+
+	{% endfor %}
+    </tr>
+  </tbody>
+</table>
+
+{% if is_paginated %}
+  <div class="text-center">
+            <ul class="pagination pagination-centered">
+                {% if commits.has_previous %}
+                    <li><a href="?commits={{ commits.previous_page_number }}">Précédente</a></li>
+                {% endif %}
+
+                 <li class="active"><a>Page {{ commits.number }} sur {{ commits.paginator.num_pages }}</a></li>
+
+                {% if commits.has_next %}
+                    <li><a href="?commits={{ commits.next_page_number }}">Suivante</a></li>
+                {% endif %}
+            </ul>
+    </div>
+{% endif %}
+
+<br /><br />
+
+ {% endblock %}
