@@ -1,0 +1,51 @@
+{% extends "main/layout.html" %}
+
+{% block content %}
+
+<h1>Liste des licences :</h1>
+
+<div class="table-responsive">
+<table class="table table-bordered table-striped table-hover">
+	<tr>
+      	<th>Nom </th>
+    </tr>
+
+
+	 {% for licence in licences %}
+     <tr>
+
+        <td><a href="{% url 'licence-detail' licence.id %}">{{ licence.name }}</a></td>
+
+    {% empty %}
+   			<td>Aucune licence</td>
+            <td></td>
+	{% endfor %}
+    </tr>
+
+
+
+</table>
+
+     {% if is_paginated %}
+        <div class="text-center">
+            <ul class="pagination pagination-centered">
+                {% if page_obj.has_previous %}
+                    <li><a href="?page={{ page_obj.previous_page_number }}">Précédente</a></li>
+                {% endif %}
+
+                 <li class="active"><a>Page {{ page_obj.number }} sur {{ page_obj.paginator.num_pages }}</a></li>
+
+                {% if page_obj.has_next %}
+                    <li><a href="?page={{ page_obj.next_page_number }}">Suivante</a></li>
+                {% endif %}
+            </ul>
+    </div>
+    {% endif %}
+
+
+
+</div>
+    <br /><br />
+       <a href="{% url 'licence-create' %}"><span class="glyphicon glyphicon-plus" aria-hidden="true"></span> Ajouter une licence</a>
+
+{% endblock %}

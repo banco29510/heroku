@@ -1,0 +1,57 @@
+{% extends "main/layout.html" %}
+{% block title %} Liste des auteurs {% endblock %}
+{% block content %}
+
+<h1>Liste des auteurs :</h1>
+
+<div class="table-responsive">
+<table class="table table-bordered table-striped table-hover">
+	<tr>
+      	<th>Nom </th>
+        <th>Date de naissance</th>
+
+
+    </tr>
+
+
+	 {% for author in authors %}
+     <tr>
+
+        <td><a href="{% url 'author-detail' author.id %}">{{ author.name | capfirst }}</a></td>
+        <td>{{ author.birthDate | default_if_none:"Non renseigné" }}</td>
+
+    {% empty %}
+   			<td>Aucun auteur</td>
+            <td></td>
+	{% endfor %}
+    </tr>
+
+
+
+</table>
+
+     {% if is_paginated %}
+        <div class="text-center">
+            <ul class="pagination pagination-centered">
+                {% if page_obj.has_previous %}
+                    <li><a href="?page={{ page_obj.previous_page_number }}">Précédente</a></li>
+                {% endif %}
+
+                 <li class="active"><a>Page {{ page_obj.number }} sur {{ page_obj.paginator.num_pages }}</a></li>
+
+                {% if page_obj.has_next %}
+                    <li><a href="?page={{ page_obj.next_page_number }}">Suivante</a></li>
+                {% endif %}
+            </ul>
+    </div>
+    {% endif %}
+
+
+
+</div>
+    <br /><br />
+        {% if user.is_staff %}
+            <a href="{% url 'author-create' %}"><span class="glyphicon glyphicon-plus" aria-hidden="true"></span> Créer auteur</a>
+        {% endif %}
+
+{% endblock %}

@@ -1,0 +1,161 @@
+{% extends "main/layout.html" %}
+{% load staticfiles %}
+
+{% block content %}
+
+
+    <h2><center><em>Voir fichier</em></center></h2>
+
+	<h1>Partition <a href="{ url 'repository-show' commit.repository.id|urlencode }">{{ commit.repository.name | capfirst }}</a> :</h1>
+
+
+
+        <table class="table table-striped table-hover ">
+  <thead>
+    <tr>
+        <th><center>Type</center></th>
+        <th><center>Nom</center></th>
+        <th><center>Taille</center></th>
+        <th><center>Licence</center></th>
+        <th><center>Instrument</center></th>
+        <th><center>Logiciel</center></th>
+
+
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+
+        <td><center>
+            {% if file.extension == '.jpg' or file.extension == '.jpeg' %}
+                <img src="{% static "images/file_icon/jpg.svg" %}" alt="Icone jpg" width="50" height="25" class="img-responsive img-thumbnail">
+            {% elif file.extension == '.ico' %}
+                <img src="{% static "images/file_icon/ico.svg" %}" alt="Icone ico" width="50" height="25" class="img-responsive img-thumbnail">
+            {% elif file.extension == '.png' %}
+                <img src="{% static "images/file_icon/png.svg" %}" alt="Icone png" width="50" height="25" class="img-responsive img-thumbnail">
+            {% elif file.extension == '.html' %}
+                <img src="{% static "images/file_icon/html.svg" %}" alt="Icone html" width="50" height="25" class="img-responsive img-thumbnail">
+            {% elif file.extension == '.pdf' %}
+                <img src="{% static "images/file_icon/pdf.svg" %}" alt="Icone pdf" width="50" height="25" class="img-responsive img-thumbnail">
+            {% elif file.extension == '.svg' %}
+                <img src="{% static "images/file_icon/svg.svg" %}" alt="Icone svg" width="50" height="25" class="img-responsive img-thumbnail">
+            {% elif file.extension == '.mp3' %}
+                <img src="{% static "images/file_icon/mp3.svg" %}" alt="Icone {{ file.extension }}" width="50" height="25" class="img-responsive img-thumbnail">
+            {% elif file.extension == '.ogg' %}
+                <img src="{% static "images/file_icon/ogg.svg" %}" alt="Icone {{ file.extension }}" width="50" height="25" class="img-responsive img-thumbnail">
+            {% else %}
+                <img src="{% static "images/file_icon/blank_image.svg" %}" alt="Icone image" width="50" height="25" class="img-responsive img-thumbnail">{{ file.extension }}
+            {% endif %}
+        </center></td>
+        <td><center>{{ file.nameWithoutExtension | capfirst }}</center></td>
+        <td><center>{{ file.size|filesizeformat }}</center></td>
+        <td><center>{{ file.licence|default_if_none:'Non renseigné' }}</center></td>
+        <td><center>
+            {% for instrument in instruments %}
+                {{ instrument | capfirst }}
+            {% empty %}
+                Non renseigné
+            {% endfor %}
+        </center></td>
+        <td><center>{{ file.software|default_if_none:'Non renseigné' }}</center></td>
+
+
+    </tr>
+  </tbody>
+  </table>
+
+
+
+   <h3>Prévisualisation :</h3>
+        {% if file.size > 10000000 %}
+            <p>La prévisualisation est impossible car le fichier est trop volumineux (>10MB)</p>
+            <a href="{% url 'repository-downloadFile' commit.id file.id|urlencode %}?branch={{ file.commit.branch }}"> Télécharger le fichier</a>
+
+        {% else %}
+
+        {% if extension == '.html' %}
+            <div class="panel panel-primary">
+            <div class="panel-heading">
+                <center><h3 class="panel-title">Readme.html</h3></center>
+            </div>
+            <div class="panel-body">
+                <textarea name="editor1" id="previsualisation" rows="50" cols="80">
+                <img src='{% static "images/ajax-loader.gif" %}' alt='ajax-loader' class='img-responsive' />
+            </textarea>
+            <script>
+
+                CKEDITOR.replace( 'previsualisation', {
+                    language: 'fr',
+                    readOnly: true,
+                });
+
+            $.ajax({
+                url : '{% url 'repository-downloadViewsFile' file.id|urlencode commit.id|urlencode %}',
+                type : 'GET',
+                dataType : 'html',
+                success : function(code_html, statut){
+                    CKEDITOR.instances.previsualisation.setData(code_html)
+                },
+                error : function(resultat, statut, erreur){
+                },
+
+                complete : function(resultat, statut){
+                }
+            });
+
+
+            </script>
+
+            </div>
+        </div>
+        {% elif extension == '.pdf' %}
+            <iframe src="{% url 'repository-downloadViewsFile' file.id|urlencode %}" width="800" height="600" align="middle"></iframe>
+        {% elif extension == '.jpg' or extension == '.jpeg' or extension == '.JPEG' or extension == '.JPG' or extension == '.png' %}
+            <center><img class="img-responsive" src="{% url 'repository-downloadViewsFile' file.id|urlencode  commit.id|urlencode %}?" alt="{{ file.name }}" title="{{ file.name }}"></center>
+        {% elif extension == '.mp3' %}
+            <audio src="{% url 'repository-downloadViewsFile' file.id|urlencode %}" controls >
+                <object type="application/x-shockwave-flash" data="http://cdn.pcinpact.com/media/dewplayer.swf" width="200" height="20" id="dewplayer" name="dewplayer"> <param name="wmode" value="transparent" /><param name="movie" value="dewplayer.swf" /> <param name="flashvars" value="mp3={% url 'repository-downloadViewsFile' file.id|urlencode %}&amp;showtime=1" /> </object>
+            </audio>
+        {% elif extension == '.ogg' %}
+            <audio src="{% url 'repository-downloadViewsFile' file.id|urlencode %}" controls >
+        {% elif extension == '.md' %}
+            <pre id="pre_code" name="pr_code"><code class="language-markdown" name="code" id="code"></code></pre>
+            <script>
+                $('#code').append("<center><img src='{% static "images/ajax-loader.gif" %}' alt='ajax-loader' class='img-responsive' /></center>");
+
+            $.ajax({
+                url : '{% url 'repository-downloadViewsFile' file.id|urlencode commit.id|urlencode %}',
+                type : 'GET',
+                success : function(code, statut){
+                    $('#code').append("");
+                    $("#code").val(code);
+                },
+                error : function(resultat, statut, erreur){
+                },
+
+                complete : function(resultat, statut){
+                }
+            });
+
+            </script>
+        {% elif extension == '.ly' %}
+            {% if user.is_staff %}
+                <a href="{% url 'lilypondSoftware-main' %}?commit={{ commit.id }}&file={{ file.id }}&branch={{ commit.branch }}">Voir le fichier</a>
+            {% else %}
+                <p>Impossible d'afficher le fichier({{ extension }})</p>
+            {% endif %}
+        {% else %}
+            <p>Impossible d'afficher le fichier({{ extension }}) <a href="{% url 'repository-downloadViewsFile' file.id commit.id %}">Lien</a></p>
+        {% endif%}
+
+        {% endif %}
+
+    <br /><br />
+
+    <a href="{% url 'repository-warningDownloadFile' file.id commit.id|urlencode %}">Télecharger</a><br />
+
+
+
+<br /><br />
+
+ {% endblock %}

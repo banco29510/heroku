@@ -1,0 +1,122 @@
+{% extends "main/layout.html" %}
+{% load staticfiles %}
+
+{% block content %}
+
+
+    <h2><center><em>Liste des commits</em></center></h2>
+
+
+    <!-- Nav tabs -->
+  <ul class="nav nav-tabs nav-pills" role="tablist">
+     <li role="presentation" class="active"><a href="#main" aria-controls="main" role="tab" data-toggle="tab">Toutes les branches</a></li>
+     {% for branch in branches %}
+        <li role="presentation" class=""><a href="#{{ branch }}" aria-controls="{{ branch }}" role="tab" data-toggle="tab">{{ branch }} <span class="close" style="">&nbsp; ×</span></a></li>
+     {% empty %}
+     {% endfor %}
+     <li role="new"><a href="#" aria-controls="" role="tab" data-target="#myModal" data-toggle="modal">Créer une branche</a></li>
+  </ul>
+
+  <!-- Tab panes -->
+  <div class="tab-content">
+     <div role="tabpanel" class="tab-pane active" id="main">
+         <ul class="list-group">
+            {% for commit in commits %}
+                <li class="list-group-item" >Commit du {{ commit.date }} : {{ commit.message }} <a href="{% url 'repository-deleteCommit' 1 %}">Suprimmer version</a>  <a href="{% url 'repository-mergeCommit' %}">Fusion version</a></li>
+            {% empty %}
+
+            {% endfor %}
+        </ul>
+
+        <div class="text-center">
+        <ul class="pagination pagination-centered">
+            {% if commits.has_previous %}
+                <li><a href="?pageCommits={{ commits.previous_page_number }}&pageFiles={{ files.number }}&branch={{ branch }}">Précédente</a></li>
+            {% endif %}
+
+             <li class="active"><a>Page {{ commits.number }} sur {{ commits.paginator.num_pages }}</a></li>
+
+            {% if commits.has_next %}
+                <li><a href="?pageCommits={{ commits.next_page_number }}&pageFiles={{ files.number }}&branch={{ branch }}">Suivante</a></li>
+            {% endif %}
+        </ul>
+    </div>
+
+
+    {% for branch in branches %}
+
+    </div>
+    <div role="tabpanel" class="tab-pane" id="{{ branch }}">
+         <ul>
+            {% for commit in commits %}
+
+                    <li class="list-group-item" >Commit du {{ commit.date }} : {{ commit.message }} <a href="{% url 'repository-deleteCommit' 1 %}">Suprimmer version</a>  <a href="{% url 'repository-mergeCommit' %}">Fusion version</a></li>
+
+             {% empty %}
+            {% endfor %}
+        </ul>
+
+
+        <div class="text-center">
+        <ul class="pagination pagination-centered">
+            {% if commits.has_previous %}
+                <li><a href="?pageCommits={{ commits.previous_page_number }}&pageFiles={{ files.number }}&branch={{ branch }}">Précédente</a></li>
+            {% endif %}
+
+             <li class="active"><a>Page {{ commits.number }} sur {{ commits.paginator.num_pages }}</a></li>
+
+            {% if commits.has_next %}
+                <li><a href="?pageCommits={{ commits.next_page_number }}&pageFiles={{ files.number }}&branch={{ branch }}">Suivante</a></li>
+            {% endif %}
+        </ul>
+    </div>
+
+
+    </div>
+       {% empty %}
+     {% endfor %}
+
+
+</div>
+
+<!-- Modal -->
+<div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        <h4 class="modal-title" id="myModalLabel">Créer une branche</h4>
+      </div>
+      <div class="modal-body">
+        <form method="post" id="myForm" action="www.google.fr">
+            <p>Nom : <input type="text" id="name" class="name"/></p>
+
+
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-primary odom-submit">Créer</button>
+        <button type="button" class="btn btn-default" data-dismiss="modal">Fermer</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+
+<br /><br />
+
+<script>
+
+
+$(function () {
+    $('body').on('click', '.odom-submit', function (e) {
+        $(this.form).submit();
+        alert($('#name').val());
+        $('#myModal').modal('hide');
+    });
+});
+
+</script>
+
+ {% endblock %}

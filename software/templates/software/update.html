@@ -1,0 +1,24 @@
+{% extends "main/layout.html" %}
+
+{% block content %}
+
+<h1>Modifier le logiciel :</h1>
+
+<div class="row">
+    <div class="col-md-3">
+
+    <form action="" method="post">{% csrf_token %}
+
+        {{ form.as_p }}
+
+        <input type="submit" class="btn btn-primary" value="Modifier" />
+    </form>
+
+
+    </div>
+
+</div>
+
+
+
+{% endblock %}

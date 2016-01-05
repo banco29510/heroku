@@ -1,0 +1,22 @@
+{% extends "main/layout.html" %}
+{% block title %} Informations auteur {% endblock %}
+{% block content %}
+
+<h1>Auteur {{ author.name | capfirst }} :</h1>
+
+
+        <p>Date de naissance : {{ author.birthDate | default_if_none:"Non renseigné" }}</p>
+        <p>Date de mort : {{ author.deathDate | default_if_none:"Non renseigné" }}</p>
+        <p>Nationalité : {{ author.nationality | default:"Non renseigné" }}</p>
+        <br><br>
+
+        {% if user.is_staff %}
+
+        <a href="{% url 'author-update' author.id %}"><span class="glyphicon glyphicon-cog" aria-hidden="true"></span> Modifier auteur</a><br />
+        <a href="{% url 'author-delete' author.id %}"><span class="glyphicon glyphicon-trash" aria-hidden="true"></span> Suprimmer auteur</a><br />
+
+
+        {% endif %}
+
+
+{% endblock %}

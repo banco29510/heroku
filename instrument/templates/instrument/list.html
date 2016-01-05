@@ -1,0 +1,56 @@
+{% extends "main/layout.html" %}
+
+{% block content %}
+
+<h1>Liste des instruments :</h1>
+<br />
+
+<div class="table-responsive">
+
+<table class="table table-bordered table-striped table-hover">
+	<tr>
+      	<th>Nom </th>
+        <th>Description</th>
+    </tr>
+
+
+	 {% for instrument in instruments %}
+
+     <tr>
+
+        <td><a href="{% url 'instrument-detail' instrument.id %}">{{ instrument.name | capfirst }}</a></td>
+        <td>{{ instrument.description | capfirst | safe }}</td>
+
+    {% empty %}
+   			<td>Aucun instrument</td>
+            <td></td>
+	{% endfor %}
+    </tr>
+
+
+
+</table>
+
+     {% if is_paginated %}
+        <div class="text-center">
+            <ul class="pagination pagination-centered">
+                {% if page_obj.has_previous %}
+                    <li><a href="?page={{ page_obj.previous_page_number }}">Précédente</a></li>
+                {% endif %}
+
+                 <li class="active"><a>Page {{ page_obj.number }} sur {{ page_obj.paginator.num_pages }}</a></li>
+
+                {% if page_obj.has_next %}
+                    <li><a href="?page={{ page_obj.next_page_number }}">Suivante</a></li>
+                {% endif %}
+            </ul>
+    </div>
+    {% endif %}
+
+
+
+</div>
+    <br /><br />
+       <a href="{% url 'instrument-create' %}"><span class="glyphicon glyphicon-plus" aria-hidden="true"></span> Ajouter un instrument</a>
+
+{% endblock %}

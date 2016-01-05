@@ -1,0 +1,72 @@
+{% extends "main/layout.html" %}
+{% load staticfiles %}
+{% load bootstrap3 %}
+
+{% block content %}
+
+
+    <h2><center><em>Recherche des partitions</em></center></h2>
+    <br />
+
+
+
+    <form action="{% url 'repository-search' %}" method="post" class="form-horizontal">{% csrf_token %}
+
+        {% bootstrap_form form layout='horizontal' show_label=True %}
+
+        {% buttons %}
+            <button type="submit" class="btn btn-default">Rechercher</button>
+        {% endbuttons %}
+
+
+     </form>
+
+
+
+	<h3><center>Liste des partitions  :</center></h3>
+	
+	<table class="table table-striped table-hover ">
+    <thead>
+        <tr>
+            <th>Nom de la partition</th>
+            <th>Auteur</th>
+
+        </tr>
+    </thead>
+    <tbody>
+    {% for repository in repositorys %}
+    <tr>
+
+        <td><a href="{% url 'repository-showRepositoryProduction' repository.id %}">{{ repository.name | capfirst }}</a></td>
+        <td>{{ repository.scoreAuthor | capfirst }}</td>
+
+    {% empty %}
+   			<td>Aucune partition</td>
+            <td></td>
+         </tr>
+	{% endfor %}
+    </tbody>
+    </table>
+
+     {% if not repositorys.is_paginated %}
+        <div class="text-center">
+            <ul class="pagination pagination-centered">
+                {% if repositorys.has_previous %}
+                    <li><a href="?page={{ repositorys.previous_page_number }}">Précédente</a></li>
+                {% endif %}
+
+                 <li class="active"><a>Page {{ repositorys.number }} sur {{ repositorys.paginator.num_pages }}</a></li>
+
+                {% if repositorys.has_next %}
+                    <li><a href="?page={{repositorys.next_page_number }}">Suivante</a></li>
+                {% endif %}
+            </ul>
+    </div>
+    {% endif %}
+
+
+    <a href="{% url 'repository-newScore' %}">Nouvelle partition</a>
+
+<br /><br />
+
+ {% endblock %}

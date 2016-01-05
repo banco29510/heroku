@@ -1,0 +1,18 @@
+{% extends "main/layout.html" %}
+
+{% block content %}
+
+<h1>Logiciel {{ software.name }} :</h1>
+
+
+        <p>Licence : {{ software.licence | default_if_none:'Non renseigné'}}</p>
+        <br><br>
+            <ul class="list-unstyled">
+
+                <li><a href="{% url 'software-update' software.id %}"> <span class="glyphicon glyphicon-cog" aria-hidden="true"></span> Modifier informations sur le logiciel</a></li>
+                <li><a href="{% url 'software-delete' software.id %}"><span class="glyphicon glyphicon-trash" aria-hidden="true"></span> Suprimmer le logiciel</a></li>
+            </ul>
+
+
+
+{% endblock %}

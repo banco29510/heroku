@@ -1,0 +1,18 @@
+{% extends "main/layout.html" %}
+
+{% block content %}
+
+<h1>Modifier la licence :</h1>
+
+
+    <form action="" method="post">{% csrf_token %}
+
+        {{ form.as_p }}
+
+        <input type="submit" class="btn btn-primary" value="Modifier" />
+    </form>
+
+
+
+
+{% endblock %}
