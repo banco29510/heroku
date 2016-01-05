@@ -1,0 +1,22 @@
+{% extends "main/layout.html" %}
+
+{% block content %}
+
+<div class="row">
+
+  {% include 'dashboard/menu.html' %}
+
+  <div class="col-lg-10">
+    <h1>Métrique matériel : </h1>
+
+    <h3>Espace utilisé : {{ disk_usage_used|filesizeformat }}</h3>
+    <h3>Espace libre disponible : {{ disk_usage_free|filesizeformat }}</h3>
+    <h3>Espace total disponible : {{ disk_usage_total|filesizeformat }}</h3>
+
+    <h3>Mémoire : {{ memory_used|filesizeformat }}/{{ memory_total|filesizeformat }}</h3>
+</div>
+
+</div>
+
+
+{% endblock %}
