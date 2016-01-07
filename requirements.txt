@@ -1,8 +1,7 @@
 wheel
 Django
-psutil
-django-debug-toolbar
-python-gitlab
+pyapi-gitlab
+flake8
 markdown
 git+https://github.com/praekelt/django-recaptcha
 unipath

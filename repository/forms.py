@@ -22,6 +22,14 @@ class RepositoryForm(ModelForm):
     def clean_name(self):
         name = self.cleaned_data['name']
         return name.capitalize()
+        
+class NewRepositoryForm(forms.Form):
+    name = forms.CharField(max_length=100, required=True, label="Nom ")
+    scoreAuthor = forms.ModelChoiceField(queryset=Author.objects.all(), label="Auteur", required=True)
+    url = forms.CharField(max_length=100, required=False, label="Url ")
+    login = forms.CharField(max_length=100, required=False, label="Login ")
+    password = forms.CharField(max_length=100, required=False, label="Mot de passe ")
+        
 
 class SearchForm(forms.Form):
     name = forms.CharField(max_length=100, required=False, label="Nom ")

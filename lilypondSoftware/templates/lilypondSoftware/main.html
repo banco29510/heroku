@@ -1,0 +1,137 @@
+{% extends "main/layout.html" %}
+
+{% block title %} Logiciel lylipond {% endblock %}
+
+{% block content %}
+
+
+        {% if file != None %}
+
+            <h1>Fichier {{file.name | capfirst }} :</h1>
+
+        {% endif %}
+
+        <div class="container-fluid">
+
+
+          <div id="navbar" class="navbar-collapse collapse">
+            <ul class="nav navbar-nav">
+
+                <li class="dropdown">
+                    <a class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">Fichier<span class="caret"></span></a>
+                    <ul class="dropdown-menu" role="menu">
+                        {% if user.is_staff  %}
+                            <li><a onclick="newScore()" ><span class="glyphicon glyphicon-plus"></span>Nouveau</a></li>
+                            {% if file != None %}
+                                <li><a onclick="" ><span class="glyphicon glyphicon-plus"></span> Enregistrer</a></li>
+                                <li><a onclick="" ><span class="glyphicon glyphicon-plus"></span> Enregistrer sous</a></li>
+                                <li><a onclick="" ><span class="glyphicon glyphicon-download"></span> Télécharger .ly</a></li>
+                                <li><a onclick="" ><span class="glyphicon glyphicon-download"></span> Télécharger .pdf</a></li>
+                            {% endif %}
+                        {% endif %}
+                        <li><a onclick="code()" ><span class="glyphicon glyphicon-refresh"></span> Compiler</a></li>
+                        <li><a onclick="" ><span class="glyphicon glyphicon-upload"></span> Upload</a></li>
+                    </ul>
+                </li>
+
+             <li class="dropdown">
+                <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">Édition<span class="caret"></span></a>
+              <ul class="dropdown-menu" role="menu">
+                  <li><a onclick="lilypondAddVersion()">Ajouter Version</a></li>
+                  <li><a onclick="lilypondAddItaliano()">Ajouter notation Italienne</a></li>
+                  <li><a onclick="lilypondAddHeader()">Ajouter header</a></li>
+                </ul>
+              </li>
+            </ul>
+
+          </div><!--/.nav-collapse -->
+        </div>
+
+<div class="row">
+    <div class="col-lg-5"><!-- code mirror -->
+        <textarea rows="34" cols="80" id="lylipond" name="lylipond" onChange="code()" style="">
+            {{ content }}
+        </textarea>
+    </div>
+    <div class="col-lg-5">
+        <iframe src="{% url 'lilypondSoftware-compilation' %}?code=" width="800" height="700" id="iframe">
+            <p>Votre navigateur ne supporte pas l'élément iframe</p>
+        </iframe>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-lg-10">
+        <h1>Sortie de compilation :</h1>
+        <textarea rows="10" cols="220" id="errors" name="errors" onChange="" style="">
+        </textarea>
+
+</div>
+
+ <script>
+
+    $( document ).ready(function() {
+        code()
+    });
+
+    function code()
+    {
+            var code = $("textarea#lylipond").val();
+            $("#iframe").attr("src", "{% url 'lilypondSoftware-compilation' %}?code="+code+"");
+
+            ErrorsCompilation()
+    }
+
+
+    function lilypondAddVersion()
+    {
+
+        $("textarea#lylipond").prepend("\\version \"2.18.2\"\n");
+
+    }
+
+    function lilypondAddItaliano()
+    {
+
+        $("textarea#lylipond").prepend("\\include \"italiano.ly\"\n");
+
+    }
+
+    function lilypondAddHeader()
+    {
+        $("textarea#lylipond").prepend("\\header {\n title = \"titre\"\n subtitle = \"sous titre\"\n composer = \"compositeur\"\n dedication = \"Dédicace\"\n instrument = \"\"\n copyright = \"\"\n }\n");
+
+    }
+
+    function ErrorsCompilation()
+    {
+            var code = $("textarea#lylipond").val();
+            $.ajax({
+                url : "{% url 'lilypondSoftware-errorsCompilation' %}?code="+code+"",
+                type : 'GET',
+                success : function(errors, statut){
+                    $("textarea#errors").prepend(""+errors+"\n -------------------------\n");
+                },
+                error : function(resultat, statut, erreur){
+                },
+
+                complete : function(resultat, statut){
+                }
+            });
+
+
+    }
+
+
+    function newScore()
+    {
+        $("textarea#lylipond").prepend("\\version \"2.18.2\"\n\n\\include \"italiano.ly\"\n\n\\header {\n \ttitle = \"titre\"\n \tsubtitle = \"sous titre\"\n \tcomposer = \"compositeur\"\n \tdedication = \"Dédicace\"\n \tinstrument = \"\"\n \tcopyright = \"\"\n }\n { do re mi }");
+
+    }
+
+
+</script>
+
+
+
+<br />{% endblock %}

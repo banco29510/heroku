@@ -18,10 +18,11 @@ from django.contrib.auth import authenticate
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.views.generic.edit import *
 
-import os, sys, datetime, glob, shutil, mimetypes, re, logging, pickle, tempfile, time, subprocess, json, base64
+import os, sys, datetime, glob, shutil, mimetypes, re, logging, pickle, tempfile, time, subprocess, json, base64, pprint
 
 from djcelery import celery
 from score.celery import *
+from celery import Task
 
 from repository.models import *
 
@@ -35,10 +36,10 @@ class GitMethods():
     password = ""
     url = ""
     bare = False
-    #author = pygit2.Signature('admin', 'admin@admin.fr')
-    #commiteur = pygit2.Signature('admin', 'admin@admin.fr')
-    #credential = pygit2.UserPass("anonymous", "anonymous")
-    temporary_folder = tempfile.mkdtemp()
+    author = pygit2.Signature('admin', 'admin@admin.fr')
+    commiteur = pygit2.Signature('admin', 'admin@admin.fr')
+    credential = pygit2.UserPass("anonymous", "anonymous")
+    temporary_folder = tempfile.TemporaryDirectory()
     repository = ""
     index = ""
 
@@ -48,14 +49,25 @@ class GitMethods():
         self.password = password
         self.url = url
         self.bare = bare
-        #self.credential = pygit2.UserPass(username, password)
+        self.credential = pygit2.UserPass(username, password)
 
+    ## ajout d'un fichier
+    def add(self, file=None):
+        print(file)
+        #self.index = self.repository.index
+        #self.index.add_all()
+        #self.index.write()
+        #tree = self.index.write_tree()
+        
+        return 1
+        
+        
     def clone(self):
-        #self.repository = pygit2.clone_repository(self.url, self.temporary_folder, bare=self.bare, credentials=self.credential)
+        self.repository = pygit2.clone_repository(self.url, self.temporary_folder, bare=self.bare,)
         return 1
 
     def push(self):
-        pass
+        print('aaaaa')
 
     def commit(self):
         pass
@@ -75,13 +87,6 @@ class GitMethods():
 
     def commit(self):
         #oid = repository.create_commit('refs/heads/master',, self.author, self.commiter, "ajout du fichier",tree,[repo.head.get_object().hex])
-        return 1
-
-    def add(self):
-        #self.index = self.repository.index
-        #self.index.add_all()
-        #self.index.write()
-        #tree = self.index.write_tree()
         return 1
 
     def delete(self, path=None):
@@ -104,10 +109,23 @@ class GitMethods():
 
 
 @app.task
-def ampq_deleteFile(username=None, password=None, url=None,):
+def ampq_addFile(username=None, password=None, url=None, file=None):
+    
+    git = GitMethods(username=username, password=password, url=url)
+    git.clone()
+    #git.add(file)
+    #git.commit()
+    #git.push()
+    # updateDatabase()
+    #print(git.listAllBranch())
 
-    #git = GitMethods(username=username, password=password, url=url,)
-    #git.clone()
+    return 1
+    
+@app.task
+def ampq_deleteFile(username=None, password=None, url=None,):
+    
+    git = GitMethods(username=username, password=password, url=url,)
+    git.clone()
     #git.add()
     #print(git.listAllBranch())
 

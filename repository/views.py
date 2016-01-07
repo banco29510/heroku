@@ -7,7 +7,7 @@ from django.contrib.auth import logout, authenticate, login
 from django.core.urlresolvers import reverse
 from django.db import models
 from django.core.files.base import ContentFile
-from django.core.files import File as File
+from django.core.files import File as DjangoFile
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.decorators import login_required
 from django.views.decorators.cache import cache_page
@@ -15,10 +15,12 @@ from django.shortcuts import get_object_or_404, get_list_or_404, redirect, rende
 from django.contrib.auth import authenticate
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.views.generic.edit import *
+from django.conf import settings
 
 import pprint, tempfile, os, sys, json, datetime, time, mimetypes, zipfile, shutil
 
 import pygit2 as pygit2
+from gitlab import *
 
 from repository.models import *
 from repository.forms import *
@@ -110,18 +112,26 @@ def search(request):
 def newScore(request):
 
     if request.method == 'POST':
-        form = RepositoryForm(request.POST)
+        form = NewRepositoryForm(request.POST)
         if form.is_valid():
-            name = form.cleaned_data['name']
+            name = form.cleaned_data['name'].replace(' ', '-')
             scoreAuthor = form.cleaned_data['scoreAuthor']
             url = form.cleaned_data['url']
             login = form.cleaned_data['login']
             password = form.cleaned_data['password']
 
 
-            #création du dépot
             
-
+            if not url:
+                #création du dépot
+                gitlab = Gitlab(settings.GITLAB_URL, settings.GITLAB_TOKEN)
+                gitlab.createproject(name)
+                
+                url = settings.GITLAB_URL+'/'+request.user.username+'/'+name+'.git'
+                login = "banco29510@gmail.com"
+                password = "antoine29510"
+                
+            
             # création du dépot dans la bdd
             repository = Repository()
             repository.name = name
@@ -132,13 +142,24 @@ def newScore(request):
             repository.save()
             
             # mise a jour du dépot
+            temporary_folder = tempfile.mkdtemp()
+            TempFile = TemporaryFile()
+            TempFile.name = "readme.md"
+            with open(temporary_folder+"/readme.md","a+") as f:
+                f.write("Partition"+repository.name+"")
             
+            TempFile.file.name = temporary_folder+"/readme.md"
+                
+            TempFile.save()   
+        
+            ampq_addFile.delay(username=repository.name, password=repository.password, url=repository.url, file=TempFile) #ajout readme.md
+            #updateDatabase.delay(username='banco29510@gmail.com', password='antoine29510', url=url)
             
-
+            messages.add_message(request, messages.INFO, 'Le dépot à été crée. Première révision lors de la prochaine mise à jour.')
             return redirect('repository-search',)
 
     else:
-        form = RepositoryForm(initial={})
+        form = NewRepositoryForm(initial={})
 
 
     return render(request, 'repository/newScore.html', {'form': form,})
@@ -293,6 +314,7 @@ def addFile(request, pk=None):
 
     repository = get_object_or_404(Repository, pk=pk)
     commits = get_list_or_404(Commit, repository=repository.id)
+    
 
     # liste des branches
     branches = []
@@ -309,6 +331,8 @@ def addFile(request, pk=None):
             file = request.FILES['file']
             branch = form.cleaned_data['branch']
             reference = 'refs/heads/master'
+            
+            #TemporaryFile= TemporaryFile()
 
             #addFile.delay(username='banco29510@gmail.com', password='antoine29510', url='https://banco29510%40gmail.com:antoine29510@gitlab.com/banco29510/rrrr.git', file=file)
 

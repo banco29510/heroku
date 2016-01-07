@@ -9,6 +9,7 @@ from django.conf import settings
 
 app = Celery('score', broker='amqp://qkmnjppx:ELBOrLJanL8BMor2GqYYeaKjhxyhDDAI@spotted-monkey.rmq.cloudamqp.com/qkmnjppx')
 app.conf.TASK_SERIALIZER="json"
+CELERY_ACCEPT_CONTENT = ['json']
 
 # Using a string here means the worker will not have to
 # pickle the object when using Windows.
@@ -18,9 +19,9 @@ app.autodiscover_tasks(lambda: settings.INSTALLED_APPS)
 app.conf.update(
     CELERY_RESULT_BACKEND='djcelery.backends.database:DatabaseBackend',
 )
-app.conf.update(
-    CELERY_RESULT_BACKEND='djcelery.backends.cache:CacheBackend',
-)
+#app.conf.update(
+#    CELERY_RESULT_BACKEND='djcelery.backends.cache:CacheBackend',
+#)
 
 app.conf.CELERY_TIMEZONE = 'Europe/Paris'
 

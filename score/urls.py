@@ -30,6 +30,7 @@ urlpatterns = [
     url(r'^author/', include('author.urls')),
     url(r'^software/', include('software.urls')),
     url(r'^administration/', include('administration.urls')),
+    url(r'^lilypondSoftware/', include('lilypondSoftware.urls')),
 ]
 
 handler404 = 'main.errors.error404'

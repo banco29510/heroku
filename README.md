@@ -10,7 +10,7 @@
 - Compte reCaptcha [reCaptcha](https://www.google.com/recaptcha/intro/index.html)
 - Compte Raven [Raven/sentry](https://getsentry.com/welcome/)
 - Doxygen [Doxygen](http://www.stack.nl/~dimitri/doxygen/)
-- RabbitMQ [RabbitMQ](http://www.stack.nl/~dimitri/doxygen/)
+- RabbitMQ [RabbitMQ](https://www.rabbitmq.com/)
 
 ### Installation ###
 

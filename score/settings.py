@@ -36,6 +36,7 @@ ALLOWED_HOSTS = ['*']
 
 INSTALLED_APPS = [
     'django.contrib.admin',
+    'django.contrib.sites',
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
@@ -56,6 +57,7 @@ INSTALLED_APPS = [
     'instrument',
     'administration',
     'registration',
+    'lilypondSoftware',
     
     
 ]
@@ -172,3 +174,6 @@ DOWNTIME_EXEMPT_PATHS = (
     '/admin',
     '/administration',
 )
+
+GITLAB_URL = 'https://gitlab.com/'
+GITLAB_TOKEN = 'zsyZdf3goQ4sCkxDVNTQ'
