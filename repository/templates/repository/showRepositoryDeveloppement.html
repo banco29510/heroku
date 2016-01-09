@@ -4,13 +4,8 @@
 {% block content %}
 
 
-    <h2><em>{{ repository.name }}</em></h2> <span class="glyphicon glyphicon-plus" aria-hidden="true"></span>
-    
-    
-    <p><small>Url : {{ repository.url }}</small></p>
-    <p><small>Login : {{ repository.login }}</small></p>
-    <p><small>Password : {{ repository.password }}</small></p>
-
+    <h2><em>Partition {{ repository.name }}</em></h2> 
+ 
     {% if user.is_staff  %}
     <h4><em>Auteur :
         {% if repository.scoreAuthor.id != None %}

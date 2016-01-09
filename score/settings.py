@@ -36,6 +36,7 @@ ALLOWED_HOSTS = ['*']
 
 INSTALLED_APPS = [
     'django.contrib.admin',
+    'django.contrib.sites',
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
@@ -55,7 +56,6 @@ INSTALLED_APPS = [
     'licence',
     'instrument',
     'administration',
-    'registration',
     'lilypondSoftware',
     
     
@@ -72,6 +72,7 @@ MIDDLEWARE_CLASSES = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     
     'downtime.middleware.DowntimeMiddleware',
+
 ]
 
 ROOT_URLCONF = 'score.urls'

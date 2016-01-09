@@ -4,7 +4,7 @@
 {% block content %}
 
 
-    <h2><center><em>{{ repository.name }}</em></center></h2>
+    <h2><center><em>Partition {{ repository.name }}</em></center></h2>
 	
 	<table class="table table-striped table-hover ">
     <thead>
@@ -86,14 +86,33 @@
     </div>
 {% endif %}
 
+    {% if readme %}
+
      <div class="panel panel-primary">
         <div class="panel-heading">
-            <center><h3 class="panel-title">Readme.html</h3></center>
+            <center><h3 class="panel-title">README</h3></center>
         </div>
-        <div class="panel-body">
+        <div class="panel-body" id="README">
             <p>Lorem epsum</p>
         </div>
      </div>
+     
+     <script type="text/javascript">
+    
+    $.ajax({
+        url : '{ url 'repository-downloadViewsFile' file.id|urlencode commit.id|urlencode }',
+        type : 'GET',
+        success : function(code, statut){
+            $('#README').append("essai");
+            
+        },
+                
+    });
+    
+    
+    </script>
+     
+     {% endif %}
 
 
 
@@ -103,5 +122,7 @@
 
 
 <br /><br />
+
+
 
  {% endblock %}

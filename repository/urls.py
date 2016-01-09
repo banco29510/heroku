@@ -25,7 +25,7 @@ urlpatterns = patterns('repository.views',
     url(r'^downloadFile$', 'downloadFile', name="repository-downloadFile"),
 
     url(r'^warningDownloadRepository/(?P<pk>\d+)$', 'warningDownloadRepository', name="repository-warningDownloadRepository"),
-    url(r'^downloadRepository$', 'downloadRepository', name="repository-downloadRepository"),
+    #url(r'^downloadRepository$', 'downloadRepository', name="repository-downloadRepository"),
 
     url(r'^warningDownloadCommit/(?P<pk>\d+)$', 'warningDownloadCommit', name="repository-warningDownloadCommit"),
     url(r'^downloadCommit$', 'downloadCommit', name="repository-downloadCommit"),

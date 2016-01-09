@@ -6,7 +6,7 @@
 
     <h2><center><em>Voir fichier</em></center></h2>
 
-	<h1>Partition <a href="{ url 'repository-show' commit.repository.id|urlencode }">{{ commit.repository.name | capfirst }}</a> :</h1>
+	<h1>Partition <a href="{% url 'repository-showRepositoryDeveloppement' commit.repository.id %}">{{ commit.repository.name }}</a> :</h1>
 
 
 
@@ -43,6 +43,8 @@
                 <img src="{% static "images/file_icon/mp3.svg" %}" alt="Icone {{ file.extension }}" width="50" height="25" class="img-responsive img-thumbnail">
             {% elif file.extension == '.ogg' %}
                 <img src="{% static "images/file_icon/ogg.svg" %}" alt="Icone {{ file.extension }}" width="50" height="25" class="img-responsive img-thumbnail">
+            {% elif file.extension == '.md' %}
+                <img src="{% static "images/file_icon/md.svg" %}" alt="Icone {{ file.extension }}" width="50" height="25" class="img-responsive img-thumbnail">
             {% else %}
                 <img src="{% static "images/file_icon/blank_image.svg" %}" alt="Icone image" width="50" height="25" class="img-responsive img-thumbnail">{{ file.extension }}
             {% endif %}
