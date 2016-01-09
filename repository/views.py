@@ -19,7 +19,6 @@ from django.conf import settings
 
 import pprint, tempfile, os, sys, json, datetime, time, mimetypes, zipfile, shutil
 
-import pygit2 as pygit2
 from gitlab import *
 
 from repository.models import *

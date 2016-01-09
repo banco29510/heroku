@@ -28,7 +28,6 @@ import gitlab
 
 from repository.models import *
 
-import pygit2 as pygit2
 
 class GitMethods():
     local_branches = []
