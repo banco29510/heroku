@@ -17,12 +17,14 @@ from django.shortcuts import get_object_or_404, get_list_or_404, redirect, rende
 from django.contrib.auth import authenticate
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.views.generic.edit import *
+from django.conf import settings
 
 import os, sys, datetime, glob, shutil, mimetypes, re, logging, pickle, tempfile, time, subprocess, json, base64, pprint
 
 from djcelery import celery
 from score.celery import *
 from celery import Task
+import gitlab
 
 from repository.models import *
 
@@ -36,98 +38,76 @@ class GitMethods():
     password = ""
     url = ""
     bare = False
-    author = pygit2.Signature('admin', 'admin@admin.fr')
-    commiteur = pygit2.Signature('admin', 'admin@admin.fr')
-    credential = pygit2.UserPass("anonymous", "anonymous")
     temporary_folder = tempfile.TemporaryDirectory()
     repository = ""
     index = ""
+    git = ""
+    gitlabId = 0
 
 
-    def __init__(self, username=None, password=None, url=None, bare=False,):
-        self.username = username
-        self.password = password
-        self.url = url
-        self.bare = bare
-        self.credential = pygit2.UserPass(username, password)
+    def __init__(self, gitlabId=None):
+        self.git = gitlab.Gitlab(settings.GITLAB_URL, settings.GITLAB_TOKEN)
+        self.gitlabId = gitlabId
 
     ## ajout d'un fichier
     def add(self, file=None):
-        print(file)
-        #self.index = self.repository.index
-        #self.index.add_all()
-        #self.index.write()
-        #tree = self.index.write_tree()
+        
+        #self.git.createfile(gitlabId, file_path, "master", content, "message")
+        pprint.pprint(file)
         
         return 1
         
-        
-    def clone(self):
-        self.repository = pygit2.clone_repository(self.url, self.temporary_folder, bare=self.bare,)
-        return 1
-
-    def push(self):
-        print('aaaaa')
-
-    def commit(self):
-        pass
-
-    def listAllBranch(self):
-        #self.local_branches = self.repository.listall_branches(pygit2.GIT_BRANCH_REMOTE)
-        return self.local_branches
-
-    def changeBranch(self):
-        #self.repository.lookup_branch('master')
-
-        return 1
-
-    def checkout(self, hash='HEAD'):
-        #self.repository.checkout(hash)
-        return 1
-
-    def commit(self):
-        #oid = repository.create_commit('refs/heads/master',, self.author, self.commiter, "ajout du fichier",tree,[repo.head.get_object().hex])
-        return 1
-
-    def delete(self, path=None):
-        #self.index.remove(path)
-        #self.index.write()
-        #tree = self.index.write_tree()
-		
-        return 1
-
-
-    def listFiles(self):
-        #self.files = self.index
-        return self.index
-
-
-    def listCommits(self):
-        #for commit in self.repository.walk(self.repository.head.target, pygit2.GIT_SORT_TOPOLOGICAL):
-            #self.commits.append(commit)
-        return 1
-
 
 @app.task
-def ampq_addFile(username=None, password=None, url=None, file=None):
+def ampq_addFile(gitlabId=None, file=None):
     
-    git = GitMethods(username=username, password=password, url=url)
-    git.clone()
-    #git.add(file)
-    #git.commit()
-    #git.push()
-    # updateDatabase()
-    #print(git.listAllBranch())
-
+    git = gitlab.Gitlab(settings.GITLAB_URL, settings.GITLAB_TOKEN)
+        
+    git.createfile(gitlabId, file.file.name, "master", file.file.read(), "Ajout du readme")
+    #pprint.pprint(file)
+    
+    git.createbranch(gitlabId, "dev", "master")
+    
+    file.file.delete()
+    file.delete()
+    
     return 1
     
-@app.task
-def ampq_deleteFile(username=None, password=None, url=None,):
     
-    git = GitMethods(username=username, password=password, url=url,)
-    git.clone()
-    #git.add()
-    #print(git.listAllBranch())
+@app.task
+def ampq_updateDatabase(gitlabId=None):
+    
+    git = gitlab.Gitlab(settings.GITLAB_URL, settings.GITLAB_TOKEN)
+    branches = git.getbranches(gitlabId)
+    
+    for branch in branches:
+        branch = branch['name']
+    
+        commits = git.getrepositorycommits(gitlabId,)
+    
+        for commit_gitlab in commits:
+        
+            if len(Commit.objects.filter(hashCommit=commit_gitlab['id'])) == 0: # si le commit n'existe pas
+                commit = Commit()
+                commit.repository = get_object_or_404(Repository, gitlabId=gitlabId)
+                commit.hashCommit = commit_gitlab['id']
+                commit.message = commit_gitlab['message']
+                commit.date = commit_gitlab['created_at']
+                commit.branch = branch
+                commit.save()
+    
+        files = git.getrepositorytree(gitlabId, path='/', ref_name=branch)
+        
+        for file in files:
+            if len(File.objects.filter(hashFile=file['id'])) == 0: # si le fichier n'existe pas
+                file = File(hashFile=file['id'], name=file['name'], size=0)
+                file.commit = Commit.objects.get(hashCommit=commit_gitlab['id']) # ajout du commit
+                file.save()
+    
+    return 1    
+    
+@app.task
+def ampq_deleteFile(file=None):
 
     return 1
 
@@ -150,51 +130,21 @@ def ampq_downloadRepository(username=None, password=None, url=None,):
 
     return temp
 
-
-
 @app.task
 def downloadRepository(username=None, password=None, url=None, bare=False):
     temporary_folder = tempfile.mkdtemp()
     print(temporary_folder)
-    #cred = pygit2.UserPass(username, password)
-    #repo = pygit2.clone_repository(url, temporary_folder, bare=bare, credentials=cred)
-
     return temporary_folder
 
 @app.task
 def addFile(username=None, password=None, url=None, file=None):
     temporary_folder = downloadRepository(username=username, password=password, url=url)
     reference = 'refs/heads/master'
-
+    
     with open(temporary_folder+'/'+file.name, 'wb+') as file_media:
             file_media.write(file.read())
-
-    index = repo.index
-    index.add_all()
-    index.write()
-    author = pygit2.Signature('admin', 'admin@admin.fr')
-    commiter = pygit2.Signature('admin', 'admin@admin.fr')
-    tree = index.write_tree()
-    oid = repo.create_commit(reference, author, commiter, message,tree,[repo.head.get_object().hex])
-
-
-    all_refs = repo.listall_references()
-
-    remote = repo.remotes[0]
-    remote.credentials = pygit2.UserPass(username, password)
-    remote.add_push('refs/heads/master')
-
-    #remote.push_url = 'https://git@gitlab.com/banco29510/rrrr.git' # avec authentification
-    remote.push_url = 'https://banco29510%40gmail.com:antoine29510@gitlab.com/banco29510/rrrr.git' # sans authentification
-    signature = pygit2.Signature('banco29510@gmail.com', 'antoine29510')
-
-    #remote.push(all_refs[1], signature, message)
-    remote.push_refspecs
-    remote.push(reference) # remote.push(reference, signature=signature) fonctionne avec la nouvelle version
-
+            
     updateDatabase.delay(username=username, password=password, url=url)
-
-
     return 1
 
 @app.task

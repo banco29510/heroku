@@ -110,7 +110,7 @@ def search(request):
 ## créer une partition
 @login_required
 def newScore(request):
-
+    
     if request.method == 'POST':
         form = NewRepositoryForm(request.POST)
         if form.is_valid():
@@ -121,16 +121,21 @@ def newScore(request):
             password = form.cleaned_data['password']
 
 
-            
+            gitlab = Gitlab(settings.GITLAB_URL, settings.GITLAB_TOKEN)
             if not url:
                 #création du dépot
-                gitlab = Gitlab(settings.GITLAB_URL, settings.GITLAB_TOKEN)
                 gitlab.createproject(name)
                 
                 url = settings.GITLAB_URL+'/'+request.user.username+'/'+name+'.git'
                 login = "banco29510@gmail.com"
                 password = "antoine29510"
                 
+                
+            projects = gitlab.getprojectsowned()
+            for project in projects:
+                #print(project['name'].lower()+'=='+name.lower())
+                if project['name'].lower() == name.lower():
+                    gitlabId = project['id']
             
             # création du dépot dans la bdd
             repository = Repository()
@@ -139,21 +144,20 @@ def newScore(request):
             repository.url = url
             repository.login = login
             repository.password = password
+            repository.gitlabId = gitlabId
             repository.save()
             
             # mise a jour du dépot
             temporary_folder = tempfile.mkdtemp()
             TempFile = TemporaryFile()
             TempFile.name = "readme.md"
-            with open(temporary_folder+"/readme.md","a+") as f:
-                f.write("Partition"+repository.name+"")
-            
-            TempFile.file.name = temporary_folder+"/readme.md"
+            TempFile.file.name = "readme.md"
+            TempFile.file.save("readme.md", ContentFile("Partition "+repository.name+""), save=True)
                 
             TempFile.save()   
         
-            ampq_addFile.delay(username=repository.name, password=repository.password, url=repository.url, file=TempFile) #ajout readme.md
-            #updateDatabase.delay(username='banco29510@gmail.com', password='antoine29510', url=url)
+            ampq_addFile.delay(gitlabId=gitlabId, file=TempFile) # ajout readme.md
+            ampq_updateDatabase.delay(gitlabId=gitlabId) # update database
             
             messages.add_message(request, messages.INFO, 'Le dépot à été crée. Première révision lors de la prochaine mise à jour.')
             return redirect('repository-search',)
@@ -178,44 +182,6 @@ def showRepositoryProduction(request, pk=None):
         files = File.objects.filter(commits__in = [commits[0]])
     except:
         files = []
-
-
-    #updateDatabase.delay(username='banco29510@gmail.com', password='antoine', url='https://github.com/banco29510/score-essai.git')
-
-    temporary_folder = tempfile.mkdtemp()
-    #cred = pygit2.UserPass('banco29510@gmail.com', 'antoine')
-    #repo = pygit2.clone_repository('https://github.com/banco29510/score-essai.git', temporary_folder, bare=False, credentials=cred)
-
-    #all_refs = repo.listall_references()
-    #print(all_refs)
-
-    #for branch in repo.listall_branches():
-    #    print(branch)
-
-        # change de branche
-    #    branch = repo.lookup_branch(branch)
-    #    ref = repo.lookup_reference(branch.name)
-    #    repo.checkout(ref)
-
-    #    for remoteCommit in repo.walk(repo.head.target, pygit2.GIT_SORT_TOPOLOGICAL):
-    #       print(remoteCommit.id)
-    #       if len(Commit.objects.filter(hashCommit=remoteCommit.id, branch=branch.name)) == 0: # si le commit n'existe pas
-    #            commit = Commit()
-    #            commit.repository = repository
-    #            commit.hashCommit = remoteCommit.id
-    #            commit.message = remoteCommit.message
-    #            commit.date = datetime.datetime.utcfromtimestamp(remoteCommit.commit_time)
-    #            commit.branch = branch.name
-    #            commit.save()
-
-    #            for entry in remoteCommit.tree:
-    #                print(entry.id, entry.name)
-    #                if len(File.objects.filter(hashFile=entry.id)) == 0: # si le fichier n'existe pas
-    #                    file = File(hashFile=entry.id, name=entry.name, size=os.path.getsize(temporary_folder+'/'+entry.name)).save()
-
-    #                    dataFile = File.objects.get(hashFile=entry.id)
-    #                    dataFile.commits.add(commit) # ajout du commit
-
 
     return render(request, 'repository/showRepositoryProduction.html', {'repository': repository, 'files': files, 'commit': commit,})
 

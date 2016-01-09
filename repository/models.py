@@ -23,6 +23,7 @@ class Repository(models.Model):
     login = models.CharField(max_length=100, verbose_name="Nom d'utilisateur")
     password = models.CharField(max_length=100, verbose_name="Mot de passe")
     size = models.IntegerField(null=True, verbose_name="Taille")
+    gitlabId = models.IntegerField(null=True,)
 
     ##
     #
@@ -50,7 +51,7 @@ class Commit(models.Model):
     ##
     #
     def __str__(self):
-        return u"%s" % self.comment
+        return u"%s" % self.message
 
 
 ##
@@ -62,8 +63,7 @@ class File(models.Model):
     hashFile = models.CharField(max_length=100, default=None)
     name = models.CharField(max_length=100)
     size = models.IntegerField(null=True,)
-    difficultLevel = models.IntegerField(null=True,)
-    commits = models.ManyToManyField(Commit,)
+    commit = models.ForeignKey(Commit, null=False)
     instrument = models.ManyToManyField(Instrument,)
     software = models.ForeignKey(Software, null=True)
     licence = models.ForeignKey(Licence, null=True)
@@ -99,5 +99,8 @@ class TemporaryFile(models.Model):
     #
     def __str__(self):
         return "%s" % self.name
+        
+    def filename(self):
+        return os.path.basename(self.file.name)
 
 
