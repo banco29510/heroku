@@ -34,28 +34,63 @@ def ampq_addFile(gitlabId=None, file=None, message=None, branch="master"):
     
     git = gitlab.Gitlab(settings.GITLAB_URL, settings.GITLAB_TOKEN)
         
-    git.createfile(gitlabId, file.file.name, branch, file.file.read(), message)
+    git.createfile(gitlabId, os.path.basename(file.file.name), branch, file.file.read(), message)
     #pprint.pprint(file)
-    
-    #git.createbranch(gitlabId, "dev", "master")
     
     file.file.delete()
     file.delete()
+
+    return 1
+    
+@app.task
+def ampq_deleteFile(gitlabId=None, file=None, message=None, branch="master"):
+    
+    git = gitlab.Gitlab(settings.GITLAB_URL, settings.GITLAB_TOKEN)
+
+    git.createfile(gitlabId, file.file.name, branch, file.file.read(), message)
     
     return 1
     
+@app.task
+def ampq_createBranch(gitlabId=None, branch="master"):
     
+    git = gitlab.Gitlab(settings.GITLAB_URL, settings.GITLAB_TOKEN)
+
+    git.createbranch(gitlabId, branch, "master")
+    
+    return 1
+    
+@app.task
+def ampq_downloadRepository(gitlabId=None,):
+
+    git = gitlab.Gitlab(settings.GITLAB_URL, settings.GITLAB_TOKEN)
+    git.getfilearchive(gitlabId, filepath='/')
+    
+    
+    temp = DownloadUser()
+    temp.name = 'archive.zip'
+    temp.file.save('archive.zip', ContentFile(base64.b64encode('a')))
+    temp.save()
+
+    # envoi de email
+    #send_mail('Votre fichier est prêt - la maison des partitions', 'Votre fichier est prêt. Vous pouvez le télécharger en cliquant sur le lien suivant <a>Lien</a>', 'banco29510@gmail.com', ['antoine.hemedy@gmail.com'], fail_silently=False)
+
+    return temp
+
 @app.task
 def ampq_updateDatabase(gitlabId=None):
     
     git = gitlab.Gitlab(settings.GITLAB_URL, settings.GITLAB_TOKEN)
     
     branches = git.getbranches(gitlabId)
+    print('branches : '+str(branches))
     
     for branch in branches:
         branch = branch['name']
+        print(branch)
     
         commits = git.getrepositorycommits(gitlabId,)
+        print(commits)
         
         for commit_gitlab in commits:
             
@@ -76,36 +111,6 @@ def ampq_updateDatabase(gitlabId=None):
                         file.commit = Commit.objects.get(hashCommit=commit_gitlab['id']) # ajout du commit
                         file.save()
     
-    return 1    
-    
 
-@app.task
-def ampq_addFile(gitlabId=None, branch="master"):
-    
-    git = gitlab.Gitlab(settings.GITLAB_URL, settings.GITLAB_TOKEN)
-
-    git.createbranch(gitlabId, branch, "master")
-    
     return 1
-    
-    
-@app.task
-def ampq_downloadRepository(username=None, password=None, url=None,):
-
-    #git = GitMethods(username=username, password=password, url=url,)
-    #git.clone()
-    #shutil.make_archive(git.temporary_folder+'/'+'archive', 'zip', git.temporary_folder) # créer le zip ou le tar
-
-    #print(git.temporary_folder+'/'+'archive')
-    #print(base64.b64decode(open(git.temporary_folder+'/'+'archive.zip').read()))
-    temp = TemporaryFile()
-    temp.name = 'archive.zip'
-    temp.file.save('archive.zip', ContentFile(base64.b64encode(open(git.temporary_folder+'/'+'archive.zip'))))
-    temp.save()
-
-    # envoi de email
-    #send_mail('Votre fichier est prêt - la maison des partitions', 'Votre fichier est prêt. Vous pouvez le télécharger en cliquant sur le lien suivant <a>Lien</a>', 'banco29510@gmail.com', ['antoine.hemedy@gmail.com'], fail_silently=False)
-
-    return temp
-
 

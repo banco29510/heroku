@@ -20,6 +20,10 @@ from django.conf import settings
 import pprint, tempfile, os, sys, json, datetime, time, mimetypes, zipfile, shutil, base64
 
 from gitlab import *
+from celery import Celery
+from celery import chain, group, chord
+from .tasks import *
+
 
 from repository.models import *
 from repository.forms import *
@@ -115,21 +119,11 @@ def newScore(request):
         if form.is_valid():
             name = form.cleaned_data['name'].replace(' ', '-')
             scoreAuthor = form.cleaned_data['scoreAuthor']
-            url = form.cleaned_data['url']
-            login = form.cleaned_data['login']
-            password = form.cleaned_data['password']
-
 
             gitlab = Gitlab(settings.GITLAB_URL, settings.GITLAB_TOKEN)
-            if not url:
-                #création du dépot
-                gitlab.createproject(name)
-                
-                url = settings.GITLAB_URL+'/'+request.user.username+'/'+name+'.git'
-                login = "banco29510@gmail.com"
-                password = "antoine29510"
-                
-                
+            
+            gitlab.createproject(name) # creation projet
+           
             projects = gitlab.getprojectsowned()
             for project in projects:
                 #print(project['name'].lower()+'=='+name.lower())
@@ -140,9 +134,6 @@ def newScore(request):
             repository = Repository()
             repository.name = name
             repository.scoreAuthor = scoreAuthor
-            repository.url = url
-            repository.login = login
-            repository.password = password
             repository.gitlabId = gitlabId
             repository.save()
             
@@ -153,10 +144,19 @@ def newScore(request):
             TempFile.file.name = "readme.md"
             TempFile.file.save("readme.md", ContentFile("Partition "+repository.name+""), save=True)
                 
-            TempFile.save()   
-        
+            TempFile.save() 
+            
+            #ampq_addFile.apply_async((gitlabId, TempFile, "Ajout du readme", "master"), link=ampq_updateDatabase.s(gitlabId))()
+            
+            #ampq_addFile.s(gitlabId=gitlabId, file=TempFile, message="Ajout du readme", branch="master") | ampq_updateDatabase.s(gitlabId=gitlabId,) 
+            #(ampq_addFile.s(gitlabId, TempFile, "Ajout du readme", "master") | ampq_updateDatabase.subtask(gitlabId) ).apply_async()
+            #ampq_addFile.delay(gitlabId, TempFile, "Ajout du readme", "master") | ampq_updateDatabase.delay(gitlabId) 
+            #chain(ampq_addFile.s(gitlabId, TempFile, "Ajout du readme", "master"), ampq_updateDatabase.s(args=gitlabId))()
+            
             ampq_addFile.delay(gitlabId=gitlabId, file=TempFile, message="Ajout du readme", branch="master") # ajout readme.md
-            ampq_updateDatabase.delay(gitlabId=gitlabId) # update database
+            ampq_createBranch.delay(gitlabId=gitlabId, branch="dev") # creation branche dev
+            ampq_updateDatabase.delay(gitlabId) # update database
+
             
             messages.add_message(request, messages.INFO, 'Le dépot à été crée. Première révision lors de la prochaine mise à jour.')
             return redirect('repository-search',)
@@ -166,7 +166,6 @@ def newScore(request):
 
 
     return render(request, 'repository/newScore.html', {'form': form,})
-
 
 ## ajoute un fichier
 @login_required
@@ -184,8 +183,14 @@ def addFile(request, pk=None):
     branches = []
     for commit in commits:
         if not commit.branch in branches:
-            branches.append((commit.branch, commit.branch.capitalize()))
-
+            branches.append(commit.branch)
+    
+    list_branch = []
+    for branch in branches:
+        list_branch.append((branch, branch.capitalize()))
+        
+    branches = list_branch # met la liste des branches dans la variable branches
+  
     if request.method == 'POST':
         form = AddFileForm(request.POST, request.FILES)
         form.fields['branch'].choices = branches
@@ -324,13 +329,16 @@ def showRepositoryDeveloppement(request, pk=None):
         commit = []
     try:
         files = File.objects.filter(commit= commits[0])
+        readme = File.objects.filter(commit = commits[0], name="readme.md")
     except:
         files = []
+        readme = []
 
-    return render(request, 'repository/showRepositoryDeveloppement.html', {'repository': repository, 'files': files, 'commit': commit,})
+    return render(request, 'repository/showRepositoryDeveloppement.html', {'repository': repository, 'files': files, 'commit': commit, 'readme': readme,})
 
 
 ## renomme un fichier
+@login_required
 def renameFile(request, pk=None, pk_commit=None):
 
     file = get_object_or_404(File, pk=pk)
@@ -338,49 +346,42 @@ def renameFile(request, pk=None, pk_commit=None):
 
     temporary_folder = tempfile.mkdtemp()
     print(temporary_folder)
-    cred = pygit2.UserPass('banco29510@gmail.com', 'antoine29510')
-    repo = pygit2.clone_repository('https://gitlab.com/banco29510/rrrr.git', temporary_folder, bare=False, credentials=cred)
-
-
-    repo.checkout(commit.hashCommit)
-
-    index = repo.index
-    index.rename(temporary_folder+'/'+file.name)
-
-    index.write()
-    author = pygit2.Signature('admin', 'admin@admin.fr')
-    commiter = pygit2.Signature('admin', 'admin@admin.fr')
-    tree = index.write_tree()
-    oid = repo.create_commit('refs/heads/master', author, commiter, 'supression',tree,[repo.head.get_object().hex])
-
-    remote = repo.remotes[0]
-    remote.credentials = cred
-    remote.add_push('refs/heads/master')
-
-    #remote.push_url = 'https://git@gitlab.com/banco29510/rrrr.git' # avec authentification
-    remote.push_url = 'https://banco29510%40gmail.com:antoine29510@gitlab.com/banco29510/rrrr.git' # sans authentification
-    signature = pygit2.Signature('banco29510@gmail.com', 'antoine29510')
-
-    remote.push('refs/heads/master') # remote.push(reference, signature=signature) fonctionne avec la nouvelle version
 
     #updateDatabase.delay(username='banco29510@gmail.com', password='antoine29510', url='https://banco29510%40gmail.com:antoine29510@gitlab.com/banco29510/rrrr.git')
 
     return render(request, 'repository/renameFile.html', {})
 
 ## suprimme un fichier
+@login_required
 def deleteFile(request, pk=None, pk_commit=None):
 
     file = get_object_or_404(File, pk=pk)
     commit = get_object_or_404(Commit, pk=pk_commit)
-
-    temporary_folder = tempfile.mkdtemp()
-    print(temporary_folder)
     
-    ampq_deleteFile.delay(username='banco29510@gmail.com', password='antoine29510', url='https://gitlab.com/banco29510/rrrr.git')
+    if request.method == 'POST':
+        form = DeleteFileForm(request.POST, request.FILES)
+        
 
-    return render(request, 'repository/deleteFile.html', {})
+        if form.is_valid():
+            
+            ampq_deleteFile.delay(commit.repository.gitlabId, file, "supression fichier", file.commit.branch)
+            ampq_updateDatabase.delay(gitlabId=commit.repository.gitlabId) 
+                
+            messages.add_message(request, messages.INFO, 'Le fichier à été suprimmé, la mise à jour sera effectué sous peu.')
+
+            return redirect('repository-showRepositoryDeveloppement', pk=commit.repository.id)
+
+
+    else:
+
+        form = DeleteFileForm(initial='',)
+        
+
+
+    return render(request, 'repository/deleteFile.html', {'form': form, 'repository': commit.repository,})
 
 ## confirme le telechargement du fichier
+@login_required
 def warningDownloadFile(request, pk=None, pk_commit=None):
 
     file = get_object_or_404(File, pk=pk)
@@ -388,17 +389,17 @@ def warningDownloadFile(request, pk=None, pk_commit=None):
 
     temporary_folder = tempfile.mkdtemp()
     print(temporary_folder)
-    cred = pygit2.UserPass('banco29510@gmail.com', 'antoine29510')
-    repo = pygit2.clone_repository('https://gitlab.com/banco29510/rrrr.git', temporary_folder, bare=False, credentials=cred)
-
+    
 
     return render(request, 'repository/warningDownloadFile.html', {})
 
 ## telechargement du fichier
+@login_required
 def downloadFile(request):
     return render(request, 'repository/deleteFile.html', {})
 
 ## confirme le telechargement du dépot
+@login_required
 def warningDownloadRepository(request, pk=None,):
 
     repository = get_object_or_404(Repository, pk=pk)
@@ -412,23 +413,30 @@ def warningDownloadRepository(request, pk=None,):
     return render(request, 'repository/warningDownloadRepository.html', {})
 
 ## telechargement du dépot
+@login_required
 def downloadFile(request):
     return render(request, 'repository/deleteFile.html', {})
 
 ## confirme le telechargement du fichier
+@login_required
 def warningDownloadCommit(request, pk=None,):
 
     return render(request, 'repository/warningDownloadCommit.html', { })
 
 ## telechargement du fichier
+@login_required
 def downloadCommit(request):
     return render(request, 'repository/deleteFile.html', {})
 
 ##
+@login_required
 def listCommits(request, pk=None):
 
     repository = Repository.objects.get(pk=pk)
-    commits = get_list_or_404(Commit, repository=repository)
+    try:
+        commits = get_list_or_404(Commit, repository=repository)
+    except:
+        commits = []
 
     # liste des branches
     branches = []
@@ -436,6 +444,8 @@ def listCommits(request, pk=None):
         if not commit.branch.split('/')[-1].capitalize() in branches:
             name = commit.branch.split('/')[-1].capitalize()
             branches.append(name)
+    
+    form = createBranchForm(initial='',)
 
     paginator = Paginator(commits, 20)
 
@@ -448,13 +458,22 @@ def listCommits(request, pk=None):
         commits = paginator.page(paginator.num_pages)
 
 
-    return render(request, 'repository/listCommits.html', {'repository': repository, 'commits': commits, 'branches': branches,})
+    return render(request, 'repository/listCommits.html', {
+        'repository': repository, 
+        'commits': commits, 
+        'branches': branches, 
+        'form': form,
+    })
 
 ##
+@login_required
 def listContributeurs(request, pk=None):
 
     repository = get_object_or_404(Repository, pk=pk)
-    commits = get_list_or_404(Commit, repository=repository)
+    try:
+        commits = get_list_or_404(Commit, repository=repository)
+    except:
+        commits = []
 
     authors = []
     for commit in commits:
@@ -464,24 +483,25 @@ def listContributeurs(request, pk=None):
     return render(request, 'repository/listContributeurs.html', {'repository': repository, 'authors': authors})
 
 ## demande de publication
+@login_required
 def publishDemand(request):
     return render(request, 'repository/publishDemand.html', {})
 
 ##
+@login_required
 def deleteCommit(request, pk=None):
 
     commit = get_object_or_404(Commit, pk=pk)
 
     temporary_folder = tempfile.mkdtemp()
     print(temporary_folder)
-    cred = pygit2.UserPass('banco29510@gmail.com', 'antoine29510')
-    repo = pygit2.clone_repository('https://gitlab.com/banco29510/rrrr.git', temporary_folder, bare=False, credentials=cred)
-
+    
     messages.add_message(request, messages.INFO, 'L\' opération est en cours, le commit sera suprimme sous peu.')
 
     return render(request, 'repository/deleteCommit.html', {})
 
 ##
+@login_required
 def changeDeprecated(request, pk=None, boolean=True):
 
     commit = get_object_or_404(Commit, pk=pk)
@@ -498,25 +518,22 @@ def changeDeprecated(request, pk=None, boolean=True):
     return render(request, 'repository/changeDeprecated.html', {})
 
 ##
+@login_required
 def restartRepositoryByOldCommit(request, pk=None):
 
     commit = get_object_or_404(Commit, pk=pk)
 
     temporary_folder = tempfile.mkdtemp()
     print(temporary_folder)
-    cred = pygit2.UserPass('banco29510@gmail.com', 'antoine29510')
-    repo = pygit2.clone_repository('https://gitlab.com/banco29510/rrrr.git', temporary_folder, bare=False, credentials=cred)
-
+    
     return render(request, 'repository/restartRepositoryByOldCommit.html', {})
 
 ##
+@login_required
 def mergeCommit(request,):
 
     temporary_folder = tempfile.mkdtemp()
     print(temporary_folder)
-    cred = pygit2.UserPass('banco29510@gmail.com', 'antoine29510')
-    repo = pygit2.clone_repository('https://gitlab.com/banco29510/rrrr.git', temporary_folder, bare=False, credentials=cred)
-
 
     return render(request, 'repository/mergeCommit.html', {})
 
@@ -596,7 +613,7 @@ def createBranch(request, pk=None):
 
         if form.is_valid():
             name = form.cleaned_data['name']
-            parent_branch = form.cleaned_data['name']
+            parent_branch = form.cleaned_data['parent_branch']
 
             if name in branches:
                 raise forms.ValidationError("La branche existe déjâ.")
@@ -604,28 +621,9 @@ def createBranch(request, pk=None):
                 raise forms.ValidationError("La branche n\'existe pas.")
 
             # création branche
-            temporary_folder = tempfile.mkdtemp()
-            print(temporary_folder)
-            cred = pygit2.UserPass('banco29510@gmail.com', 'antoine29510')
-            repo = pygit2.clone_repository('https://gitlab.com/banco29510/rrrr.git', temporary_folder, bare=False, credentials=cred)
-
-            repo.create_branch(name, repo.head.get_object(), force=False)
-
-            author = pygit2.Signature('admin', 'admin@admin.fr')
-            commiter = pygit2.Signature('admin', 'admin@admin.fr')
-
-            remote = repo.remotes[0]
-            remote.credentials = cred
-            remote.add_push('refs/heads/master')
-
-            #remote.push_url = 'https://git@gitlab.com/banco29510/rrrr.git' # avec authentification
-            remote.push_url = 'https://banco29510%40gmail.com:antoine29510@gitlab.com/banco29510/rrrr.git' # sans authentification
-            signature = pygit2.Signature('banco29510@gmail.com', 'antoine29510')
-
-            remote.push('refs/heads/master') # remote.push(reference, signature=signature) fonctionne avec la nouvelle version
-
-            #updateDatabase.delay(username='banco29510@gmail.com', password='antoine29510', url='https://banco29510%40gmail.com:antoine29510@gitlab.com/banco29510/rrrr.git')
-
+            git = gitlab.Gitlab(settings.GITLAB_URL, settings.GITLAB_TOKEN)
+            
+            git.createbranch(repository.gitlabId, name, parent_branch)
 
             messages.add_message(request, messages.INFO, 'La branche à été enregistré, elle sera créé lors de la prochaine mise à jour.')
 
@@ -689,7 +687,8 @@ def changeCommitVisibility(request, pk=None, boolean=True):
 ## affiche la liste des dépot demandé en téléchargement
 @login_required
 def listDownload(request):
-    listDownload = []
+    
+    listDownload = DownloadUser.objects.get(user=request.user).order_by('-date')
     return render(request, 'repository/listDownload.html', {'user': request.user, 'listDownload': listDownload, })
     
     
@@ -699,3 +698,16 @@ def tagCommit(request, commit=None):
     commit = get_object_or_404(Commit, pk=pk)
     
     return render(request, 'repository/tagCommit.html', {'user': request.user,})
+    
+## met a jour la base de donnée de façon manuel
+@login_required
+def updateDatabase(request, pk=None):
+
+    repository = get_object_or_404(Repository, pk=pk)
+        
+    ampq_updateDatabase.delay(gitlabId=repository.gitlabId) 
+                
+    messages.add_message(request, messages.INFO, 'La mise à jour sera effectué sous peu.')
+
+    return redirect('repository-showRepositoryDeveloppement', pk=repository.id)
+

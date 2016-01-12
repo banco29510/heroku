@@ -19,6 +19,7 @@ urlpatterns = patterns('repository.views',
     url(r'^downloadViewsFile/(?P<pk>.+)/(?P<pk_commit>.+)$', 'downloadViewsFile', name="repository-downloadViewsFile"),
     url(r'^downloadCommit/(?P<pk>.+)/$', 'downloadCommit', name="repository-downloadCommit"),
     url(r'^createBranch/(?P<pk>.+)/$', 'createBranch', name="repository-createBranch"),
+    url(r'^updateDatabase/(?P<pk>.+)/$', 'updateDatabase', name="repository-updateDatabase"),
     url(r'^deleteBranch/(?P<pk>.+)/$', 'deleteBranch', name="repository-deleteBranch"),
 
     url(r'^warningDownloadFile/(?P<pk>\d+)/(?P<pk_commit>\d+)$', 'warningDownloadFile', name="repository-warningDownloadFile"),

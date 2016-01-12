@@ -69,12 +69,20 @@
                 {% endif %}
             </center></td>
             </tr>
+            {% empty %}
+            <tr>
+              <td><center>Pas de fichier</center></td>
+              <td></td>
+              <td></td>
+              
+            </tr>
             {% endfor %}
 
     </tbody>
     </table>
 
-
+    {% if readme %}
+    
      <div class="panel panel-primary">
         <div class="panel-heading">
             <center><h3 class="panel-title">Readme.md</h3></center>
@@ -101,12 +109,14 @@
             </script>
         </div>
      </div>
+     {% endif %}
 
 
       <a href="{% url 'repository-addFile' repository.id %}">Ajouter fichier</a><br />
       <a href="{% url 'repository-warningDownloadCommit' 1 %}">Télécharger la version</a><br />
       {% if user.is_staff  %}
             <a href="{% url 'repository-publishDemand' %}">Publier la version</a><br />
+            <a href="{% url 'repository-updateDatabase' repository.id %}">Mise à jour manuelle</a><br />
       {% else %}
             <a href="{% url 'repository-publishDemand' %}">Demander la publication</a><br />
       {% endif %}

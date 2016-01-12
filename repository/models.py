@@ -2,6 +2,7 @@
 from django.db import models
 from django.conf import settings
 from django.utils import timezone
+from django.contrib.auth.models import User
 
 import os, json
 
@@ -19,9 +20,6 @@ from author.models import *
 class Repository(models.Model):
     name = models.CharField(max_length=100, verbose_name="Nom")
     scoreAuthor = models.ForeignKey(Author, null=True, verbose_name="Auteur")
-    url = models.CharField(max_length=1000, null=True, verbose_name="Url")
-    login = models.CharField(max_length=100, verbose_name="Nom d'utilisateur")
-    password = models.CharField(max_length=100, verbose_name="Mot de passe")
     size = models.IntegerField(null=True, verbose_name="Taille")
     gitlabId = models.IntegerField(null=True,)
 
@@ -103,4 +101,22 @@ class TemporaryFile(models.Model):
     def filename(self):
         return os.path.basename(self.file.name)
 
+
+##
+# \brief Téléchargement demandé par les utilisateurs
+# \author A. H.
+# \class DownloadUser(models.Model):
+#
+class DownloadUser(models.Model):
+    name = models.CharField(max_length=100)
+    user = models.ForeignKey(User, unique=False)
+    file = models.FileField(upload_to='media/')
+    dateUpload = models.DateTimeField(auto_now_add=True)
+
+    ##
+    #
+    def __str__(self):
+        return "%s" % self.name
+        
+    
 

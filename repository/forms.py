@@ -26,9 +26,6 @@ class RepositoryForm(ModelForm):
 class NewRepositoryForm(forms.Form):
     name = forms.CharField(max_length=100, required=True, label="Nom ")
     scoreAuthor = forms.ModelChoiceField(queryset=Author.objects.all(), label="Auteur", required=True)
-    url = forms.CharField(max_length=100, required=False, label="Url ")
-    login = forms.CharField(max_length=100, required=False, label="Login ")
-    password = forms.CharField(max_length=100, required=False, label="Mot de passe ")
         
 
 class SearchForm(forms.Form):
@@ -67,6 +64,10 @@ class AddFileForm(forms.Form):
     def clean_comment(self):
         comment = self.cleaned_data['comment'].strip().capitalize()
         return comment
+
+# Supression d'un fichier
+class DeleteFileForm(forms.Form):
+    pass
 
 ##
 # \brief Formulaire de ajout d'un fichier
