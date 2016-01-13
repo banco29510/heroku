@@ -6,13 +6,13 @@
 # \date 29 juillet 2014
 #
 
-from django.conf.urls import patterns, include, url
+from django.conf.urls import include, url
 
 
 from licence.views import *
 
 
-urlpatterns = patterns('',
+urlpatterns = [
 
     url(r'^$', 'licence.views.listLicences', name="licence-list"),
     url(r'^detail/(?P<pk>\d+)$', 'licence.views.detailLicence', name="licence-detail"),
@@ -23,4 +23,4 @@ urlpatterns = patterns('',
 
 
 
-)
+]

@@ -5,13 +5,13 @@
 # \date 18/03/2015
 #
 
-from django.conf.urls import patterns, include, url
+from django.conf.urls import include, url
 
 
 from instrument.views import *
 
 
-urlpatterns = patterns('',
+urlpatterns = [
 
     url(r'^$', 'instrument.views.listInstruments', name="instrument-list"),
     url(r'^detail/(?P<pk>\d+)$', 'instrument.views.detailInstrument', name="instrument-detail"),
@@ -22,4 +22,4 @@ urlpatterns = patterns('',
 
 
 
-)
+]

@@ -1,18 +1,18 @@
 #-*- coding: utf-8 -*-
 #
 # \file urls.py
-# \brief Contient les urls des instruments
+# \brief Contient les urls des auteurs
 # \author A. H.
 # \date 29 juillet 2014
 #
 
-from django.conf.urls import patterns, include, url
+from django.conf.urls import include, url
 
 
 from author.views import *
 
 
-urlpatterns = patterns('',
+urlpatterns = [
 
     url(r'^$', 'author.views.listAuthors', name="author-list"),
     url(r'^detail/(?P<pk>\d+)$', 'author.views.detailAuthor', name="author-detail"),
@@ -23,4 +23,4 @@ urlpatterns = patterns('',
 
 
 
-)
+]
