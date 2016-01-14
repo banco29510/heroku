@@ -82,6 +82,7 @@ def ampq_updateDatabase(gitlabId=None):
     
     git = gitlab.Gitlab(settings.GITLAB_URL, settings.GITLAB_TOKEN)
     
+    
     branches = git.getbranches(gitlabId)
     print('branches : '+str(branches))
     
@@ -90,7 +91,9 @@ def ampq_updateDatabase(gitlabId=None):
         print(branch)
     
         commits = git.getrepositorycommits(gitlabId,)
-        print(commits)
+        print('------------------------')
+        
+        print('commits : '+str(commits))
         
         for commit_gitlab in commits:
             
