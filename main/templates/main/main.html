@@ -48,7 +48,7 @@
   <tbody>
      {% for commit in commits %}
      <tr>
-        <td><center><a href="{% url 'repository-show' commit.repository.id|urlencode %}" >{{commit.repository.name | capfirst }}</a></center></td>
+        <td><center><a href="{% url 'repository-showRepositoryProduction' commit.repository.id|urlencode %}" >{{ commit.repository.name | capfirst }}</a></center></td>
         <td><center>{{ commit.date|date:"d F Y H:i" }}</center></td>
 
 

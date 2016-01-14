@@ -15,10 +15,33 @@ from django.shortcuts import get_object_or_404, get_list_or_404
 from django.contrib.auth import authenticate
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 
+from repository.models import *
+
 
 #@cache_page(60 * 5) # cache pendant 5 minutes
 def main(request):
-    return render(request, 'main/main.html', {})
+    
+    commits = Commit.objects.all().order_by('-date')
+    list_commits = []
+    i = 0
+    
+    for commit in commits:
+        if i != 5:
+            list_commits.append(commit)
+        i += 1
+        
+        
+    paginator = Paginator(list_commits, 20)
+
+    page = request.GET.get('page', 1)
+    try:
+        list_commits = paginator.page(page)
+    except PageNotAnInteger:
+        list_commits = paginator.page(1)
+    except EmptyPage:
+        list_commits = paginator.page(paginator.num_pages)
+    
+    return render(request, 'main/main.html', {'commits': list_commits})
 
 #@cache_page(60 * 5) # cache pendant 5 minutes
 def cgu(request):
