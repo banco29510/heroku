@@ -4,7 +4,7 @@
 {% block content %}
 
 
-    <h2><em>Partition {{ repository.name }}</em></h2> 
+    <h2><em>Partition <a href="{% url 'repository-showRepositoryProduction' commit.repository.id %}">{{ commit.repository.name }}</a></em></h2> 
  
     {% if user.is_staff  %}
     <h4><em>Auteur :
@@ -56,7 +56,7 @@
 
         {% for file in files %}
             <tr>
-            <td><center><a href="{% url 'repository-showFile' file.id commit.id %}">{{ file.name }}</a></center></td>
+            <td><center><a href="{% url 'repository-showFile' file.id commit.id %}">{{ file.name | capfirst }}</a></center></td>
             <td><center>{{ file.size|filesizeformat }}</center></td>
             <td><center>
                 <a href="{ url 'repository-renameFile' }" data-target="#modalRename" data-toggle="modal"><span class="glyphicon glyphicon-edit" aria-hidden="true"></span></a>
@@ -80,24 +80,30 @@
 
     </tbody>
     </table>
-
-    {% if readme %}
     
+    {% if readme %}
+
      <div class="panel panel-primary">
         <div class="panel-heading">
-            <center><h3 class="panel-title">Readme.md</h3></center>
+            <center><h3 class="panel-title">Readme</h3></center>
         </div>
-        <div class="panel-body">
-            <pre id="pre_code" name="pr_code"><code class="language-markdown" name="code" id="code"></code></pre>
+        <div class="panel-body" id="README">
+           <code class="language-markdown" name="code" id="code"></code>
+
+        </div> 
+        
+        
+     </div>
+     
+             
             <script>
                 $('#code').append("<center><img src='{% static "images/ajax-loader.gif" %}' alt='ajax-loader' class='img-responsive' /></center>");
 
             $.ajax({
-                url : '{ url 'repository-downloadViewsFile' file.id|urlencode commit.id|urlencode }',
+                url : '{% url 'repository-downloadViewsFile' readme.id|urlencode commit.id|urlencode %}',
                 type : 'GET',
                 success : function(code, statut){
-                    $('#code').append("");
-                    $("#code").val(code);
+                    $("#code").text(code);
                 },
                 error : function(resultat, statut, erreur){
                 },
@@ -107,8 +113,7 @@
             });
 
             </script>
-        </div>
-     </div>
+     
      {% endif %}
 
 

@@ -92,7 +92,6 @@ class TemporaryFile(models.Model):
     dateUpload = models.DateTimeField(auto_now_add=True)
     dateDelete = models.DateTimeField(auto_now_add=True)
 
-
     ##
     #
     def __str__(self):

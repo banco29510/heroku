@@ -129,8 +129,7 @@
                 url : '{% url 'repository-downloadViewsFile' file.id|urlencode commit.id|urlencode %}',
                 type : 'GET',
                 success : function(code, statut){
-                    $('#code').append("");
-                    $("#code").val(code);
+                    $("#code").text(code);
                 },
                 error : function(resultat, statut, erreur){
                 },

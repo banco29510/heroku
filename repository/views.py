@@ -240,7 +240,7 @@ def showRepositoryProduction(request, pk=None):
         commit = []
     try:
         files = File.objects.filter(commit = commits[0])
-        readme = File.objects.filter(commit = commits[0], name="readme.md")
+        readme = File.objects.get(commit = commits[0], name="readme.md")
     except:
         files = []
         readme = []
@@ -328,8 +328,8 @@ def showRepositoryDeveloppement(request, pk=None):
     except:
         commit = []
     try:
-        files = File.objects.filter(commit= commits[0])
-        readme = File.objects.filter(commit = commits[0], name="readme.md")
+        files = File.objects.filter(commit = commits[0])
+        readme = File.objects.get(commit = commits[0], name = "readme.md")
     except:
         files = []
         readme = []
@@ -387,8 +387,7 @@ def warningDownloadFile(request, pk=None, pk_commit=None):
     file = get_object_or_404(File, pk=pk)
     commit = get_object_or_404(Commit, pk=pk_commit)
 
-    temporary_folder = tempfile.mkdtemp()
-    print(temporary_folder)
+    ampq_downloadFile(commit.repository.gitlabId, file, request.user)
     
 
     return render(request, 'repository/warningDownloadFile.html', {})
@@ -688,7 +687,8 @@ def changeCommitVisibility(request, pk=None, boolean=True):
 @login_required
 def listDownload(request):
     
-    listDownload = DownloadUser.objects.get(user=request.user).order_by('-date')
+    listDownload = DownloadUser.objects.filter(user=request.user).order_by('-dateUpload')
+    
     return render(request, 'repository/listDownload.html', {'user': request.user, 'listDownload': listDownload, })
     
     

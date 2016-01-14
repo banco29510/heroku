@@ -5,15 +5,24 @@
 
 
     <h2><center><em>Liste des téléchargements</em></center></h2>
+    <br />
 
-
-    <ul>
          {% for download in listDownload %}
-            <li><a>{{ download }}</a></li>
+            <div class="btn-group btn-group-justified" role="group" aria-label="...">
+                <div class="btn-group" role="group">
+                    <button type="button" class="btn btn-default"><a href="{ }">{{ download }}</a></button>
+                </div>
+            </div>
+            <br />
+            
           {% empty %}
-            <li>Pas de téléchargement</li>
+            <div class="btn-group btn-group-justified" role="group" aria-label="...">
+                <div class="btn-group" role="group">
+                    <button type="button" class="btn btn-default"><a href="{ }">Aucun téléchargement disponible</a></button>
+                </div>
+            </div>
           {% endfor %}
-    </ul>
+
 
 <br /><br />
 

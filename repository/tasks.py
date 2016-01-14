@@ -76,6 +76,27 @@ def ampq_downloadRepository(gitlabId=None,):
     #send_mail('Votre fichier est prêt - la maison des partitions', 'Votre fichier est prêt. Vous pouvez le télécharger en cliquant sur le lien suivant <a>Lien</a>', 'banco29510@gmail.com', ['antoine.hemedy@gmail.com'], fail_silently=False)
 
     return temp
+    
+@app.task
+def ampq_downloadFile(gitlabId=None, file=None, user=None):
+
+    git = gitlab.Gitlab(settings.GITLAB_URL, settings.GITLAB_TOKEN)
+    
+    raw = git.getrawfile(gitlabId, file.commit.hashCommit, filepath='readme.md')
+    
+    print(file.hashFile)
+    print(raw)
+    
+    temp = DownloadUser()
+    temp.name = file.name
+    temp.user = user
+    temp.file.save(file.name, ContentFile(raw), save=True)
+    temp.save()
+
+    # envoi de email
+    #send_mail('Votre fichier est prêt - la maison des partitions', 'Votre fichier est prêt. Vous pouvez le télécharger en cliquant sur le lien suivant <a>Lien</a>', 'banco29510@gmail.com', ['antoine.hemedy@gmail.com'], fail_silently=False)
+
+    return temp
 
 @app.task
 def ampq_updateDatabase(gitlabId=None):
