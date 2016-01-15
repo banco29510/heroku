@@ -29,7 +29,24 @@ class Repository(models.Model):
         return u"%s" % self.name
 
 ##
-# \brief Révision des dépots
+# \brief Model des branches
+# \author A. H.
+# \class
+#
+class Branche(models.Model):
+    name = models.CharField(max_length=100, verbose_name="Nom")
+    repository = models.ForeignKey(Repository, null=True, verbose_name="Dépot")
+
+    ##
+    #
+    def __str__(self):
+        return u"%s" % self.name
+
+
+
+        
+##
+# \brief Révision des commits
 # \author A. H.
 # \class
 #
@@ -37,12 +54,11 @@ class Commit(models.Model):
     repository = models.ForeignKey(Repository, null=False)
     message = models.CharField(max_length=10000)
     date = models.DateTimeField(null=True,)
-    branch = models.CharField(max_length=100, null=True, default=None)
+    branch = models.ForeignKey(Branche, null=True, verbose_name="Dépot")
     hashCommit = models.CharField(max_length=100)
     deprecated = models.BooleanField(default=False)
     visible = models.BooleanField(default=True)
     lock = models.BooleanField(default=False)
-    tag = models.CharField(max_length=100, null=True, default=None)
     author = models.CharField(max_length=100, null=True , default=None)
     size = models.IntegerField(null=True, verbose_name="Taille", default=None)
 
@@ -52,6 +68,20 @@ class Commit(models.Model):
         return u"%s" % self.message
 
 
+##
+# \brief Model des tags
+# \author A. H.
+# \class
+#
+class Tag(models.Model):
+    name = models.CharField(max_length=100, verbose_name="Nom")
+    commit = models.ForeignKey(Commit, null=True, verbose_name="Commit")
+
+    ##
+    #
+    def __str__(self):
+        return u"%s" % self.name
+        
 ##
 # \brief Liste des fichiers
 # \author A. H.

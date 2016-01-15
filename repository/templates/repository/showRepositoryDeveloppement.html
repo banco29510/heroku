@@ -22,10 +22,10 @@
 
     <div class="btn-group btn-group-justified" role="group" aria-label="...">
         <div class="btn-group" role="group">
-            <a class="btn btn-default" href="{% url 'repository-listCommits' repository.id %}" role="button">Commits (10)</a>
+            <a class="btn btn-default" href="{% url 'repository-listCommits' repository.id %}" role="button">Commits {{ commits|length }}</a>
         </div>
         <div class="btn-group" role="group">
-            <a class="btn btn-default" href="{% url 'repository-listContributeurs' repository.id|urlencode %}" role="button">Contributeurs (2)</a>
+            <a class="btn btn-default" href="{% url 'repository-listContributeurs' repository.id|urlencode %}" role="button">Contributeurs {{ commits|length }}</a>
         </div>
 
     </div>
@@ -294,6 +294,8 @@
       <div class="modal-footer">
         <button type="button" class="btn btn-primary">Télécharger</button>
         <button type="button" class="btn btn-default" data-dismiss="modal">Fermer</button>
+        <input class="btn btn-success" type="submit" value="Send!" id="submit">
+        <a href="#" class="btn" data-dismiss="modal">Nah.</a>
       </div>
     </div>
   </div>

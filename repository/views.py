@@ -334,7 +334,12 @@ def showRepositoryDeveloppement(request, pk=None):
         files = []
         readme = []
 
-    return render(request, 'repository/showRepositoryDeveloppement.html', {'repository': repository, 'files': files, 'commit': commit, 'readme': readme,})
+    return render(request, 'repository/showRepositoryDeveloppement.html', {'repository': repository, 
+                                                                            'files': files, 
+                                                                            'commit': commit, 
+                                                                            'readme': readme,
+                                                                            'commits': commits,
+                                                                            })
 
 
 ## renomme un fichier
