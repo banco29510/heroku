@@ -32,6 +32,7 @@ from repository.forms import *
 from repository.tasks import *
 
 ## recherche des partitions
+@login_required
 def search(request):
 
     if request.GET.get("name", None) != None:
@@ -173,22 +174,16 @@ def newScore(request):
 def addFile(request, pk=None):
 
     repository = get_object_or_404(Repository, pk=pk)
+    branches = get_list_or_404(Branche, repository=repository)
     
     try:
         commits = get_list_or_404(Commit, repository=repository.id)
     except:
         commits = []
     
-
-    # liste des branches
-    branches = []
-    for commit in commits:
-        if not commit.branch in branches:
-            branches.append(commit.branch)
-    
     list_branch = []
     for branch in branches:
-        list_branch.append((branch, branch.capitalize()))
+        list_branch.append((branch, str(branch).capitalize() ))
         
     branches = list_branch # met la liste des branches dans la variable branches
   
@@ -251,6 +246,7 @@ def showRepositoryProduction(request, pk=None):
     return render(request, 'repository/showRepositoryProduction.html', {'repository': repository, 'files': files, 'readme': readme, 'commit': commit,})
 
 ## Voir un fichier
+@login_required
 def showFile(request, pk=None, pk_commit=None):
 
     file = get_object_or_404(File, pk=pk)
@@ -324,6 +320,7 @@ def showRepositoryDeveloppement(request, pk=None):
 
     repository = get_object_or_404(Repository, pk=pk)
     commits = Commit.objects.filter(repository=repository).order_by('-date')
+    
     try:
         commit = commits[0]
     except:
@@ -331,15 +328,18 @@ def showRepositoryDeveloppement(request, pk=None):
     try:
         files = File.objects.filter(commit = commits[0])
         readme = File.objects.get(commit = commits[0], name = "readme.md")
+        tags = Tag.objects.filter(commit = commits[0])
     except:
         files = []
         readme = []
+        tags = []
 
     return render(request, 'repository/showRepositoryDeveloppement.html', {'repository': repository, 
                                                                             'files': files, 
                                                                             'commit': commit, 
                                                                             'readme': readme,
                                                                             'commits': commits,
+                                                                            'tags': tags,
                                                                             })
 
 
@@ -513,11 +513,8 @@ def publishDemand(request):
 def deleteCommit(request, pk=None):
 
     commit = get_object_or_404(Commit, pk=pk)
-
-    temporary_folder = tempfile.mkdtemp()
-    print(temporary_folder)
     
-    messages.add_message(request, messages.INFO, 'L\' opération est en cours, le commit sera suprimme sous peu.')
+    messages.add_message(request, messages.INFO, 'L\' opération est en cours, le commit sera suprimmé sous peu.')
 
     return render(request, 'repository/deleteCommit.html', {})
 
@@ -655,7 +652,7 @@ def createBranch(request, pk=None):
     return render(request, 'repository/createBranch.html', {'form': form, 'repository': repository,})
 
 
-## suprimme une branche dans le dépot
+## \brief suprimme une branche dans le dépot
 @login_required
 def deleteBranch(request, pk=None):
 
@@ -668,12 +665,6 @@ def deleteBranch(request, pk=None):
             message = form.cleaned_data['comment']
             file = request.FILES['file']
             branch = form.cleaned_data['branch']
-            reference = 'refs/heads/master'
-
-            temporary_folder = tempfile.mkdtemp()
-            print(temporary_folder)
-            cred = pygit2.UserPass('banco29510@gmail.com', 'antoine29510')
-            repo = pygit2.clone_repository('https://gitlab.com/banco29510/rrrr.git', temporary_folder, bare=False, credentials=cred)
 
             return redirect('repository-search',)
 

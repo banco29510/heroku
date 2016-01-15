@@ -22,23 +22,27 @@
 
     <div class="btn-group btn-group-justified" role="group" aria-label="...">
         <div class="btn-group" role="group">
-            <a class="btn btn-default" href="{% url 'repository-listCommits' repository.id %}" role="button">Commits {{ commits|length }}</a>
+            <a class="btn btn-default" href="{% url 'repository-listCommits' repository.id %}" role="button">Commits ({{ commits|length }})</a>
         </div>
         <div class="btn-group" role="group">
-            <a class="btn btn-default" href="{% url 'repository-listContributeurs' repository.id|urlencode %}" role="button">Contributeurs {{ commits|length }}</a>
+            <a class="btn btn-default" href="{% url 'repository-listContributeurs' repository.id|urlencode %}" role="button">Contributeurs ({{ commits|length }})</a>
         </div>
 
     </div>
     <br />
 
+    {% if tag %}
     <form>
         <p>Tags :</p>
         <select>
-            <option>1.0</option>
-            <option>2.0</option>
+          {% for tag in tags %}
+            <option>{{ tag | capfirst }}</option>
+          {% endfor %}
         </select>
 
     </form>
+    
+    {% endif %}
 
 
 	<h3><center>Liste des fichiers  :</center></h3>

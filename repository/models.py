@@ -41,9 +41,6 @@ class Branche(models.Model):
     #
     def __str__(self):
         return u"%s" % self.name
-
-
-
         
 ##
 # \brief Révision des commits

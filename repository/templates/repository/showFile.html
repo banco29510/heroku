@@ -6,7 +6,7 @@
 
     <h2><center><em>Voir fichier</em></center></h2>
 
-	<h1>Partition <a href="{% url 'repository-showRepositoryDeveloppement' commit.repository.id %}">{{ commit.repository.name }}</a> :</h1>
+	<h1>Partition <a href="{% url 'repository-showRepositoryDeveloppement' commit.repository.id %}">{{ commit.repository.name | capfirst }}</a> :</h1>
 
 
 
@@ -51,7 +51,7 @@
         </center></td>
         <td><center>{{ file.nameWithoutExtension | capfirst }}</center></td>
         <td><center>{{ file.size|filesizeformat }}</center></td>
-        <td><center>{{ file.licence|default_if_none:'Non renseigné' }}</center></td>
+        <td><center>{{ file.licence|default_if_none:'Non renseigné' | capfirst }}</center></td>
         <td><center>
             {% for instrument in instruments %}
                 {{ instrument | capfirst }}
@@ -59,7 +59,7 @@
                 Non renseigné
             {% endfor %}
         </center></td>
-        <td><center>{{ file.software|default_if_none:'Non renseigné' }}</center></td>
+        <td><center>{{ file.software|default_if_none:'Non renseigné' | capfirst }}</center></td>
 
 
     </tr>

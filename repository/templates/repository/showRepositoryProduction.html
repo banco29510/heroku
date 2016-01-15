@@ -13,7 +13,7 @@
             <th>Nom</th>
             <th>Auteur</th>
             <th>Taille du dépot</th>
-            <th><center>Action</center></th>
+            <th>Action</th>
 
         </tr>
     </thead>
@@ -51,7 +51,7 @@
                 <td><a href="{% url 'author-detail' repository.scoreAuthor.id %}">{{ repository.scoreAuthor | capfirst}}</a></td>
                 <td>{{ file.size | filesizeformat }}</td>
                 <td>
-                    <a href="{% url 'repository-warningDownloadFile' file.id commit.id|urlencode %}">Télecharger</a>
+                    <a href="{% url 'repository-warningDownloadFile' file.id commit.id|urlencode %}">Télécharger</a>
                 </td>
 
 

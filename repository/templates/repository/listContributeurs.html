@@ -6,16 +6,28 @@
 
     <h2><center><em>Liste des contributeurs</em></center></h2>
 
-
-  <ul>
-      {% for author in authors %}
-        <li>{{ author }}</li>
-      {% empty %}
-        <li>Pas de contributeur</li>
-      {% endfor %}
-
-  </ul>
-
+<br />
+<table class='table'>
+    <tr>
+        <td>Nom</td>
+        <td>Contactez</td>
+    </tr>
+    
+    {% for author in authors %}
+    <tr>
+        <td>{{ author }}</td>
+        <td><a href="">Envoyer un mail à {{ author }}</a></td>
+    </tr>
+    {% empty %}
+    <tr>
+        <td>Pas de contributeur</td>
+        <td></td>
+    </tr>
+    {% endfor %}
+    
+    
+</table>
+ 
     <h2>Statistique du dépôt</h2>
 
     <canvas id="myChart" width="1400" height="400"></canvas>
