@@ -62,16 +62,25 @@ def ampq_createBranch(gitlabId=None, branch="master"):
     return 1
     
 @app.task
-def ampq_downloadRepository(gitlabId=None,):
-
+def ampq_downloadRepository(gitlabId=None, user=None):
+    
+    BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+    temporary_folder = str(tempfile.mkdtemp())
+    
     git = gitlab.Gitlab(settings.GITLAB_URL, settings.GITLAB_TOKEN)
-    git.getfilearchive(gitlabId, filepath='/')
+    content = git.getfilearchive(gitlabId, filepath=temporary_folder+'/archive.tar.gz')
     
-    
+    fichier = open(temporary_folder+'/archive.tar.gz', "rb")
+    content = ContentFile(base64.b64decode(fichier.read()))
+    fichier.close()
+ 
+
     temp = DownloadUser()
-    temp.name = 'archive.zip'
-    temp.file.save('archive.zip', ContentFile(base64.b64encode('a')))
+    temp.user = user
+    temp.name = 'archive.tar.gz'
+    temp.file.save('archive.tar.gz', content)
     temp.save()
+    
 
     # envoi de email
     #send_mail('Votre fichier est prêt - la maison des partitions', 'Votre fichier est prêt. Vous pouvez le télécharger en cliquant sur le lien suivant <a>Lien</a>', 'banco29510@gmail.com', ['antoine.hemedy@gmail.com'], fail_silently=False)

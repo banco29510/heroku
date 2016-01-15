@@ -418,22 +418,17 @@ def downloadFile(request, pk=None,):
 
     return response
 
-## confirme le telechargement du dépot
+## \brief confirme le telechargement du dépot
 @login_required
 def warningDownloadRepository(request, pk=None,):
 
     repository = get_object_or_404(Repository, pk=pk)
 
-    ampq_downloadRepository.delay(repository.gitlabId)
-
-    # envoi du mail
-    #ampq_sendMail.delay(user=request.user,)
-
+    ampq_downloadRepository.delay(repository.gitlabId, request.user)
 
     return render(request, 'repository/warningDownloadRepository.html', {})
 
-
-## confirme le telechargement du fichier
+## \brief confirme le telechargement du fichier
 @login_required
 def warningDownloadCommit(request, pk=None,):
     
@@ -443,12 +438,12 @@ def warningDownloadCommit(request, pk=None,):
 
     return render(request, 'repository/warningDownloadCommit.html', { })
 
-## telechargement du fichier
+## \brief telechargement du fichier
 @login_required
 def downloadCommit(request):
     return render(request, 'repository/deleteFile.html', {})
 
-##
+## \brief liste des commits et des branches
 @login_required
 def listCommits(request, pk=None):
 
@@ -486,7 +481,7 @@ def listCommits(request, pk=None):
         'form': form,
     })
 
-##
+## \brief liste des contributeurs et statistiques
 @login_required
 def listContributeurs(request, pk=None):
 
@@ -503,12 +498,12 @@ def listContributeurs(request, pk=None):
 
     return render(request, 'repository/listContributeurs.html', {'repository': repository, 'authors': authors})
 
-## demande de publication
+## \brief demande de publication
 @login_required
 def publishDemand(request):
     return render(request, 'repository/publishDemand.html', {})
 
-##
+## \brief
 @login_required
 def deleteCommit(request, pk=None):
 
@@ -518,7 +513,7 @@ def deleteCommit(request, pk=None):
 
     return render(request, 'repository/deleteCommit.html', {})
 
-##
+## \brief
 @login_required
 def changeDeprecated(request, pk=None, boolean=True):
 
@@ -535,7 +530,7 @@ def changeDeprecated(request, pk=None, boolean=True):
 
     return render(request, 'repository/changeDeprecated.html', {})
 
-##
+## \brief
 @login_required
 def restartRepositoryByOldCommit(request, pk=None):
 
@@ -546,7 +541,7 @@ def restartRepositoryByOldCommit(request, pk=None):
     
     return render(request, 'repository/restartRepositoryByOldCommit.html', {})
 
-##
+## \brief
 @login_required
 def mergeCommit(request,):
 
@@ -555,7 +550,7 @@ def mergeCommit(request,):
 
     return render(request, 'repository/mergeCommit.html', {})
 
-## modifie le dépot
+## \brief modifie le dépot
 @login_required
 def editRepository(request, pk=None):
 
@@ -585,7 +580,7 @@ def editRepository(request, pk=None):
 
     return render(request, 'repository/editRepository.html', {'form': form, 'repository': repository,})
 
-## supprime le dépot
+## \brief supprime le dépot
 @login_required
 def deleteRepository(request, pk=None):
 
@@ -611,7 +606,7 @@ def deleteRepository(request, pk=None):
 
     return render(request, 'repository/deleteRepository.html', {'form': form, 'repository': repository,})
 
-## Créer une branche dans le dépot
+## \brief Créer une branche dans le dépot
 @login_required
 @csrf_exempt
 def createBranch(request, pk=None):
@@ -675,7 +670,7 @@ def deleteBranch(request, pk=None):
 
     return render(request, 'repository/deleteRepository.html', {'form': form, 'repository': repository,})
 
-##
+## \brief
 @login_required
 def changeCommitVisibility(request, pk=None, boolean=True):
 
@@ -692,7 +687,7 @@ def changeCommitVisibility(request, pk=None, boolean=True):
     return redirect('repository-search',)
     
     
-## affiche la liste des dépot demandé en téléchargement
+## \brief affiche la liste des dépot demandé en téléchargement
 @login_required
 def listDownload(request):
     
@@ -701,14 +696,14 @@ def listDownload(request):
     return render(request, 'repository/listDownload.html', {'user': request.user, 'listDownload': listDownload, })
     
     
-## affiche le formulaire pour tagger un commit
+## \brief affiche le formulaire pour tagger un commit
 @login_required
 def tagCommit(request, commit=None):
     commit = get_object_or_404(Commit, pk=pk)
     
     return render(request, 'repository/tagCommit.html', {'user': request.user,})
     
-## met a jour la base de donnée de façon manuel
+## \brief met a jour la base de donnée de façon manuel
 @login_required
 def updateDatabase(request, pk=None):
 

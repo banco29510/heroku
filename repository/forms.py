@@ -103,4 +103,4 @@ class createBranchForm(forms.Form):
 class EditRepositoryForm(ModelForm):
     class Meta:
          model = Repository
-         exclude = ('size',)
+         exclude = ('size', 'gitlabId')

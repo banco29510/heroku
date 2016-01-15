@@ -9,17 +9,20 @@
     <br />
 
 
+    <div class="row">
+        <div class="col-md-3">
+            
+            <form action="{% url 'repository-search' %}" method="post" class="form-horizontal">{% csrf_token %}
+                {{ form.as_p }}
+                
+                {% buttons %}
+                    <button type="submit" class="btn btn-default">Rechercher</button>
+                {% endbuttons %}
 
-    <form action="{% url 'repository-search' %}" method="post" class="form-horizontal">{% csrf_token %}
-
-       {{ form.as_p }}
-
-        {% buttons %}
-            <button type="submit" class="btn btn-default">Rechercher</button>
-        {% endbuttons %}
-
-
-     </form>
+            </form>
+     
+         </div>
+     </div>
 
 
 
