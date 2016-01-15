@@ -16,6 +16,7 @@ from django.contrib.auth import authenticate
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.views.generic.edit import *
 from django.conf import settings
+from django.views.decorators.csrf import csrf_exempt
 
 import pprint, tempfile, os, sys, json, datetime, time, mimetypes, zipfile, shutil, base64
 
@@ -356,7 +357,7 @@ def renameFile(request, pk=None, pk_commit=None):
 
     return render(request, 'repository/renameFile.html', {})
 
-## suprimme un fichier
+## \brief suprimme un fichier
 @login_required
 def deleteFile(request, pk=None, pk_commit=None):
 
@@ -385,7 +386,7 @@ def deleteFile(request, pk=None, pk_commit=None):
 
     return render(request, 'repository/deleteFile.html', {'form': form, 'repository': commit.repository,})
 
-## confirme le telechargement du fichier
+## \brief  confirme le telechargement du fichier
 @login_required
 def warningDownloadFile(request, pk=None, pk_commit=None):
 
@@ -397,10 +398,25 @@ def warningDownloadFile(request, pk=None, pk_commit=None):
 
     return render(request, 'repository/warningDownloadFile.html', {})
 
-## telechargement du fichier
+## \brief telechargement du fichier
+# \author A. H.
+# \fn def downloadFile(request, pk=None,):
+# \param[in] pk=None id du téléchargement
+# \return le fichier
+#
 @login_required
-def downloadFile(request):
-    return render(request, 'repository/deleteFile.html', {})
+def downloadFile(request, pk=None,):
+    
+    download = DownloadUser.objects.get(pk=pk, user=request.user)
+    
+    response = HttpResponse()
+
+    response['Content-Type'] = mimetype=mimetypes.guess_type(download.name)
+    response['Content-Disposition'] = 'attachment; filename='+str(download.name)
+    response['Content-Length'] = download.file.size
+    response.write(download.file.read())
+
+    return response
 
 ## confirme le telechargement du dépot
 @login_required
@@ -408,7 +424,7 @@ def warningDownloadRepository(request, pk=None,):
 
     repository = get_object_or_404(Repository, pk=pk)
 
-    ampq_downloadRepository.delay(username='banco29510@gmail.com', password='antoine29510', url='https://gitlab.com/banco29510/rrrr.git')
+    ampq_downloadRepository.delay(repository.gitlabId)
 
     # envoi du mail
     #ampq_sendMail.delay(user=request.user,)
@@ -416,14 +432,14 @@ def warningDownloadRepository(request, pk=None,):
 
     return render(request, 'repository/warningDownloadRepository.html', {})
 
-## telechargement du dépot
-@login_required
-def downloadFile(request):
-    return render(request, 'repository/deleteFile.html', {})
 
 ## confirme le telechargement du fichier
 @login_required
 def warningDownloadCommit(request, pk=None,):
+    
+    repository = get_object_or_404(Repository, pk=pk)
+
+    ampq_downloadCommit.delay(repository.gitlabId)
 
     return render(request, 'repository/warningDownloadCommit.html', { })
 
@@ -437,19 +453,20 @@ def downloadCommit(request):
 def listCommits(request, pk=None):
 
     repository = Repository.objects.get(pk=pk)
+    branches = Branche.objects.filter(repository=repository)
+    
     try:
         commits = get_list_or_404(Commit, repository=repository)
     except:
         commits = []
-
-    # liste des branches
-    branches = []
-    for commit in commits:
-        if not commit.branch.split('/')[-1].capitalize() in branches:
-            name = commit.branch.split('/')[-1].capitalize()
-            branches.append(name)
-    
+        
+    form_branches = []
+    for branche in branches:
+        form_branches.append((branche.name,branche.name.capitalize()))
+        
     form = createBranchForm(initial='',)
+    form.fields['parent_branch'].choices = form_branches
+    form.fields['parent_branch'].initial = [0]
 
     paginator = Paginator(commits, 20)
 
@@ -599,21 +616,17 @@ def deleteRepository(request, pk=None):
 
 ## Créer une branche dans le dépot
 @login_required
+@csrf_exempt
 def createBranch(request, pk=None):
 
     repository = get_object_or_404(Repository, pk=pk)
     commits = get_list_or_404(Commit, repository=repository.id)
-
-    # liste des branches
-    branches = []
-    for commit in commits:
-        if not commit.branch in branches:
-            branches.append((commit.branch, commit.branch))
-
-
+    branches = get_list_or_404(Branche, repository=repository.id)
+    
+    
     if request.method == 'POST':
         form = createBranchForm(request.POST, request.FILES)
-        form.fields['parent_branch'].choices = branches
+        form.fields['parent_branch'].choices = []
 
         if form.is_valid():
             name = form.cleaned_data['name']
@@ -636,7 +649,7 @@ def createBranch(request, pk=None):
     else:
 
         form = createBranchForm(initial='',)
-        form.fields['parent_branch'].choices = branches
+        form.fields['parent_branch'].choices = []
 
 
     return render(request, 'repository/createBranch.html', {'form': form, 'repository': repository,})

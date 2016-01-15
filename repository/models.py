@@ -54,7 +54,7 @@ class Commit(models.Model):
     repository = models.ForeignKey(Repository, null=False)
     message = models.CharField(max_length=10000)
     date = models.DateTimeField(null=True,)
-    branch = models.ForeignKey(Branche, null=True, verbose_name="Dépot")
+    branch = models.ForeignKey(Branche, null=True, verbose_name="Branche")
     hashCommit = models.CharField(max_length=100)
     deprecated = models.BooleanField(default=False)
     visible = models.BooleanField(default=True)

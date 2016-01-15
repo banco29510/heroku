@@ -16,6 +16,7 @@ from django.views.decorators.cache import cache_page
 from django.shortcuts import get_object_or_404, get_list_or_404, redirect, render
 from django.contrib.auth import authenticate
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
+from django.core.exceptions import ObjectDoesNotExist
 from django.views.generic.edit import *
 from django.conf import settings
 
@@ -102,6 +103,7 @@ def ampq_downloadFile(gitlabId=None, file=None, user=None):
 def ampq_updateDatabase(gitlabId=None):
     
     git = gitlab.Gitlab(settings.GITLAB_URL, settings.GITLAB_TOKEN)
+    repository = get_object_or_404(Repository, gitlabId=gitlabId)
     
     
     branches = git.getbranches(gitlabId)
@@ -109,6 +111,15 @@ def ampq_updateDatabase(gitlabId=None):
     
     for branch in branches:
         branch = branch['name']
+        
+        #try:
+        #    print('try')
+        #    branche = Branche.objects.get(name__exact=branch, repository=repository)
+        #    print(branche)
+        #except ObjectDoesNotExist:
+        #    Branche(str(branch), repository).save()
+        #    print('create')
+        
         print(branch)
     
         commits = git.getrepositorycommits(gitlabId,)

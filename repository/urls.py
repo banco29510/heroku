@@ -23,7 +23,7 @@ urlpatterns = [
     url(r'^deleteBranch/(?P<pk>.+)/$', 'repository.views.deleteBranch', name="repository-deleteBranch"),
 
     url(r'^warningDownloadFile/(?P<pk>\d+)/(?P<pk_commit>\d+)$', 'repository.views.warningDownloadFile', name="repository-warningDownloadFile"),
-    url(r'^downloadFile$', 'repository.views.downloadFile', name="repository-downloadFile"),
+    url(r'^downloadFile/(?P<pk>.+)/$', 'repository.views.downloadFile', name="repository-downloadFile"),
 
     url(r'^warningDownloadRepository/(?P<pk>\d+)$', 'repository.views.warningDownloadRepository', name="repository-warningDownloadRepository"),
     #url(r'^downloadRepository$', 'downloadRepository', name="repository-downloadRepository"),

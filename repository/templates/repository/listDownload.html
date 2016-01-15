@@ -6,23 +6,23 @@
 
     <h2><center><em>Liste des téléchargements</em></center></h2>
     <br />
-
+<table class="table">
+    <tr>
+        <td>Nom</td>
+        <td>Lien</td>
+    </tr>
          {% for download in listDownload %}
-            <div class="btn-group btn-group-justified" role="group" aria-label="...">
-                <div class="btn-group" role="group">
-                    <button type="button" class="btn btn-default"><a href="{ }">{{ download }}</a></button>
-                </div>
-            </div>
-            <br />
-            
+         <tr>
+             <td>{{ download | capfirst}}</td>
+              <td><a href="{% url 'repository-downloadFile' download.id|urlencode %}">Lien vers {{ download }}</a></td>
+         </tr>
           {% empty %}
-            <div class="btn-group btn-group-justified" role="group" aria-label="...">
-                <div class="btn-group" role="group">
-                    <button type="button" class="btn btn-default"><a href="{ }">Aucun téléchargement disponible</a></button>
-                </div>
-            </div>
+            <tr>
+                <td>Aucun téléchargement disponible</td>
+            </tr>
           {% endfor %}
-
+          
+</table>
 
 <br /><br />
 

@@ -160,12 +160,21 @@
         </form>
       </div>
       <div class="modal-footer">
-        <button type="button" class="btn btn-primary">Renommer</button>
+        <input class="btn btn-primary" type="submit" value="Renommer" id="submit_rename">
         <button type="button" class="btn btn-default" data-dismiss="modal">Fermer</button>
       </div>
     </div>
   </div>
 </div>
+
+<script>
+$(document).ready(function () {
+    $("input#submit_rename").click(function(){
+        $(location).attr('href', '{% url 'repository-renameFile' repository.id commit.id %}');
+       
+    });
+});
+</script>
 
 <!-- Modal  tag-->
 {% for file in files %}
@@ -214,11 +223,10 @@
         <form>
             <p>Etes vous sur de vouloir suprimmer le fichier</p>
 
-            <a href="{% url 'repository-deleteFile' file.id commit.id %}">Delete</a>
         </form>
       </div>
       <div class="modal-footer">
-        <button href="#" type="button" class="btn btn-primary" id="save-event">Suprimmer</button>
+        <input class="btn btn-danger" type="submit" value="Suprimmer" id="submit_delete">
         <button type="button" class="btn btn-default" data-dismiss="modal" >Fermer</button>
       </div>
     </div>
@@ -226,13 +234,14 @@
 </div>
 
 <script>
-    $(document).on("click", "#save-event", function(event){
-        //alert( "GO" );
-        window.location.replace("{% url 'repository-deleteFile' file.id commit.id %}");
-
+$(document).ready(function () {
+    $("input#submit_delete").click(function(){
+        $(location).attr('href', '{% url 'repository-deleteFile' file.id commit.id %}');
+       
     });
-
+});
 </script>
+
 
 {% endfor %}
 
@@ -287,18 +296,25 @@
         <h4 class="modal-title" id="myModalLabel">Télécharger le fichier</h4>
       </div>
       <div class="modal-body">
-        <form>
+        <form id='form-download'>
             <p>Etes vous sur de vouloir telecharger le fichier</p>
         </form>
       </div>
       <div class="modal-footer">
-        <button type="button" class="btn btn-primary">Télécharger</button>
+        <input class="btn btn-primary" type="submit" value="Télécharger" id="submit">
         <button type="button" class="btn btn-default" data-dismiss="modal">Fermer</button>
-        <input class="btn btn-success" type="submit" value="Send!" id="submit">
-        <a href="#" class="btn" data-dismiss="modal">Nah.</a>
       </div>
     </div>
   </div>
 </div>
+
+<script>
+$(document).ready(function () {
+    $("input#submit").click(function(){
+        $(location).attr('href', '{% url 'repository-warningDownloadFile' repository.id commit.id %}');
+       
+    });
+});
+</script>
 
  {% endblock %}

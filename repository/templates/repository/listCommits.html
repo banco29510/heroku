@@ -11,8 +11,9 @@
   <ul class="nav nav-tabs nav-pills" role="tablist">
      <li role="presentation" class="active"><a href="#main" aria-controls="main" role="tab" data-toggle="tab">Toutes les branches</a></li>
      {% for branch in branches %}
-        <li role="presentation" class=""><a href="#{{ branch }}" aria-controls="{{ branch }}" role="tab" data-toggle="tab">{{ branch }} <span class="close" style="">&nbsp; ×</span></a></li>
+        <li role="presentation" class=""><a href="#{{ branch }}" aria-controls="{{ branch }}" role="tab" data-toggle="tab">{{ branch | capfirst}} <span class="close" style="">&nbsp; ×</span></a></li>
      {% empty %}
+         <li role="presentation" class=""><a href="#{{ branch }}" aria-controls="{{ branch }}" role="tab" data-toggle="tab">Aucune branche <span class="close" style="">&nbsp; ×</span></a></li>
      {% endfor %}
      <li role="new"><a href="#" aria-controls="" role="tab" data-target="#myModal" data-toggle="modal">Créer une branche</a></li>
   </ul>
@@ -88,20 +89,17 @@
         <h4 class="modal-title" id="myModalLabel">Créer une branche</h4>
       </div>
       <div class="modal-body">
-        <form method="post" id="myForm" action="{% url 'repository-createBranch' repository.id %}">
+        <form method="post" id="myForm" action="">
             {% csrf_token %}
             
             {{ form.as_p }}
-            
-            <br />
-            <button type="submit" class="btn btn-default">Créer</button>
-            
 
         </form>
 
             
       </div>
       <div class="modal-footer">
+         <input class="btn btn-primary" type="submit" value="Créer" id="submit_create">
         <button type="button" class="btn btn-default" data-dismiss="modal">Fermer</button>
       </div>
     </div>
@@ -111,18 +109,14 @@
 
 
 <br /><br />
-
+<script src="https://raw.githubusercontent.com/mgalante/jquery.redirect/master/jquery.redirect.js"></script>
 <script>
-
-
-$(function () {
-    $('body').on('click', '.odom-submit', function (e) {
-        $(this.form).submit();
-        alert($('#name').val());
-        $('#myModal').modal('hide');
+$(document).ready(function () {
+    $("input#submit_create").click(function(){
+        //$(location).attr('href', '{% url 'repository-createBranch' repository.id %}');
+        $.redirect('{% url 'repository-createBranch' repository.id %}', {'name': 'value1', 'parent_branch': 'value2'});
+       
     });
 });
-
 </script>
-
  {% endblock %}
