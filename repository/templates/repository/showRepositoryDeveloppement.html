@@ -122,7 +122,7 @@
 
 
       <a href="{% url 'repository-addFile' repository.id %}">Ajouter fichier</a><br />
-      <a href="{% url 'repository-warningDownloadCommit' 1 %}">Télécharger la version</a><br />
+      <a href="{% url 'repository-warningDownloadCommit' repository.id commit.id %}">Télécharger la version</a><br />
       {% if user.is_staff  %}
             <a href="{% url 'repository-publishDemand' %}">Publier la version</a><br />
             <a href="{% url 'repository-updateDatabase' repository.id %}">Mise à jour manuelle</a><br />

@@ -430,11 +430,12 @@ def warningDownloadRepository(request, pk=None,):
 
 ## \brief confirme le telechargement du fichier
 @login_required
-def warningDownloadCommit(request, pk=None,):
+def warningDownloadCommit(request, pk=None, pk_commit=None):
     
     repository = get_object_or_404(Repository, pk=pk)
+    commit = get_object_or_404(Commit, pk=pk_commit)
 
-    ampq_downloadCommit.delay(repository.gitlabId)
+    ampq_downloadCommit.delay(repository.gitlabId, request.user, commit)
 
     return render(request, 'repository/warningDownloadCommit.html', { })
 

@@ -20,7 +20,8 @@ from django.core.exceptions import ObjectDoesNotExist
 from django.views.generic.edit import *
 from django.conf import settings
 
-import os, sys, datetime, glob, shutil, mimetypes, re, logging, pickle, tempfile, time, subprocess, json, base64, pprint
+import os, sys, datetime, glob, mimetypes, re, logging, pickle, tempfile, time, subprocess, json, base64, pprint
+from shutil import *
 
 from djcelery import celery
 from score.celery import *
@@ -81,6 +82,48 @@ def ampq_downloadRepository(gitlabId=None, user=None):
     temp.file.save('archive.tar.gz', content)
     temp.save()
     
+
+    # envoi de email
+    #send_mail('Votre fichier est prêt - la maison des partitions', 'Votre fichier est prêt. Vous pouvez le télécharger en cliquant sur le lien suivant <a>Lien</a>', 'banco29510@gmail.com', ['antoine.hemedy@gmail.com'], fail_silently=False)
+
+    return temp
+    
+@app.task
+def ampq_downloadCommit(gitlabId=None, user=None, commit=None):
+    
+    temporary_folder = str(tempfile.mkdtemp())
+    
+    git = gitlab.Gitlab(settings.GITLAB_URL, settings.GITLAB_TOKEN)
+    commit = git.getrepositorycommit(gitlabId, commit.hashCommit)
+    commit = Commit.objects.get(hashCommit=commit['id'])
+    
+    files = git.getrepositorytree(gitlabId, path='', ref_name=commit.branch.name)
+        
+    for file in files:
+        print(file)
+        print(file['name'])
+        raw = git.getrawfile(gitlabId, commit.hashCommit, filepath=file['name'])
+        print(raw)
+        
+        if raw:
+            fichier = open(temporary_folder+'/'+file['name'], "wb")
+            fichier.write(raw)
+            fichier.close()
+        print(os.listdir(temporary_folder))
+ 
+    # mise en zip
+    print(make_archive(temporary_folder+'/archive', 'zip', temporary_folder))
+    print(os.listdir(temporary_folder))
+    
+    fichier = open(temporary_folder+'/archive.zip', "rb")
+    content = ContentFile(fichier.read())
+    fichier.close()
+    
+    temp = DownloadUser()
+    temp.user = user
+    temp.name = 'archive.zip'
+    temp.file.save('archive.zip', content)
+    temp.save()
 
     # envoi de email
     #send_mail('Votre fichier est prêt - la maison des partitions', 'Votre fichier est prêt. Vous pouvez le télécharger en cliquant sur le lien suivant <a>Lien</a>', 'banco29510@gmail.com', ['antoine.hemedy@gmail.com'], fail_silently=False)

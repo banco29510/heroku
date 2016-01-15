@@ -113,8 +113,9 @@
 <script>
 $(document).ready(function () {
     $("input#submit_create").click(function(){
-        //$(location).attr('href', '{% url 'repository-createBranch' repository.id %}');
-        $.redirect('{% url 'repository-createBranch' repository.id %}', {'name': 'value1', 'parent_branch': 'value2'});
+        alert($("#name").val());
+        
+        //$.redirect('{% url 'repository-createBranch' repository.id %}', {'name': 'value1', 'parent_branch': 'value2'});
        
     });
 });

@@ -28,7 +28,7 @@ urlpatterns = [
     url(r'^warningDownloadRepository/(?P<pk>\d+)$', 'repository.views.warningDownloadRepository', name="repository-warningDownloadRepository"),
     #url(r'^downloadRepository$', 'downloadRepository', name="repository-downloadRepository"),
 
-    url(r'^warningDownloadCommit/(?P<pk>\d+)$', 'repository.views.warningDownloadCommit', name="repository-warningDownloadCommit"),
+    url(r'^warningDownloadCommit/(?P<pk>\d+)/(?P<pk_commit>\d+)$', 'repository.views.warningDownloadCommit', name="repository-warningDownloadCommit"),
     url(r'^downloadCommit$', 'repository.views.downloadCommit', name="repository-downloadCommit"),
 
     url(r'^changeDeprecated/(?P<pk>\d+)/(?P<boolean>\d+)$', 'repository.views.changeDeprecated', name="repository-changeDeprecated"),
