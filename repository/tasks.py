@@ -150,6 +150,20 @@ def ampq_downloadFile(gitlabId=None, file=None, user=None):
     #send_mail('Votre fichier est prêt - la maison des partitions', 'Votre fichier est prêt. Vous pouvez le télécharger en cliquant sur le lien suivant <a>Lien</a>', 'banco29510@gmail.com', ['antoine.hemedy@gmail.com'], fail_silently=False)
 
     return temp
+    
+@app.task
+def ampq_tagCommit(gitlabId=None, commit=None, tag_name=None):
+
+    git = gitlab.Gitlab(settings.GITLAB_URL, settings.GITLAB_TOKEN)
+    
+    git.createrepositorytag(gitlabId, tag_name, commit.hashCommit, message='Ajout du tag '+tag_name)
+    
+    Tag(name=str(tag_name), commit=commit).save()
+
+    # envoi de email
+    #send_mail('Votre fichier est prêt - la maison des partitions', 'Votre fichier est prêt. Vous pouvez le télécharger en cliquant sur le lien suivant <a>Lien</a>', 'banco29510@gmail.com', ['antoine.hemedy@gmail.com'], fail_silently=False)
+
+    return 1
 
 @app.task
 def ampq_updateDatabase(gitlabId=None):
@@ -200,4 +214,5 @@ def ampq_updateDatabase(gitlabId=None):
     
 
     return 1
+
 

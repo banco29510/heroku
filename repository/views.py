@@ -502,6 +502,8 @@ def listContributeurs(request, pk=None):
 ## \brief demande de publication
 @login_required
 def publishDemand(request):
+    
+    
     return render(request, 'repository/publishDemand.html', {})
 
 ## \brief
@@ -699,10 +701,18 @@ def listDownload(request):
     
 ## \brief affiche le formulaire pour tagger un commit
 @login_required
-def tagCommit(request, commit=None):
+@csrf_exempt
+def tagCommit(request, pk=None):
     commit = get_object_or_404(Commit, pk=pk)
+    repository = commit.repository
+    print(request.POST.get("name", ""))
     
-    return render(request, 'repository/tagCommit.html', {'user': request.user,})
+    ampq_tagCommit.delay(repository.gitlabId, commit, request.POST.get("name", "") )
+    
+    messages.add_message(request, messages.INFO, 'Le tag est enregistré, il sera pris en compte lors de la prochaine mise à jour.')
+    
+    return redirect('repository-showRepositoryDeveloppement', repository.id)
+    
     
 ## \brief met a jour la base de donnée de façon manuel
 @login_required

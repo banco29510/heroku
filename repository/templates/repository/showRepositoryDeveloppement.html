@@ -171,6 +171,7 @@
   </div>
 </div>
 
+
 <script>
 $(document).ready(function () {
     $("input#submit_rename").click(function(){
@@ -191,24 +192,26 @@ $(document).ready(function () {
       </div>
       <div class="modal-body">
         <form>
-            <p>Nom : <input type="text" /></p>
+            <p>Nom : <input type="text" id='tag_name' /></p>
         </form>
       </div>
       <div class="modal-footer">
-        <button type="button" class="btn btn-primary">Tagger</button>
+        <input class="btn btn-primary" type="submit" value="Tagger" id="submit_tag">
         <button type="button" class="btn btn-default" data-dismiss="modal">Fermer</button>
       </div>
     </div>
   </div>
 </div>
 
+<script src="https://raw.githubusercontent.com/mgalante/jquery.redirect/master/jquery.redirect.js"></script>
 <script>
-    $(document).on("click", "#save-event", function(event){
-        //alert( "GO" );
-        window.location.replace("{% url 'repository-deleteFile' file.id commit.id %}");
+$(document).ready(function () {
+    $("input#submit_tag").click(function(){
 
+        $.redirect('{% url 'repository-tagCommit' commit.id %}', {'name': $('#tag_name').val(),});
+       
     });
-
+});
 </script>
 
 {% endfor %}
