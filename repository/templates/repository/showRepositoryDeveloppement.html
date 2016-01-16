@@ -3,6 +3,25 @@
 
 {% block content %}
 
+  {% if commit.deprecated %}
+  
+  <div class="alert alert-danger" role="alert">
+    <span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span>
+    <span class="sr-only">Error:</span>
+    La version est déprécié, elle sera bientôt suprimmé.
+  </div>
+  
+  {% endif %}
+  {% if commit.lock %}
+  
+  <div class="alert alert-danger" role="alert">
+    <span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span>
+    <span class="sr-only">Error:</span>
+    La version est bloqué, elle sera bientôt suprimmé.
+  </div>
+  
+  {% endif %}
+  
 
     <h2><em>Partition <a href="{% url 'repository-showRepositoryProduction' commit.repository.id %}">{{ commit.repository.name }}</a></em></h2> 
  
@@ -160,7 +179,7 @@
       </div>
       <div class="modal-body">
         <form>
-            <p>Nom : <input type="text" /></p>
+            <p>Nom : <input type="text" id='rename_name'/></p>
         </form>
       </div>
       <div class="modal-footer">
@@ -171,12 +190,13 @@
   </div>
 </div>
 
-
+<script src="https://raw.githubusercontent.com/mgalante/jquery.redirect/master/jquery.redirect.js"></script>
 <script>
 $(document).ready(function () {
     $("input#submit_rename").click(function(){
-        $(location).attr('href', '{% url 'repository-renameFile' repository.id commit.id %}');
-       
+      
+        //$(location).attr('href', '{% url 'repository-renameFile' repository.id commit.id %}');
+        $.redirect('{% url 'repository-tagCommit' commit.id %}', {'name': $('#rename_name').val(),});
     });
 });
 </script>

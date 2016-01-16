@@ -53,9 +53,9 @@ class Commit(models.Model):
     date = models.DateTimeField(null=True,)
     branch = models.ForeignKey(Branche, null=True, verbose_name="Branche")
     hashCommit = models.CharField(max_length=100)
-    deprecated = models.BooleanField(default=False)
+    deprecated = models.BooleanField(default=False) # economie place supression vieille version
     visible = models.BooleanField(default=True)
-    lock = models.BooleanField(default=False)
+    lock = models.BooleanField(default=False) # en cas de probleme
     author = models.CharField(max_length=100, null=True , default=None)
     size = models.IntegerField(null=True, verbose_name="Taille", default=None)
 

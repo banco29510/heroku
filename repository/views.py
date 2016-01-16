@@ -347,17 +347,19 @@ def showRepositoryDeveloppement(request, pk=None):
 
 ## renomme un fichier
 @login_required
+@csrf_exempt
 def renameFile(request, pk=None, pk_commit=None):
 
     file = get_object_or_404(File, pk=pk)
     commit = get_object_or_404(Commit, pk=pk_commit)
+    repository = commit.repository
 
-    temporary_folder = tempfile.mkdtemp()
-    print(temporary_folder)
+    #ampq_renameFile.delay(repository.gitlabId, request.POST.get("name", ""))
+    #updateDatabase.delay()
 
-    #updateDatabase.delay(username='banco29510@gmail.com', password='antoine29510', url='https://banco29510%40gmail.com:antoine29510@gitlab.com/banco29510/rrrr.git')
-
-    return render(request, 'repository/renameFile.html', {})
+    messages.add_message(request, messages.INFO, 'Le fichier est renommé, il sera pris en compte lors de la prochaine mise à jour.')
+    
+    return redirect('repository-showRepositoryDeveloppement', repository.id)
 
 ## \brief suprimme un fichier
 @login_required
