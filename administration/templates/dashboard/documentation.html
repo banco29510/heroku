@@ -1,0 +1,22 @@
+{% extends "main/layout.html" %}
+{% load staticfiles %}
+
+{% block content %}
+
+<div class="row">
+
+    {% include 'dashboard/menu.html' %}
+
+  <div class="col-lg-10">
+
+      <h3>Documentation :</h3>
+      <br />
+
+     <iframe src="{% static "documentation/html/index.html" %}" width="1000" height="600">
+          <p>Votre navigateur ne supporte pas l'élément iframe</p>
+    </iframe>
+
+</div>
+
+
+{% endblock %}

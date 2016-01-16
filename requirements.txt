@@ -22,4 +22,5 @@ django-registration-redux
 django-bootstrap3
 cffi
 redis
+cloudconvert
 

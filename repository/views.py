@@ -31,7 +31,8 @@ from repository.forms import *
 
 from repository.tasks import *
 
-## recherche des partitions
+## \brief recherche des partitions
+# \author A. H.
 @login_required
 def search(request):
 
@@ -112,7 +113,8 @@ def search(request):
 
     return render(request, 'repository/search.html', {'repositorys': repositorys, 'form': form,})
 
-## créer une partition
+## \brief créer une partition
+# \author A. H.
 @login_required
 def newScore(request):
     
@@ -169,7 +171,8 @@ def newScore(request):
 
     return render(request, 'repository/newScore.html', {'form': form,})
 
-## ajoute un fichier
+## \brief ajoute un fichier
+# \author A. H.
 @login_required
 def addFile(request, pk=None):
 
@@ -224,7 +227,8 @@ def addFile(request, pk=None):
 
     return render(request, 'repository/addFile.html', {'form': form, 'repository': repository,})
     
-## voir le depot en production avec juste la derniere version
+## \brief voir le depot en production avec juste la derniere version
+# \author A. H.
 @login_required
 def showRepositoryProduction(request, pk=None):
 
@@ -245,7 +249,8 @@ def showRepositoryProduction(request, pk=None):
 
     return render(request, 'repository/showRepositoryProduction.html', {'repository': repository, 'files': files, 'readme': readme, 'commit': commit,})
 
-## Voir un fichier
+## \brief  Voir un fichier
+# \author A. H.
 @login_required
 def showFile(request, pk=None, pk_commit=None):
 
@@ -313,7 +318,8 @@ def downloadCommit(request, pk=None):
     return response
 
 
-## Voir la page du dépot en developpement
+## \brief Voir la page du dépot en developpement
+# \author A. H.
 @login_required
 def showRepositoryDeveloppement(request, pk=None):
 
@@ -333,8 +339,6 @@ def showRepositoryDeveloppement(request, pk=None):
         files = []
         readme = []
         tags = []
-        
-    
 
     return render(request, 'repository/showRepositoryDeveloppement.html', {'repository': repository, 
                                                                             'files': files, 
@@ -345,7 +349,8 @@ def showRepositoryDeveloppement(request, pk=None):
                                                                             })
 
 
-## renomme un fichier
+## \brief renomme un fichier
+# \author A. H.
 @login_required
 @csrf_exempt
 def renameFile(request, pk=None, pk_commit=None):
@@ -362,6 +367,7 @@ def renameFile(request, pk=None, pk_commit=None):
     return redirect('repository-showRepositoryDeveloppement', repository.id)
 
 ## \brief suprimme un fichier
+# \author A. H.
 @login_required
 def deleteFile(request, pk=None, pk_commit=None):
 
@@ -370,7 +376,6 @@ def deleteFile(request, pk=None, pk_commit=None):
     
     if request.method == 'POST':
         form = DeleteFileForm(request.POST, request.FILES)
-        
 
         if form.is_valid():
             
@@ -389,18 +394,6 @@ def deleteFile(request, pk=None, pk_commit=None):
 
 
     return render(request, 'repository/deleteFile.html', {'form': form, 'repository': commit.repository,})
-
-## \brief  confirme le telechargement du fichier
-@login_required
-def warningDownloadFile(request, pk=None, pk_commit=None):
-
-    file = get_object_or_404(File, pk=pk)
-    commit = get_object_or_404(Commit, pk=pk_commit)
-
-    ampq_downloadFile(commit.repository.gitlabId, file, request.user)
-    
-
-    return render(request, 'repository/warningDownloadFile.html', {})
 
 ## \brief telechargement du fichier
 # \author A. H.
@@ -422,33 +415,14 @@ def downloadFile(request, pk=None,):
 
     return response
 
-## \brief confirme le telechargement du dépot
-@login_required
-def warningDownloadRepository(request, pk=None,):
-
-    repository = get_object_or_404(Repository, pk=pk)
-
-    ampq_downloadRepository.delay(repository.gitlabId, request.user)
-
-    return render(request, 'repository/warningDownloadRepository.html', {})
-
-## \brief confirme le telechargement du fichier
-@login_required
-def warningDownloadCommit(request, pk=None, pk_commit=None):
-    
-    repository = get_object_or_404(Repository, pk=pk)
-    commit = get_object_or_404(Commit, pk=pk_commit)
-
-    ampq_downloadCommit.delay(repository.gitlabId, request.user, commit)
-
-    return render(request, 'repository/warningDownloadCommit.html', { })
-
 ## \brief telechargement du fichier
+# \author A. H.
 @login_required
 def downloadCommit(request):
     return render(request, 'repository/deleteFile.html', {})
 
 ## \brief liste des commits et des branches
+# \author A. H.
 @login_required
 def listCommits(request, pk=None):
 
@@ -487,6 +461,7 @@ def listCommits(request, pk=None):
     })
 
 ## \brief liste des contributeurs et statistiques
+# \author A. H.
 @login_required
 def listContributeurs(request, pk=None):
 
@@ -504,13 +479,21 @@ def listContributeurs(request, pk=None):
     return render(request, 'repository/listContributeurs.html', {'repository': repository, 'authors': authors})
 
 ## \brief demande de publication
+# \author A. H.
 @login_required
-def publishDemand(request):
+def publishDemand(request, pk=None):
+    commit = get_object_or_404(Commit, pk=pk)
+    repository = commit.repository
     
+    ampq_mergeBranch.delay(repository.gitlabId, commit.branch.name, 'master')
     
-    return render(request, 'repository/publishDemand.html', {})
+    messages.add_message(request, messages.INFO, 'L\' opération est en cours, la publication sera effectué sous peu.')
+    
+    return redirect('repository-showRepositoryDeveloppement', repository.id)
 
-## \brief
+
+## \brief supprime un commit
+# \author A. H.
 @login_required
 def deleteCommit(request, pk=None):
 
@@ -520,7 +503,8 @@ def deleteCommit(request, pk=None):
 
     return render(request, 'repository/deleteCommit.html', {})
 
-## \brief
+## \brief change la version en déprécié
+# \author A. H.
 @login_required
 def changeDeprecated(request, pk=None, boolean=True):
 
@@ -548,7 +532,8 @@ def restartRepositoryByOldCommit(request, pk=None):
     
     return render(request, 'repository/restartRepositoryByOldCommit.html', {})
 
-## \brief
+## \brief merge deux commits
+# \author A. H.
 @login_required
 def mergeCommit(request,):
 
@@ -558,6 +543,7 @@ def mergeCommit(request,):
     return render(request, 'repository/mergeCommit.html', {})
 
 ## \brief modifie le dépot
+# \author A. H.
 @login_required
 def editRepository(request, pk=None):
 
@@ -588,6 +574,7 @@ def editRepository(request, pk=None):
     return render(request, 'repository/editRepository.html', {'form': form, 'repository': repository,})
 
 ## \brief supprime le dépot
+# \author A. H.
 @login_required
 def deleteRepository(request, pk=None):
 
@@ -614,6 +601,7 @@ def deleteRepository(request, pk=None):
     return render(request, 'repository/deleteRepository.html', {'form': form, 'repository': repository,})
 
 ## \brief Créer une branche dans le dépot
+# \author A. H.
 @login_required
 @csrf_exempt
 def createBranch(request, pk=None):
@@ -622,37 +610,12 @@ def createBranch(request, pk=None):
     commits = get_list_or_404(Commit, repository=repository.id)
     branches = get_list_or_404(Branche, repository=repository.id)
     
-    
-    if request.method == 'POST':
-        form = createBranchForm(request.POST, request.FILES)
-        form.fields['parent_branch'].choices = []
+    # création branche
+    ampq_createBranch.delay(repository.gitlabId, request.POST.get("name", ""), request.POST.get("parent_branch", ""))
 
-        if form.is_valid():
-            name = form.cleaned_data['name']
-            parent_branch = form.cleaned_data['parent_branch']
+    messages.add_message(request, messages.INFO, 'La branche à été enregistré, elle sera créé lors de la prochaine mise à jour.')
 
-            if name in branches:
-                raise forms.ValidationError("La branche existe déjâ.")
-            if parent_branch not in branches:
-                raise forms.ValidationError("La branche n\'existe pas.")
-
-            # création branche
-            git = gitlab.Gitlab(settings.GITLAB_URL, settings.GITLAB_TOKEN)
-            
-            git.createbranch(repository.gitlabId, name, parent_branch)
-
-            messages.add_message(request, messages.INFO, 'La branche à été enregistré, elle sera créé lors de la prochaine mise à jour.')
-
-            return redirect('repository-search',)
-
-    else:
-
-        form = createBranchForm(initial='',)
-        form.fields['parent_branch'].choices = []
-
-
-    return render(request, 'repository/createBranch.html', {'form': form, 'repository': repository,})
-
+    return redirect('repository-showRepositoryDeveloppement', repository.id)
 
 ## \brief suprimme une branche dans le dépot
 @login_required
@@ -678,6 +641,7 @@ def deleteBranch(request, pk=None):
     return render(request, 'repository/deleteRepository.html', {'form': form, 'repository': repository,})
 
 ## \brief
+# \author A. H.
 @login_required
 def changeCommitVisibility(request, pk=None, boolean=True):
 
@@ -695,6 +659,7 @@ def changeCommitVisibility(request, pk=None, boolean=True):
     
     
 ## \brief affiche la liste des dépot demandé en téléchargement
+# \author A. H.
 @login_required
 def listDownload(request):
     
@@ -704,6 +669,7 @@ def listDownload(request):
     
     
 ## \brief affiche le formulaire pour tagger un commit
+# \author A. H.
 @login_required
 @csrf_exempt
 def tagCommit(request, pk=None):
@@ -719,6 +685,7 @@ def tagCommit(request, pk=None):
     
     
 ## \brief met a jour la base de donnée de façon manuel
+# \author A. H.
 @login_required
 def updateDatabase(request, pk=None):
 
@@ -730,3 +697,52 @@ def updateDatabase(request, pk=None):
 
     return redirect('repository-showRepositoryDeveloppement', pk=repository.id)
 
+## \brief confirme le telechargement du dépot
+# \author A. H.
+@login_required
+def warningDownloadRepository(request, pk=None,):
+
+    repository = get_object_or_404(Repository, pk=pk)
+
+    ampq_downloadRepository.delay(repository.gitlabId, request.user)
+
+    return render(request, 'repository/warningDownloadRepository.html', {})
+
+## \brief confirme le telechargement du fichier
+# \author A. H.
+@login_required
+def warningDownloadCommit(request, pk=None, pk_commit=None):
+    
+    repository = get_object_or_404(Repository, pk=pk)
+    commit = get_object_or_404(Commit, pk=pk_commit)
+
+    ampq_downloadCommit.delay(repository.gitlabId, request.user, commit)
+
+    return render(request, 'repository/warningDownloadCommit.html', { })
+    
+## \brief  confirme le telechargement du fichier
+# \author A. H.
+@login_required
+def warningDownloadFile(request, pk=None, pk_commit=None):
+
+    file = get_object_or_404(File, pk=pk)
+    commit = get_object_or_404(Commit, pk=pk_commit)
+
+    ampq_downloadFile(commit.repository.gitlabId, file, request.user)
+    
+
+    return render(request, 'repository/warningDownloadFile.html', {})
+    
+## \brief  edit les fichier markdown
+# \author A. H.
+@login_required
+def editMarkdown(request, pk=None, ):
+
+    file = get_object_or_404(File, pk=pk)
+    commit = file.commit
+    repository = commit.repository
+
+    
+    
+
+    return render(request, 'repository/editMarkdown.html', {})

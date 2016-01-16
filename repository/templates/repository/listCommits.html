@@ -4,7 +4,7 @@
 {% block content %}
 
 
-    <h2><center><em>Liste des commits</em></center></h2>
+    <h2><center><em>Liste des versions et branches de la partitions {{ repository }}</em></center></h2>
 
 
     <!-- Nav tabs -->
@@ -113,9 +113,9 @@
 <script>
 $(document).ready(function () {
     $("input#submit_create").click(function(){
-        alert($("#name").val());
+        //alert($("#id_parent_branch").val());
         
-        //$.redirect('{% url 'repository-createBranch' repository.id %}', {'name': 'value1', 'parent_branch': 'value2'});
+        $.redirect('{% url 'repository-createBranch' repository.id %}', {'name': $("#id_name").val(), 'parent_branch': $("#id_parent_branch").val()});
        
     });
 });

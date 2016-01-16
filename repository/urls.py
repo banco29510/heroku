@@ -21,6 +21,7 @@ urlpatterns = [
     url(r'^createBranch/(?P<pk>.+)/$', 'repository.views.createBranch', name="repository-createBranch"),
     url(r'^updateDatabase/(?P<pk>.+)/$', 'repository.views.updateDatabase', name="repository-updateDatabase"),
     url(r'^deleteBranch/(?P<pk>.+)/$', 'repository.views.deleteBranch', name="repository-deleteBranch"),
+    url(r'^editMarkdown/(?P<pk>.+)/$', 'repository.views.editMarkdown', name="repository-editMarkdown"),
 
     url(r'^warningDownloadFile/(?P<pk>\d+)/(?P<pk_commit>\d+)$', 'repository.views.warningDownloadFile', name="repository-warningDownloadFile"),
     url(r'^downloadFile/(?P<pk>.+)/$', 'repository.views.downloadFile', name="repository-downloadFile"),
@@ -37,7 +38,7 @@ urlpatterns = [
 
     url(r'^commits/(?P<pk>\d+)$', 'repository.views.listCommits', name="repository-listCommits"),
     url(r'^listContributeurs/(?P<pk>\d+)$', 'repository.views.listContributeurs', name="repository-listContributeurs"),
-    url(r'^publishDemand$', 'repository.views.publishDemand', name="repository-publishDemand"),
+    url(r'^publishDemand/(?P<pk>\d+)$', 'repository.views.publishDemand', name="repository-publishDemand"),
     
     url(r'^listDownload$', 'repository.views.listDownload', name="repository-listDownload"),
     url(r'^tagCommit/(?P<pk>\d+)$', 'repository.views.tagCommit', name="repository-tagCommit"),

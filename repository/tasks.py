@@ -49,16 +49,33 @@ def ampq_deleteFile(gitlabId=None, file=None, message=None, branch="master"):
     
     git = gitlab.Gitlab(settings.GITLAB_URL, settings.GITLAB_TOKEN)
 
-    git.createfile(gitlabId, file.file.name, branch, file.file.read(), message)
+    git.deletefile(gitlabId, file.file.name, branch,  message)
     
     return 1
     
 @app.task
-def ampq_createBranch(gitlabId=None, branch="master"):
+def ampq_renameFile(gitlabId=None, oldFile=None, newFile=None):
     
     git = gitlab.Gitlab(settings.GITLAB_URL, settings.GITLAB_TOKEN)
 
-    git.createbranch(gitlabId, branch, "master")
+    # recuperation et stockage fichier
+    raw = git.getrawfile(gitlabId, oldFile.commit.hashCommit, filepath=oldFile.name)
+
+    #supression du fichier
+    git.deletefile(gitlabId, oldFile.name, oldFile.commit.branch,  "Supresion du fichier "+oldFile.name)
+    
+    # ajout du fichier
+    git.createfile(gitlabId, oldFile.name, oldFile.commit.branch, raw, 'Ajout du fichier '+newFile.name)
+    
+    
+    return 1
+    
+@app.task
+def ampq_createBranch(gitlabId=None, branch="master", parent_branch='master'):
+    
+    git = gitlab.Gitlab(settings.GITLAB_URL, settings.GITLAB_TOKEN)
+
+    git.createbranch(gitlabId, branch, parent_branch)
     
     return 1
     
@@ -166,6 +183,15 @@ def ampq_tagCommit(gitlabId=None, commit=None, tag_name=None):
     return 1
 
 @app.task
+def ampq_mergeBranch(gitlabId=None, source_branch=None, target_branch='master'):
+
+    git = gitlab.Gitlab(settings.GITLAB_URL, settings.GITLAB_TOKEN)
+    
+    merge = git.createmergerequest(gitlabId, source_branch, target_branch, 'Fusion de '+source_branch+' et de '+target_branch+'', )
+
+    return 1
+
+@app.task
 def ampq_updateDatabase(gitlabId=None):
     
     git = gitlab.Gitlab(settings.GITLAB_URL, settings.GITLAB_TOKEN)
@@ -188,7 +214,7 @@ def ampq_updateDatabase(gitlabId=None):
         
         print(branch)
     
-        commits = git.getrepositorycommits(gitlabId,)
+        commits = git.getrepositorycommits(project_id=gitlabId, ref_name=branch)
         print('------------------------')
         
         print('commits : '+str(commits))

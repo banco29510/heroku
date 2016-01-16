@@ -27,8 +27,6 @@ from django.contrib.admin.views.decorators import staff_member_required
 from django.db.models import Q
 
 
-
-
 import os, sys, datetime, glob, shutil, mimetypes, re, logging, hashlib, random, base64, pprint, tempfile, shutil
 import zipfile, tarfile, bz2
 
@@ -105,7 +103,18 @@ def managementCommands(request):
 
 
 
+##
+# \brief page d'accueil du dashboard
+# \author A. H.
+# \fn def dashboard(request)
+# \return le dashboard
+#
+@login_required
+@staff_member_required
+@csrf_exempt
+def documentation(request):
 
+    return render(request, 'dashboard/documentation.html', {})
 
 
 
