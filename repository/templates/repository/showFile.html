@@ -3,12 +3,9 @@
 
 {% block content %}
 
-
-    <h2><center><em>Voir fichier</em></center></h2>
-
 	<h1>Partition <a href="{% url 'repository-showRepositoryDeveloppement' commit.repository.id %}">{{ commit.repository.name | capfirst }}</a> :</h1>
 
-
+    <br />
 
         <table class="table table-striped table-hover ">
   <thead>
@@ -51,15 +48,15 @@
         </center></td>
         <td><center>{{ file.nameWithoutExtension | capfirst }}</center></td>
         <td><center>{{ file.size|filesizeformat }}</center></td>
-        <td><center>{{ file.licence|default_if_none:'Non renseigné' | capfirst }}</center></td>
+        <td><center><a href='{% url 'licence-detail' file.licence.id|urlencode %}'>{{ file.licence|default_if_none:'Non renseigné' | capfirst }}</a></center></td>
         <td><center>
             {% for instrument in instruments %}
-                {{ instrument | capfirst }}
+                <a href='{% url 'instrument-detail' instrument|urlencode %}'>{{ instrument | capfirst }}</a>
             {% empty %}
                 Non renseigné
             {% endfor %}
         </center></td>
-        <td><center>{{ file.software|default_if_none:'Non renseigné' | capfirst }}</center></td>
+        <td><center><a href='{% url 'software-detail' file.software.id|urlencode %}'>{{ file.software|default_if_none:'Non renseigné' | capfirst }}</a></center></td>
 
 
     </tr>

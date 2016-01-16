@@ -31,7 +31,7 @@
     </div>
     <br />
 
-    {% if tag %}
+    {% if tags %}
     <form>
         <p>Tags :</p>
         <select>
@@ -69,7 +69,7 @@
                 <a href="{ url 'repository-deleteFile' }" data-target="#modalDownload" data-toggle="modal"><span class="glyphicon glyphicon-download" aria-hidden="true"></span></a>
                 <a href="{ url 'repository-deleteFile' }" data-target="#modalConvert" data-toggle="modal"><span class="glyphicon glyphicon-wrench" aria-hidden="true"></span></a>
                 {% if file.extension == '.md' %}
-                    <a href="{ url 'repository-deleteFile' }" data-target="#modalRename" data-toggle="modal"><span class="glyphicon glyphicon-wrench" aria-hidden="true"></span><Modifier en ligne</a>
+                    <a href="{ url 'repository-deleteFile' }" data-target="#modalRename" data-toggle="modal"><span class="glyphicon glyphicon-wrench" aria-hidden="true"></span>Modifier en ligne</a>
                 {% endif %}
             </center></td>
             </tr>

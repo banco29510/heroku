@@ -333,6 +333,8 @@ def showRepositoryDeveloppement(request, pk=None):
         files = []
         readme = []
         tags = []
+        
+    
 
     return render(request, 'repository/showRepositoryDeveloppement.html', {'repository': repository, 
                                                                             'files': files, 
