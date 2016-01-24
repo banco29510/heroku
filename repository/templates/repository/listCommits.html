@@ -4,7 +4,7 @@
 {% block content %}
 
 
-    <h2><center><em>Liste des versions et branches de la partitions {{ repository }}</em></center></h2>
+    <h2><center><em>Liste des versions et branches de la partitions <a href="{% url 'repository-showRepositoryDeveloppement' repository.id %}">{{ repository }}</a></em></center></h2>
 
 
     <!-- Nav tabs -->
@@ -23,7 +23,7 @@
      <div role="tabpanel" class="tab-pane active" id="main">
          <ul class="list-group">
             {% for commit in commits %}
-                <li class="list-group-item" >Commit du {{ commit.date }} : {{ commit.message }} <a href="{% url 'repository-deleteCommit' 1 %}">Suprimmer version</a>  <a href="{% url 'repository-mergeCommit' %}">Fusion version</a></li>
+                <li class="list-group-item" >Commit du {{ commit.date }} : <a href="{% url 'repository-showRepositoryDeveloppement' repository.id %}">{{ commit.message | capfirst }}</a> <a href="{% url 'repository-mergeCommit' %}">Fusion version</a></li>
             {% empty %}
 
             {% endfor %}

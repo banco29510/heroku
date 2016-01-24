@@ -41,7 +41,7 @@
     <tr>
 
         <td><a href="{% url 'repository-showRepositoryProduction' repository.id %}">{{ repository.name | capfirst }}</a></td>
-        <td>{{ repository.scoreAuthor | capfirst }}</td>
+        <td><a href="{% url 'author-detail' repository.scoreAuthor.id %}">{{ repository.scoreAuthor | capfirst }}</a></td>
 
     {% empty %}
    			<td>Aucune partition</td>

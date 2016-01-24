@@ -214,7 +214,7 @@ def ampq_updateDatabase(gitlabId=None):
         
         print(branch)
     
-        commits = git.getrepositorycommits(project_id=gitlabId, ref_name=branch)
+        commits = git.getrepositorycommits(project_id=gitlabId, ref_name=branch) # ne fonctionne pas
         print('------------------------')
         
         print('commits : '+str(commits))

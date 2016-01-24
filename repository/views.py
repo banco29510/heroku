@@ -434,6 +434,7 @@ def listCommits(request, pk=None):
     except:
         commits = []
         
+    # création form pour créer une branche
     form_branches = []
     for branche in branches:
         form_branches.append((branche.name,branche.name.capitalize()))
@@ -441,6 +442,7 @@ def listCommits(request, pk=None):
     form = createBranchForm(initial='',)
     form.fields['parent_branch'].choices = form_branches
     form.fields['parent_branch'].initial = [0]
+
 
     paginator = Paginator(commits, 20)
 
