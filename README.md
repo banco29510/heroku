@@ -4,7 +4,7 @@
 
 ### Pré requis ###
 
-- Python 3.4
+- Python 3.5
 - Wamp 
 - Compte gitlab [Gitlab](https://gitlab.com/)
 - Compte reCaptcha [reCaptcha](https://www.google.com/recaptcha/intro/index.html)
