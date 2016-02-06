@@ -15,7 +15,9 @@ from django.shortcuts import get_object_or_404, get_list_or_404
 from django.contrib.auth import authenticate
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 
+
 from repository.models import *
+from .forms import *
 
 
 #@cache_page(60 * 5) # cache pendant 5 minutes
@@ -52,3 +54,34 @@ def cgu(request):
 def profile(request):
     return render(request, 'main/profile.html', {'user': request.user,})
     
+# Affiche la page pour se connecter
+def login(request):
+    
+    if request.method == 'POST':
+        form = LoginForm(request.POST, request.FILES)
+        
+
+        if form.is_valid():
+           
+            name = form.cleaned_data['name']
+            password = form.cleaned_data['password']
+            
+            user = authenticate(username=name, password=password)
+            
+            if user is not None:
+                # the password verified for the user
+                if user.is_active:
+                    messages.add_message(request, messages.INFO, 'Vous êtes connecté.')
+                    return redirect('main')
+                else:
+                    messages.add_message(request, messages.INFO, 'Votre compte à été désactivé.')
+            else:
+                # the authentication system was unable to verify the username and password
+                messages.add_message(request, messages.INFO, 'Informations incorectes.')
+
+    else:
+
+        form = LoginForm(initial='',)
+        
+
+    return render(request, 'main/login.html', {'form': form})

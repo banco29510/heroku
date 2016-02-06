@@ -49,81 +49,73 @@
 iVBORw0KGgoAAAANSUhEUgAAAEAAAABACAMAAACdt4HsAAAAA3NCSVQICAjb4U/gAAAACXBIWXMAAAJkAAACZAHsijAMAAAAGXRFWHRTb2Z0d2FyZQB3d3cuaW5rc2NhcGUub3Jnm+48GgAAARFQTFRF////AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABAQEAwMDAwMDAwMDAwMDAwMDAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAwMDAwMDAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICzgAShwAAAFp0Uk5TAAEEBwgJCgsMDhYXGB4fICEiIyQoKy8wNDU4OT4/SE1VV1ljam1vcHN0dXh/gZKTl5icnqCho6WoqausrrC1t7m9vr/Iy9ve4OHi4+Xn7O3w8fLz9PX3+/z+ogslsQAAAVtJREFUWMPt12s3AlEUBuAzQhk0DEqMFHJylygGiVxKKXd6//8P8WHWnLGsxpi9P5H3+37WzJyz154thEq22sG3edgeF/7RyghO0/QHcgBPaP0IwO2kT70O8IQEAKBS8MtBkJAEAKR933DMe4bGBBPoLYQB0DCYAOoGE0A9zgRgc4E3PSQw+P5FSIYExDkXMK+ZgIgurkoppZQFIqCS/l3ATH7dijCAIwB4rW0uaDRgtOseWm2KBBjesT/PMQG0TSaAHS7QidCAs9RKyWmDDA04FEKIzD2AXQYgjEugyAHEgI0SCxDRiw0eQL6JfQ0MWfMpBhA/eXFagAhYbbeHaMBwEzwgDyZQ9IB9EmB7wBoJWFb13VkSMHLjAnvEyTR959Qfx6ijLbZ19fh0uvQHpvM/0GdA0NL1KRUAQIK69rnRiYunmxZx9VXJ0ZZvlbLW4+sGrv/qd6ua9ao+APwi5O3BN+JcAAAAAElFTkSuQmCC" rel="icon" type="image/x-icon" />
 
 
-      
-
-<!-- Piwik -->
-<script type="text/javascript">
-  var _paq = _paq || [];
-  _paq.push(['trackPageView']);
-  _paq.push(['enableLinkTracking']);
-  (function() {
-    var u="//banco29510.piwikpro.com/";
-    _paq.push(['setTrackerUrl', u+'piwik.php']);
-    _paq.push(['setSiteId', 1]);
-    var d=document, g=d.createElement('script'), s=d.getElementsByTagName('script')[0];
-    g.type='text/javascript'; g.async=true; g.defer=true; g.src=u+'piwik.js'; s.parentNode.insertBefore(g,s);
-  })();
-</script>
-<noscript><p><img src="//banco29510.piwikpro.com/piwik.php?idsite=1" style="border:0;" alt="" /></p></noscript>
-<!-- End Piwik Code -->
-
-
-
+        <!-- Piwik -->
+        <script type="text/javascript">
+            var _paq = _paq || [];
+            _paq.push(['trackPageView']);
+            _paq.push(['enableLinkTracking']);
+            (function() {
+            var u="//banco29510.piwikpro.com/";
+            _paq.push(['setTrackerUrl', u+'piwik.php']);
+            _paq.push(['setSiteId', 1]);
+            var d=document, g=d.createElement('script'), s=d.getElementsByTagName('script')[0];
+            g.type='text/javascript'; g.async=true; g.defer=true; g.src=u+'piwik.js'; s.parentNode.insertBefore(g,s);
+            })();
+        </script>
+        <noscript><p><img src="//banco29510.piwikpro.com/piwik.php?idsite=1" style="border:0;" alt="" /></p></noscript>
+        <!-- End Piwik Code -->
 
     </head>
     <body>
    
-<div class="navbar navbar-default">
-  <div class="navbar-header">
-    <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-responsive-collapse">
-      <span class="icon-bar"></span>
-      <span class="icon-bar"></span>
-      <span class="icon-bar"></span>
-    </button>
-    <a class="navbar-brand" href="{% url 'main' %}">La maison des partitions</a>
-  </div>
+    <div class="navbar navbar-default">
+        <div class="navbar-header">
+            <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-responsive-collapse">
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="{% url 'main' %}">La maison des partitions</a>
+        </div>
 
-  <div class="navbar-collapse collapse navbar-responsive-collapse">
-    <ul class="nav navbar-nav">
+        <div class="navbar-collapse collapse navbar-responsive-collapse">
+            <ul class="nav navbar-nav">
 
-      <li><a href="{% url 'main' %}">Accueil</a></li>
+                <li><a href="{% url 'main' %}">Accueil</a></li>
+                <li><a href="{% url 'repository-search' %}" class="" data-toggle="">Recherche d'une partition</a></li>
 
-      <li><a href="{% url 'repository-search' %}" class="" data-toggle="">Recherche d'une partition</a></li>
+	            {% if user.is_authenticated %}
+	                {% if user.is_staff %}
+                        <ul class="nav navbar-nav navbar-right">
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">Données<b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+                                    <li><a href="{% url 'instrument-list' %}">Instruments</a></li>
+		                            <li><a href="{% url 'software-list' %}">Logiciels</a></li>
+		                            <li><a href="{% url 'licence-list' %}">Licences</a></li>
+		                            <li><a href="{% url 'author-list' %}">Auteurs</a></li>
+                                </ul>
+                            </li>
+                        </ul>
 
-	  {% if user.is_authenticated %}
+            <ul class="nav navbar-nav navbar-right">
+                <li class="dropdown">
+                    <a href="#" class="dropdown-toggle" data-toggle="dropdown">Administration<b class="caret"></b></a>
+                    <ul class="dropdown-menu">
+                        <li><a href="{% url 'administration-dashboard' %}"><span class="glyphicon glyphicon-dashboard" aria-hidden="true"></span> Panel administration</a></li>
+                         <li class="divider"></li>
+                         <li><a href="{% url 'admin:index' %}"><span class="glyphicon glyphicon-dashboard" aria-hidden="true"></span> Panel admin django</a></li>
 
-	  {% if user.is_staff %}
+                    </ul>
+                </li>
+            </ul>
 
-        <ul class="nav navbar-nav navbar-right">
-            <li class="dropdown">
-                <a href="#" class="dropdown-toggle" data-toggle="dropdown">Données<b class="caret"></b></a>
-                <ul class="dropdown-menu">
-                   <li><a href="{% url 'instrument-list' %}">Instruments</a></li>
-		            <li><a href="{% url 'software-list' %}">Logiciels</a></li>
-		            <li><a href="{% url 'licence-list' %}">Licences</a></li>
-		            <li><a href="{% url 'author-list' %}">Auteurs</a></li>
-                </ul>
-            </li>
-        </ul>
-
-        <ul class="nav navbar-nav navbar-right">
-            <li class="dropdown">
-                <a href="#" class="dropdown-toggle" data-toggle="dropdown">Administration<b class="caret"></b></a>
-                <ul class="dropdown-menu">
-                     <li><a href="{% url 'administration-dashboard' %}"><span class="glyphicon glyphicon-dashboard" aria-hidden="true"></span> Panel administration</a></li>
-                     <li class="divider"></li>
-                     <li><a href="{% url 'admin:index' %}"><span class="glyphicon glyphicon-dashboard" aria-hidden="true"></span> Panel admin django</a></li>
-
-                </ul>
-            </li>
-        </ul>
-
-        <li><a href="{% url 'lilypondSoftware-main' %}" class="" data-toggle="">Logiciel lilypond</a></li>
+            <li><a href="{% url 'lilypondSoftware-main' %}" class="" data-toggle="">Logiciel lilypond</a></li>
 
 	  {% endif %}
 	  
 	  {% else %}
-	    <li><a href="{% url 'login' %}">Connexion</a></li>
+	    <li><a href="{% url 'main-login' %}">Connexion</a></li>
 		<li><a href="{ url 'main-register%}">Inscription</a></li>
 	  
 	  {% endif %}
@@ -131,19 +123,16 @@ iVBORw0KGgoAAAANSUhEUgAAAEAAAABACAMAAACdt4HsAAAAA3NCSVQICAjb4U/gAAAACXBIWXMAAAJk
       </ul>
 
     <ul class="nav navbar-nav navbar-right">
-      {% if user.is_authenticated %}
-
-      <li class="dropdown">
-
-        <a href="#" class="dropdown-toggle" data-toggle="dropdown">Utilisateur : {{ user.username | capfirst }}<b class="caret"></b></a>
-        <ul class="dropdown-menu">
-
-          <li><a href="{% url 'main-profile' %}"><span class="glyphicon glyphicon-user" aria-hidden="true"></span> Modifier les informations</a></li>
-          <li><a href="{% url 'repository-listDownload' %}"><span class="glyphicon glyphicon-download" aria-hidden="true"></span> Téléchargement</a></li>
-          <li><a href="{% url 'logout' %}?next=/"><span class="glyphicon glyphicon-log-out" aria-hidden="true"></span> Déconnection</a></li>
-        </ul>
-      </li>
-      {% endif %}
+        {% if user.is_authenticated %}
+            <li class="dropdown">
+                <a href="#" class="dropdown-toggle" data-toggle="dropdown">Utilisateur : {{ user.username | capfirst }}<b class="caret"></b></a>
+                <ul class="dropdown-menu">
+                    <li><a href="{% url 'main-profile' %}"><span class="glyphicon glyphicon-user" aria-hidden="true"></span> Modifier les informations</a></li>
+                    <li><a href="{% url 'repository-listDownload' %}"><span class="glyphicon glyphicon-download" aria-hidden="true"></span> Téléchargement</a></li>
+                    <li><a href="{% url 'logout' %}?next=/"><span class="glyphicon glyphicon-log-out" aria-hidden="true"></span> Déconnexion</a></li>
+                </ul>
+            </li>
+        {% endif %}
     </ul>
 
 	<form id='search_form' class="navbar-form navbar-right" action="{% url 'repository-search' %}" method="GET">{% csrf_token %}

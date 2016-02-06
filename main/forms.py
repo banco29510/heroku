@@ -10,4 +10,6 @@ from software.models import *
 from author.models import *
 
 
-
+class LoginForm(forms.Form):
+    name = forms.CharField(max_length=100, required=True, label="Nom ")
+    password = forms.CharField(max_length=100, required=True, label="Mot de passe", widget=forms.PasswordInput)

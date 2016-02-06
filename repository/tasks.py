@@ -29,6 +29,9 @@ from celery import Task
 import gitlab
 
 from repository.models import *
+
+
+
         
 
 @app.task
