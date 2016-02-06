@@ -84,3 +84,41 @@ def MyLogin(request):
         
 
     return render(request, 'main/login.html', {'form': form})
+    
+    
+# Affiche la page pour se deconnecter
+def MyLogout(request):
+    
+    logout(request) 
+    messages.add_message(request, messages.INFO, 'Vous êtes deconnecté.')
+    return redirect('main')
+
+    
+# Affiche la page pour se deconnecter
+def MyRegistration(request):
+    
+    if request.method == 'POST':
+        form = RegistrationForm(request.POST, request.FILES)
+        
+        if form.is_valid():
+            
+            name = form.cleaned_data['name']
+            password = form.cleaned_data['password']
+            repassword = form.cleaned_data['password']
+            mail = form.cleaned_data['password']
+            
+            if password != repassword:
+                messages.add_message(request, messages.INFO, 'Les deux mot de passe sont differents.')
+                return redirect('main-register')
+            
+            user = User.objects.create_user(name, mail, password)
+            user.save()
+            
+            messages.add_message(request, messages.INFO, 'Vous êtes inscrit.')
+
+    else:
+
+        form = RegistrationForm(initial='',)
+        
+
+    return render(request, 'main/registration.html', {'form': form})

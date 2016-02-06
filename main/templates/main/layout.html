@@ -116,7 +116,7 @@ iVBORw0KGgoAAAANSUhEUgAAAEAAAABACAMAAACdt4HsAAAAA3NCSVQICAjb4U/gAAAACXBIWXMAAAJk
 	  
 	  {% else %}
 	    <li><a href="{% url 'main-login' %}">Connexion</a></li>
-		<li><a href="{ url 'main-register%}">Inscription</a></li>
+		<li><a href="{% url 'main-register' %}">Inscription</a></li>
 	  
 	  {% endif %}
 
@@ -129,7 +129,7 @@ iVBORw0KGgoAAAANSUhEUgAAAEAAAABACAMAAACdt4HsAAAAA3NCSVQICAjb4U/gAAAACXBIWXMAAAJk
                 <ul class="dropdown-menu">
                     <li><a href="{% url 'main-profile' %}"><span class="glyphicon glyphicon-user" aria-hidden="true"></span> Modifier les informations</a></li>
                     <li><a href="{% url 'repository-listDownload' %}"><span class="glyphicon glyphicon-download" aria-hidden="true"></span> Téléchargement</a></li>
-                    <li><a href="{% url 'logout' %}?next=/"><span class="glyphicon glyphicon-log-out" aria-hidden="true"></span> Déconnexion</a></li>
+                    <li><a href="{% url 'main-logout' %}?next=/"><span class="glyphicon glyphicon-log-out" aria-hidden="true"></span> Déconnexion</a></li>
                 </ul>
             </li>
         {% endif %}

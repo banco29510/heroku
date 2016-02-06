@@ -32,6 +32,11 @@ TEMPLATE_DEBUG = True
 ALLOWED_HOSTS = ['*']
 
 
+AUTHENTICATION_BACKENDS = (
+    'django.contrib.auth.backends.ModelBackend',
+    'allauth.account.auth_backends.AuthenticationBackend',
+)
+
 # Application definition
 
 INSTALLED_APPS = [
@@ -48,6 +53,12 @@ INSTALLED_APPS = [
     'bootstrap3',
     'kombu.transport.django',
     'djcelery',
+    
+    'allauth',
+    'allauth.account',
+    'allauth.socialaccount',
+    'allauth.socialaccount.providers.google',
+    
     
     'main',
     'repository',
@@ -179,3 +190,8 @@ GITLAB_URL = 'https://gitlab.com/'
 GITLAB_TOKEN = 'zsyZdf3goQ4sCkxDVNTQ'
 
 SITE_ID = 1
+
+LOGIN_URL = 'main-login'
+LOGIN_REDIRECT_URL = 'main'
+LOGOUT_URL = 'main-logout'
+

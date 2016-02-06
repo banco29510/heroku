@@ -21,6 +21,8 @@ urlpatterns = [
     url(r'^admin/', include(admin.site.urls)),
     
     url(r'^$', 'main.views.main', name="main"), # page d'accueil
+    
+    url(r'^accounts/', include('allauth.urls')),
 
     url(r'^main/', include('main.urls')),
     url(r'^repository/', include('repository.urls')),
