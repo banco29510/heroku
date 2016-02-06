@@ -55,22 +55,21 @@ def profile(request):
     return render(request, 'main/profile.html', {'user': request.user,})
     
 # Affiche la page pour se connecter
-def login(request):
+def MyLogin(request):
     
     if request.method == 'POST':
         form = LoginForm(request.POST, request.FILES)
         
-
         if form.is_valid():
-           
+            
             name = form.cleaned_data['name']
             password = form.cleaned_data['password']
-            
             user = authenticate(username=name, password=password)
             
             if user is not None:
                 # the password verified for the user
                 if user.is_active:
+                    login(request, user) 
                     messages.add_message(request, messages.INFO, 'Vous êtes connecté.')
                     return redirect('main')
                 else:
