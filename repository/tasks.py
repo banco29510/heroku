@@ -197,13 +197,20 @@ def ampq_updateDatabase(gitlabId=None):
     
     repository = get_object_or_404(Repository, gitlabId=gitlabId)
     temp = tempfile.mkdtemp()
-    proc = subprocess.Popen('cd '+temp+'/', stdin=subprocess.PIPE, stdout=subprocess.PIPE,  stderr=subprocess.PIPE, shell=True)
-    print(proc.stdout.read())
-    print(proc.communicate(input='git init'.encode()))
     
-    #proc = subprocess.Popen('git clone git@bitbucket.org:banco29510/score_c9.git', stdin=subprocess.PIPE, stdout=subprocess.PIPE,  stderr=subprocess.PIPE, shell=True)
+    # clone du dépot
+    #p = subprocess.Popen('git clone git@bitbucket.org:banco29510/score_c9.git', stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
+
+    #pprint.pprint(p.stdout.read().decode("utf-8") )
+
+    #pprint.pprint(p.communicate(bytes('ls', "utf-8")))
     
-    #proc.stdin.write("banco")
+    # liste des revision
+    revision = []
+    
+    # liste des fichiers
+    for revision in revision:
+        pass
     
 
     return 1
