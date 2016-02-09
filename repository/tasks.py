@@ -196,9 +196,9 @@ def ampq_mergeBranch(gitlabId=None, source_branch=None, target_branch='master'):
     return 1
 
 @app.task
-def ampq_updateDatabase(gitlabId=None):
+def ampq_updateDatabase(pk=None):
     
-    repository = get_object_or_404(Repository, gitlabId=gitlabId)
+    repository = get_object_or_404(Repository, pk=pk)
     temp = tempfile.mkdtemp()
     
     # clone du dépot
@@ -213,13 +213,13 @@ def ampq_updateDatabase(gitlabId=None):
     # liste des commits
     for commit in cloned_repo.iter_commits():
         if not Commit.objects.filter(hashCommit=str(commit.binsha)).exists():
-            commitDatabase = Commit(repository=repository, message=commit.message, hashCommit=str(commit.binsha), date=datetime.now(),).save()
+            commitDatabase = Commit(repository=repository, message=commit.message, hash=str(commit.binsha), date=datetime.now(),).save()
             
         print(commit.tree.trees)
         commitDatabase = Commit.objects.get(repository=repository, hashCommit=str(commit.binsha))
         for tree in commit.tree.trees:
             if not File.objects.filter(hashFile=str(tree.binsha)).exists():
-                treeDatabase = File(hashFile=str(tree.binsha), commit=commitDatabase, name=tree.name).save()
+                treeDatabase = File(hash=str(tree.binsha), commit=commitDatabase, name=tree.name).save()
     
     return 1
 
