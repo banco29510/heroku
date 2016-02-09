@@ -21,7 +21,8 @@ class Repository(models.Model):
     name = models.CharField(max_length=100, verbose_name="Nom")
     scoreAuthor = models.ForeignKey(Author, null=True, verbose_name="Auteur")
     size = models.IntegerField(null=True, verbose_name="Taille")
-    gitlabId = models.IntegerField(null=True,)
+    url = models.CharField(max_length=100, verbose_name="Url")
+    password = models.CharField(max_length=100, verbose_name="Mot de passe")
 
     ##
     #
@@ -52,9 +53,9 @@ class Commit(models.Model):
     message = models.CharField(max_length=10000)
     date = models.DateTimeField(null=True,)
     branch = models.ForeignKey(Branche, null=True, verbose_name="Branche")
-    hashCommit = models.CharField(max_length=100)
+    hash = models.CharField(max_length=100)
     deprecated = models.BooleanField(default=False) # economie place supression vieille version
-    visible = models.BooleanField(default=True)
+    visible = models.BooleanField(default=True) # si visible
     lock = models.BooleanField(default=False) # en cas de probleme
     author = models.CharField(max_length=100, null=True , default=None)
     size = models.IntegerField(null=True, verbose_name="Taille", default=None)
@@ -85,7 +86,7 @@ class Tag(models.Model):
 # \class File(models.Model):
 #
 class File(models.Model):
-    hashFile = models.CharField(max_length=100, default=None)
+    hash = models.CharField(max_length=100, default=None)
     name = models.CharField(max_length=100)
     size = models.IntegerField(null=True,)
     commit = models.ForeignKey(Commit, null=False)

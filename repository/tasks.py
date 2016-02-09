@@ -32,6 +32,8 @@ import gitlab
 
 from repository.models import *
 
+from git import Repo
+
 
 @app.task
 def ampq_addFile(gitlabId=None, file=None, message=None, branch="master"):
@@ -196,14 +198,19 @@ def ampq_mergeBranch(gitlabId=None, source_branch=None, target_branch='master'):
 @app.task
 def ampq_updateDatabase(gitlabId=None):
     
-    from git import Repo
-    
     repository = get_object_or_404(Repository, gitlabId=gitlabId)
     temp = tempfile.mkdtemp()
     
     # clone du dépot
     cloned_repo = Repo.clone_from('https://banco29510:antoine29510@bitbucket.org/banco29510/score_c9.git', temp, branch='master')
     
+    # list des branches
+    branches = cloned_repo.git.branch()
+    for branch in branches:
+        pass
+    
+    
+    # liste des commits
     for commit in cloned_repo.iter_commits():
         if not Commit.objects.filter(hashCommit=str(commit.binsha)).exists():
             commitDatabase = Commit(repository=repository, message=commit.message, hashCommit=str(commit.binsha), date=datetime.now(),).save()
@@ -211,7 +218,8 @@ def ampq_updateDatabase(gitlabId=None):
         print(commit.tree.trees)
         commitDatabase = Commit.objects.get(repository=repository, hashCommit=str(commit.binsha))
         for tree in commit.tree.trees:
-            treeDatabase = File(hashFile=str(tree.binsha), commit=commitDatabase, name=tree.name).save()
+            if not File.objects.filter(hashFile=str(tree.binsha)).exists():
+                treeDatabase = File(hashFile=str(tree.binsha), commit=commitDatabase, name=tree.name).save()
     
     return 1
 
