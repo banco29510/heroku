@@ -20,7 +20,8 @@ from django.core.exceptions import ObjectDoesNotExist
 from django.views.generic.edit import *
 from django.conf import settings
 
-import os, sys, datetime, glob, mimetypes, re, logging, pickle, tempfile, time, subprocess, json, base64, pprint
+import os, sys, glob, mimetypes, re, logging, pickle, tempfile, time, subprocess, json, base64, pprint
+from datetime import datetime
 from subprocess import *
 from shutil import *
 
@@ -195,24 +196,23 @@ def ampq_mergeBranch(gitlabId=None, source_branch=None, target_branch='master'):
 @app.task
 def ampq_updateDatabase(gitlabId=None):
     
+    from git import Repo
+    
     repository = get_object_or_404(Repository, gitlabId=gitlabId)
     temp = tempfile.mkdtemp()
     
     # clone du dépot
-    #p = subprocess.Popen('git clone git@bitbucket.org:banco29510/score_c9.git', stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
-
-    #pprint.pprint(p.stdout.read().decode("utf-8") )
-
-    #pprint.pprint(p.communicate(bytes('ls', "utf-8")))
+    cloned_repo = Repo.clone_from('https://banco29510:antoine29510@bitbucket.org/banco29510/score_c9.git', temp, branch='master')
     
-    # liste des revision
-    revision = []
+    for commit in cloned_repo.iter_commits():
+        if not Commit.objects.filter(hashCommit=str(commit.binsha)).exists():
+            commitDatabase = Commit(repository=repository, message=commit.message, hashCommit=str(commit.binsha), date=datetime.now(),).save()
+            
+        print(commit.tree.trees)
+        commitDatabase = Commit.objects.get(repository=repository, hashCommit=str(commit.binsha))
+        for tree in commit.tree.trees:
+            treeDatabase = File(hashFile=str(tree.binsha), commit=commitDatabase, name=tree.name).save()
     
-    # liste des fichiers
-    for revision in revision:
-        pass
-    
-
     return 1
 
 
