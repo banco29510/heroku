@@ -21,6 +21,7 @@ from django.views.generic.edit import *
 from django.conf import settings
 
 import os, sys, datetime, glob, mimetypes, re, logging, pickle, tempfile, time, subprocess, json, base64, pprint
+from subprocess import *
 from shutil import *
 
 from djcelery import celery
@@ -30,9 +31,6 @@ import gitlab
 
 from repository.models import *
 
-
-
-        
 
 @app.task
 def ampq_addFile(gitlabId=None, file=None, message=None, branch="master"):
@@ -197,49 +195,15 @@ def ampq_mergeBranch(gitlabId=None, source_branch=None, target_branch='master'):
 @app.task
 def ampq_updateDatabase(gitlabId=None):
     
-    git = gitlab.Gitlab(settings.GITLAB_URL, settings.GITLAB_TOKEN)
     repository = get_object_or_404(Repository, gitlabId=gitlabId)
+    temp = tempfile.mkdtemp()
+    proc = subprocess.Popen('cd '+temp+'/', stdin=subprocess.PIPE, stdout=subprocess.PIPE,  stderr=subprocess.PIPE, shell=True)
+    print(proc.stdout.read())
+    print(proc.communicate(input='git init'.encode()))
     
+    #proc = subprocess.Popen('git clone git@bitbucket.org:banco29510/score_c9.git', stdin=subprocess.PIPE, stdout=subprocess.PIPE,  stderr=subprocess.PIPE, shell=True)
     
-    branches = git.getbranches(gitlabId)
-    print('branches : '+str(branches))
-    
-    for branch in branches:
-        branch = branch['name']
-        
-        #try:
-        #    print('try')
-        #    branche = Branche.objects.get(name__exact=branch, repository=repository)
-        #    print(branche)
-        #except ObjectDoesNotExist:
-        #    Branche(str(branch), repository).save()
-        #    print('create')
-        
-        print(branch)
-    
-        commits = git.getrepositorycommits(project_id=gitlabId, ref_name=branch) # ne fonctionne pas
-        print('------------------------')
-        
-        print('commits : '+str(commits))
-        
-        for commit_gitlab in commits:
-            
-            if len(Commit.objects.filter(hashCommit=commit_gitlab['id'])) == 0: # si le commit n'existe pas
-                commit = Commit()
-                commit.repository = get_object_or_404(Repository, gitlabId=gitlabId)
-                commit.hashCommit = commit_gitlab['id']
-                commit.message = commit_gitlab['message']
-                commit.date = commit_gitlab['created_at']
-                commit.branch = branch
-                commit.save()
-    
-                files = git.getrepositorytree(gitlabId, path='/', ref_name=branch)
-        
-                for file in files:
-                    if len(File.objects.filter(hashFile=file['id'], commit=commit)) == 0: # si le fichier n'existe pas
-                        file = File(hashFile=file['id'], name=file['name'], size=0)
-                        file.commit = Commit.objects.get(hashCommit=commit_gitlab['id']) # ajout du commit
-                        file.save()
+    #proc.stdin.write("banco")
     
 
     return 1

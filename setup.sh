@@ -6,6 +6,7 @@ sudo apt-get install -y lilypond
 sudo apt-get install -y nodejs npm
 npm install -g bower
 sudo apt-get install -y doxygen
+
 sudo pip install -r requirements.txt
 
 sudo python manage.py makemigrations

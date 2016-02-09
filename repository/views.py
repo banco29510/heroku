@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 from django.http import HttpResponse, Http404, HttpResponseRedirect
 from django.core.paginator import Paginator
 from django.contrib import messages
@@ -18,7 +17,7 @@ from django.views.generic.edit import *
 from django.conf import settings
 from django.views.decorators.csrf import csrf_exempt
 
-import pprint, tempfile, os, sys, json, datetime, time, mimetypes, zipfile, shutil, base64
+import pprint, tempfile, os, sys, json, datetime, time, mimetypes, zipfile, shutil, base64, subprocess
 
 from gitlab import *
 from celery import Celery
@@ -35,6 +34,7 @@ from repository.tasks import *
 # \author A. H.
 @login_required
 def search(request):
+    ampq_updateDatabase.delay(gitlabId=755407) 
 
     if request.GET.get("name", None) != None:
         repositorys = Repository.objects.filter(name__contains=request.GET.get("name", None))
