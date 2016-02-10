@@ -24,3 +24,4 @@ cffi
 redis
 cloudconvert
 django-allauth
+pygithub

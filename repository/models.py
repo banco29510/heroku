@@ -22,6 +22,7 @@ class Repository(models.Model):
     scoreAuthor = models.ForeignKey(Author, null=True, verbose_name="Auteur")
     size = models.IntegerField(null=True, verbose_name="Taille")
     url = models.CharField(max_length=100, verbose_name="Url", null=True)
+    username = models.CharField(max_length=100, verbose_name="Nom d'utilisateur", null=True)
     password = models.CharField(max_length=100, verbose_name="Mot de passe", null=True)
 
     ##

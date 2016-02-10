@@ -38,6 +38,9 @@ from git import Repo
 @app.task
 def ampq_addFile(gitlabId=None, file=None, message=None, branch="master"):
     
+    # clone du dépot
+    #cloned_repo = Repo.clone_from('https://banco29510:antoine29510@bitbucket.org/banco29510/score_c9.git', temp, branch='master')
+    
     git = gitlab.Gitlab(settings.GITLAB_URL, settings.GITLAB_TOKEN)
         
     git.createfile(gitlabId, os.path.basename(file.file.name), branch, file.file.read(), message)

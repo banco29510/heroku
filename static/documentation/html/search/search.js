@@ -7,10 +7,18 @@
 
 var indexSectionsWithContent =
 {
+  0: "abcdefilmnrstuw",
+  1: "abcdefilmnrstu",
+  2: "suw",
+  3: "r"
 };
 
 var indexSectionNames =
 {
+  0: "all",
+  1: "classes",
+  2: "namespaces",
+  3: "pages"
 };
 
 function convertToId(search)

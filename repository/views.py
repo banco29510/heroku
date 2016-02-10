@@ -20,6 +20,8 @@ from django.views.decorators.csrf import csrf_exempt
 import pprint, tempfile, os, sys, json, datetime, time, mimetypes, zipfile, shutil, base64, subprocess
 
 from gitlab import *
+from github import Github
+
 from celery import Celery
 from celery import chain, group, chord
 from .tasks import *
@@ -34,7 +36,6 @@ from repository.tasks import *
 # \author A. H.
 @login_required
 def search(request):
-    ampq_updateDatabase.delay(gitlabId=755407) 
 
     if request.GET.get("name", None) != None:
         repositorys = Repository.objects.filter(name__contains=request.GET.get("name", None))
@@ -124,21 +125,18 @@ def newScore(request):
             name = form.cleaned_data['name'].replace(' ', '-')
             scoreAuthor = form.cleaned_data['scoreAuthor']
 
-            gitlab = Gitlab(settings.GITLAB_URL, settings.GITLAB_TOKEN)
-            
-            gitlab.createproject(name) # creation projet
-           
-            projects = gitlab.getprojectsowned()
-            for project in projects:
-                #print(project['name'].lower()+'=='+name.lower())
-                if project['name'].lower() == name.lower():
-                    gitlabId = project['id']
+            # creation dépot github
+            g = Github("banco29510@gmail.com", "antoine29510")
+            user = g.get_user()
+            repo = user.create_repo(name)
+        
             
             # création du dépot dans la bdd
             repository = Repository()
             repository.name = name
             repository.scoreAuthor = scoreAuthor
-            repository.gitlabId = gitlabId
+            repository.url = "https://github.com/banco29510/"+name+".git"
+            repository.password = "antoine29510"
             repository.save()
             
             # mise a jour du dépot
@@ -150,16 +148,9 @@ def newScore(request):
                 
             TempFile.save() 
             
-            #ampq_addFile.apply_async((gitlabId, TempFile, "Ajout du readme", "master"), link=ampq_updateDatabase.s(gitlabId))()
-            
-            #ampq_addFile.s(gitlabId=gitlabId, file=TempFile, message="Ajout du readme", branch="master") | ampq_updateDatabase.s(gitlabId=gitlabId,) 
-            #(ampq_addFile.s(gitlabId, TempFile, "Ajout du readme", "master") | ampq_updateDatabase.subtask(gitlabId) ).apply_async()
-            #ampq_addFile.delay(gitlabId, TempFile, "Ajout du readme", "master") | ampq_updateDatabase.delay(gitlabId) 
-            #chain(ampq_addFile.s(gitlabId, TempFile, "Ajout du readme", "master"), ampq_updateDatabase.s(args=gitlabId))()
-            
-            ampq_addFile.delay(gitlabId=gitlabId, file=TempFile, message="Ajout du readme", branch="master") # ajout readme.md
-            ampq_createBranch.delay(gitlabId=gitlabId, branch="dev") # creation branche dev
-            ampq_updateDatabase.delay(gitlabId) # update database
+            #ampq_addFile.delay(gitlabId=gitlabId, file=TempFile, message="Ajout du readme", branch="master") # ajout readme.md
+            #ampq_createBranch.delay(gitlabId=gitlabId, branch="dev") # creation branche dev
+            #ampq_updateDatabase.delay(gitlabId) # update database
 
             
             messages.add_message(request, messages.INFO, 'Le dépot à été crée. Première révision lors de la prochaine mise à jour.')
@@ -238,11 +229,16 @@ def showRepositoryProduction(request, pk=None):
         commit = commits[0]
     except:
         commit = []
+        
+        
     try:
         files = File.objects.filter(commit = commits[0])
-        readme = File.objects.get(commit = commits[0], name="readme.md")
     except:
         files = []
+        
+    try:
+        readme = File.objects.get(commit = commits[0], name="readme.md")
+    except:
         readme = []
         
     print(readme)
@@ -327,18 +323,29 @@ def showRepositoryDeveloppement(request, pk=None):
     repository = get_object_or_404(Repository, pk=pk)
     commits = Commit.objects.filter(repository=repository).order_by('-date')
     
+    # si demande un commit en particulier
+    if request.GET.get('commit'):
+        commits = Commit.objects.filter(repository=repository, hash=request.GET['commit']) 
+    
     try:
         commit = commits[0]
     except:
         commit = []
+        
     try:
         files = File.objects.filter(commit = commits[0])
+    except:
+        files = []
+        
+    try:
         readme = File.objects.get(commit = commits[0], name = "readme.md")
         tags = Tag.objects.filter(commit = commits[0])
     except:
-        files = []
         readme = []
         tags = []
+        
+        
+    
 
     return render(request, 'repository/showRepositoryDeveloppement.html', {'repository': repository, 
                                                                             'files': files, 
