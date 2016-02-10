@@ -1,5 +1,6 @@
 #sudo mv /usr/bin/python /usr/bin/python2
 #sudo ln -s /usr/bin/python3 /usr/bin/python
+#mysql-ctl start
 
 #sudo apt-get update -y
 #sudo apt-get upgrade -y
@@ -22,8 +23,8 @@ sudo pip install -r requirements.txt
 sudo python manage.py makemigrations
 sudo python manage.py migrate
 sudo python manage.py createcachetable
-sudo python manage.py createsuperuser --username=admin --email=admin@example.com
-sudo python manage.py collectstatic
+#sudo python manage.py createsuperuser --username=admin --email=admin@example.com
+#sudo python manage.py collectstatic
 
 
 sudo doxygen

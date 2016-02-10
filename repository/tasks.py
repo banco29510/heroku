@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 from __future__ import absolute_import
 
 from django.http import HttpResponse, Http404, HttpResponseRedirect
@@ -208,20 +207,21 @@ def ampq_updateDatabase(pk=None):
     cloned_repo = Repo.clone_from('https://banco29510:antoine29510@bitbucket.org/banco29510/score_c9.git', temp, branch='master')
     
     # list des branches
-    branches = cloned_repo.git.branch()
+    branches = cloned_repo.heads
     for branch in branches:
-        pass
-    
+        print(branch)
+        if not Branche.objects.filter(name=str(branch), repository=repository).exists():
+            Branche(name=branch, repository=repository).save()
     
     # liste des commits
     for commit in cloned_repo.iter_commits():
-        if not Commit.objects.filter(hashCommit=str(commit.binsha)).exists():
+        if not Commit.objects.filter(hash=str(commit.binsha)).exists():
             commitDatabase = Commit(repository=repository, message=commit.message, hash=str(commit.binsha), date=datetime.now(),).save()
             
         print(commit.tree.trees)
-        commitDatabase = Commit.objects.get(repository=repository, hashCommit=str(commit.binsha))
+        commitDatabase = Commit.objects.get(repository=repository, hash=str(commit.binsha))
         for tree in commit.tree.trees:
-            if not File.objects.filter(hashFile=str(tree.binsha)).exists():
+            if not File.objects.filter(hash=str(tree.binsha)).exists():
                 treeDatabase = File(hash=str(tree.binsha), commit=commitDatabase, name=tree.name).save()
     
     return 1

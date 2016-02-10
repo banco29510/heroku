@@ -122,7 +122,7 @@ Including another URLconf
 <b>Valeur initiale :</b><div class="fragment"><div class="line"><a name="l00001"></a><span class="lineno"><a class="line" href="namespaceurls.html">    1</a></span>&#160;= [</div>
 <div class="line"><a name="l00002"></a><span class="lineno">    2</span>&#160;    url(<span class="stringliteral">r&#39;^admin/&#39;</span>, include(admin.site.urls)),</div>
 <div class="line"><a name="l00003"></a><span class="lineno">    3</span>&#160;    </div>
-<div class="line"><a name="l00004"></a><span class="lineno">    4</span>&#160;    url(<span class="stringliteral">r&#39;^$&#39;</span>, <span class="stringliteral">&#39;main.views.main&#39;</span>, name=<span class="stringliteral">&quot;main&quot;</span>), <span class="comment"># page d&#39;accueil</span></div>
+<div class="line"><a name="l00004"></a><span class="lineno">    4</span>&#160;    url(<span class="stringliteral">r&#39;^$&#39;</span>, views.main, name=<span class="stringliteral">&quot;main&quot;</span>), <span class="comment"># page d&#39;accueil</span></div>
 <div class="line"><a name="l00005"></a><span class="lineno">    5</span>&#160;    </div>
 <div class="line"><a name="l00006"></a><span class="lineno">    6</span>&#160;    url(<span class="stringliteral">r&#39;^accounts/&#39;</span>, include(<span class="stringliteral">&#39;allauth.urls&#39;</span>)),</div>
 <div class="line"><a name="l00007"></a><span class="lineno">    7</span>&#160;</div>
@@ -141,7 +141,7 @@ Including another URLconf
 </div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Généré le Mercredi 10 Février 2016 12:09:00 pour La maison des partitions par &#160;<a href="http://www.doxygen.org/index.html">
+Généré le Mercredi 10 Février 2016 15:30:57 pour La maison des partitions par &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="doxygen.png" alt="doxygen"/>
 </a> 1.8.6
 </small></address>

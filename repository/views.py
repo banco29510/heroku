@@ -224,6 +224,7 @@ def addFile(request, pk=None):
 def showRepositoryProduction(request, pk=None):
 
     repository = get_object_or_404(Repository, pk=pk)
+    ampq_updateDatabase.delay(repository.id)
     commits = Commit.objects.filter(repository=repository).order_by('-date')
     try:
         commit = commits[0]
