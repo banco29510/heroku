@@ -17,10 +17,12 @@ from django.conf.urls import include, url
 from django.contrib import admin
 from django.views.generic import TemplateView
 
+from main import views
+
 urlpatterns = [
     url(r'^admin/', include(admin.site.urls)),
     
-    url(r'^$', 'main.views.main', name="main"), # page d'accueil
+    url(r'^$', views.main, name="main"), # page d'accueil
     
     url(r'^accounts/', include('allauth.urls')),
 

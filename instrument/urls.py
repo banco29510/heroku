@@ -8,16 +8,16 @@
 from django.conf.urls import include, url
 
 
-from instrument.views import *
+from . import views
 
 
 urlpatterns = [
 
-    url(r'^$', 'instrument.views.listInstruments', name="instrument-list"),
-    url(r'^detail/(?P<pk>\d+)$', 'instrument.views.detailInstrument', name="instrument-detail"),
-    url(r'^create/$', 'instrument.views.createInstrument', name="instrument-create"),
-    url(r'^update/(?P<pk>\d+)$', 'instrument.views.updateInstrument', name="instrument-update"),
-    url(r'^delete/(?P<pk>\d+)$', 'instrument.views.deleteInstrument', name="instrument-delete"),
+    url(r'^$', views.listInstruments, name="instrument-list"),
+    url(r'^detail/(?P<pk>\d+)$', views.detailInstrument, name="instrument-detail"),
+    url(r'^create/$', views.createInstrument, name="instrument-create"),
+    url(r'^update/(?P<pk>\d+)$', views.updateInstrument, name="instrument-update"),
+    url(r'^delete/(?P<pk>\d+)$', views.deleteInstrument, name="instrument-delete"),
 
 
 

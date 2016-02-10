@@ -1,4 +1,3 @@
-#-*- coding: utf-8 -*-
 #
 # \file urls.py
 # \brief Contient les urls des auteurs
@@ -9,18 +8,16 @@
 from django.conf.urls import include, url
 
 
-from author.views import *
+from . import views
 
 
 urlpatterns = [
 
-    url(r'^$', 'author.views.listAuthors', name="author-list"),
-    url(r'^detail/(?P<pk>\d+)$', 'author.views.detailAuthor', name="author-detail"),
-    url(r'^create/$', 'author.views.createAuthor', name="author-create"),
-    url(r'^update/(?P<pk>\d+)$', 'author.views.updateAuthor', name="author-update"),
-    url(r'^delete/(?P<pk>\d+)$', 'author.views.deleteAuthor', name="author-delete"),
-
-
+    url(r'^$', views.listAuthors, name="author-list"),
+    url(r'^detail/(?P<pk>\d+)$', views.detailAuthor, name="author-detail"),
+    url(r'^create/$', views.createAuthor, name="author-create"),
+    url(r'^update/(?P<pk>\d+)$', views.updateAuthor, name="author-update"),
+    url(r'^delete/(?P<pk>\d+)$', views.deleteAuthor, name="author-delete"),
 
 
 ]

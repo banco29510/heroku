@@ -1,10 +1,13 @@
 from django.conf.urls import patterns, include, url
 
+from . import views
 
-urlpatterns = patterns('',
-    url(r'^cgu$', 'main.views.cgu', name="main-cgu"),
-    url(r'^login$', 'main.views.MyLogin', name="main-login"),
-    url(r'^logout$', 'main.views.MyLogout', name="main-logout"),
-    url(r'^register$', 'main.views.MyRegistration', name="main-register"),
-    url(r'^profile$', 'main.views.profile', name="main-profile"),
-)
+urlpatterns = [
+    
+    url(r'^cgu$', views.cgu, name="main-cgu"),
+    url(r'^login$', views.MyLogin, name="main-login"),
+    url(r'^logout$', views.MyLogout, name="main-logout"),
+    url(r'^register$', views.MyRegistration, name="main-register"),
+    url(r'^profile$', views.profile, name="main-profile"),
+    
+]

@@ -1,4 +1,3 @@
-#-*- coding: utf-8 -*-
 #
 # \file urls.py
 # \brief Contient les urls pour le logiciel lilypond
@@ -8,15 +7,15 @@
 
 from  django.conf.urls import include, url
 
-import lilypondSoftware
+from . import views
 
 
 
 urlpatterns = [
 
-    url(r'^lilypondMain/$', 'lilypondSoftware.views.main', name="lilypondSoftware-main"),
-    url(r'^lilypondCompilation/$', 'lilypondSoftware.views.lilypondCompilation', name="lilypondSoftware-compilation"),
-    url(r'^lilypondErrorsCompilation/$', 'lilypondSoftware.views.lilypondErrorsCompilation', name="lilypondSoftware-errorsCompilation"),
+    url(r'^lilypondMain/$', views.main, name="lilypondSoftware-main"),
+    url(r'^lilypondCompilation/$', views.lilypondCompilation, name="lilypondSoftware-compilation"),
+    url(r'^lilypondErrorsCompilation/$', views.lilypondErrorsCompilation, name="lilypondSoftware-errorsCompilation"),
 
 
 

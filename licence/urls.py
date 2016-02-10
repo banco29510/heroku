@@ -1,4 +1,3 @@
-#-*- coding: utf-8 -*-
 #
 # \file urls.py
 # \brief Contient les urls des instruments
@@ -9,16 +8,16 @@
 from django.conf.urls import include, url
 
 
-from licence.views import *
+from . import views
 
 
 urlpatterns = [
 
-    url(r'^$', 'licence.views.listLicences', name="licence-list"),
-    url(r'^detail/(?P<pk>\d+)$', 'licence.views.detailLicence', name="licence-detail"),
-    url(r'^create/$', 'licence.views.createLicence', name="licence-create"),
-    url(r'^update/(?P<pk>\d+)$', 'licence.views.updateLicence', name="licence-update"),
-    url(r'^delete/(?P<pk>\d+)$', 'licence.views.deleteLicence', name="licence-delete"),
+    url(r'^$', views.listLicences, name="licence-list"),
+    url(r'^detail/(?P<pk>\d+)$', views.detailLicence, name="licence-detail"),
+    url(r'^create/$', views.createLicence, name="licence-create"),
+    url(r'^update/(?P<pk>\d+)$', views.updateLicence, name="licence-update"),
+    url(r'^delete/(?P<pk>\d+)$', views.deleteLicence, name="licence-delete"),
 
 
 

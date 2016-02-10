@@ -6,7 +6,7 @@
         "jquery": "latest",
         "jqueryui": "latest",
         "prism": "latest",
-        "chart.js": "latest",
+        "chartjs": "latest",
         "ckeditor": "latest",
         "html5shiv": "latest",
         "bootstrap": "latest"
