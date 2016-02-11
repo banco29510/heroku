@@ -26,6 +26,9 @@ sudo python manage.py createcachetable
 #sudo python manage.py createsuperuser --username=admin --email=admin@example.com
 #sudo python manage.py collectstatic
 
+cd www
+wget http://builds.piwik.org/piwik.zip && unzip piwik.zip
+cd ..
 
 sudo doxygen
 

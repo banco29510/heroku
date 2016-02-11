@@ -9,6 +9,7 @@ from django.core.files.base import ContentFile
 from django.core.files import File as DjangoFile
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.decorators import login_required
+from django.contrib.admin.views.decorators import staff_member_required
 from django.views.decorators.cache import cache_page
 from django.shortcuts import get_object_or_404, get_list_or_404, redirect, render
 from django.contrib.auth import authenticate
@@ -555,6 +556,7 @@ def mergeCommit(request,):
 ## \brief modifie le dépot
 # \author A. H.
 @login_required
+@staff_member_required
 def editRepository(request, pk=None):
 
     repository = get_object_or_404(Repository, pk=pk)
@@ -586,6 +588,7 @@ def editRepository(request, pk=None):
 ## \brief supprime le dépot
 # \author A. H.
 @login_required
+@staff_member_required
 def deleteRepository(request, pk=None):
 
     repository = get_object_or_404(Repository, pk=pk)
