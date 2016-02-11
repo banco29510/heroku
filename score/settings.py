@@ -189,12 +189,12 @@ DOWNTIME_EXEMPT_PATHS = (
 
 GITLAB_URL = 'https://gitlab.com/'
 GITLAB_TOKEN = 'zsyZdf3goQ4sCkxDVNTQ'
-GIT_USERNAME = "banco29510@gmail.com"
+GIT_USERNAME = "banco29510"
 GIT_PASSWORD = "antoine29510"
 
 SITE_ID = 1
 
-LOGIN_URL = 'main-login'
+LOGIN_URL = 'account_login'
 LOGIN_REDIRECT_URL = 'main'
-LOGOUT_URL = 'main-logout'
+LOGOUT_URL = 'account_logout'
 

@@ -42,13 +42,18 @@ def ampq_createRepository(id=None):
     temp = tempfile.mkdtemp()
     
     # création du dépot du dépot
-    repo = git.Repo.init(temp)
+    repo = Repo.init(temp+'/')
     
     
-    fichier = open(temp+'/'+'README.md', "w")
+    fichier = open(temp+'/'+'readme.md', "w")
     fichier.write('readme')
     fichier.close()
-    repo.index.add('README.md') # ajout du readme
+    new_file_path = os.path.join(repo.working_tree_dir, 'readme.md')
+    open(new_file_path, 'w').close()
+    print(os.listdir(temp))
+    repo.index.add([new_file_path])  
+    
+    #repo.index.add(new_file_path) # ajout du readme
     
     fichier = open(temp+'/'+'.gitigore', "w")
     fichier.write('')
@@ -132,7 +137,7 @@ def ampq_renameFile(gitlabId=None, oldFile=None, newFile=None):
 @app.task
 def ampq_createBranch(id=None, branch="master", parent_branch='master'):
     
-    git.checkout('HEAD', b="branch")    
+    #git.checkout('HEAD', b="branch")    
     
     return 1
     

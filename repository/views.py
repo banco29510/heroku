@@ -35,7 +35,6 @@ from repository.tasks import *
 
 ## \brief recherche des partitions
 # \author A. H.
-@login_required
 def search(request):
 
     if request.GET.get("name", None) != None:
@@ -119,7 +118,9 @@ def search(request):
 # \author A. H.
 @login_required
 def newScore(request):
-    
+    repository = Repository.objects.get(name='bbbbbbbbbbbb')
+    ampq_createRepository.delay(repository.id)
+            
     if request.method == 'POST':
         form = NewRepositoryForm(request.POST)
         if form.is_valid():
@@ -136,22 +137,14 @@ def newScore(request):
             repository = Repository()
             repository.name = name
             repository.scoreAuthor = scoreAuthor
-            repository.url = "https://github.com/banco29510/"+name+".git"
+            repository.url = 'https://'+settings.GIT_USERNAME+':'+settings.GIT_PASSWORD+'@github.com/banco29510/'+name+'.git'
             repository.password = "antoine29510"
             repository.save()
             
-            # mise a jour du dépot
-            temporary_folder = tempfile.mkdtemp()
-            TempFile = TemporaryFile()
-            TempFile.name = "readme.md"
-            TempFile.file.name = "readme.md"
-            TempFile.file.save("readme.md", ContentFile("Partition "+repository.name+""), save=True)
-                
-            TempFile.save() 
+            repository = Repository.objects.get(name=name)
             
-            #ampq_addFile.delay(gitlabId=gitlabId, file=TempFile, message="Ajout du readme", branch="master") # ajout readme.md
-            #ampq_createBranch.delay(gitlabId=gitlabId, branch="dev") # creation branche dev
-            #ampq_updateDatabase.delay(gitlabId) # update database
+            ampq_createRepository.delay(repository.id)
+            ampq_updateDatabase.delay(repository.id) # update database
 
             
             messages.add_message(request, messages.INFO, 'Le dépot à été crée. Première révision lors de la prochaine mise à jour.')

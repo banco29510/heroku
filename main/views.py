@@ -33,7 +33,7 @@ def main(request):
         i += 1
         
         
-    paginator = Paginator(list_commits, 20)
+    paginator = Paginator(list_commits, 5)
 
     page = request.GET.get('page', 1)
     try:
