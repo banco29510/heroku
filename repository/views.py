@@ -201,8 +201,8 @@ def addFile(request, pk=None):
                 
             TempFile.save() 
             
-            ampq_addFile.delay(gitlabId=repository.gitlabId, file=TempFile, message=message, branch=branch)
-            ampq_updateDatabase.delay(gitlabId=repository.gitlabId) 
+            ampq_addFile.delay(id=repository.id, file=TempFile, message=message, branch=branch)
+            ampq_updateDatabase.delay(pk=repository.id) 
                 
             messages.add_message(request, messages.INFO, 'Le fichier à été sauvegardé, la mise à jour sera effectué sous peu.')
 

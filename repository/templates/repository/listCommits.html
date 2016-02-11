@@ -3,121 +3,102 @@
 
 {% block content %}
 
-
     <h2><center><em>Liste des versions et branches de la partitions <a href="{% url 'repository-showRepositoryDeveloppement' repository.id %}">{{ repository }}</a></em></center></h2>
 
-
     <!-- Nav tabs -->
-  <ul class="nav nav-tabs nav-pills" role="tablist">
-     <li role="presentation" class="active"><a href="#main" aria-controls="main" role="tab" data-toggle="tab">Toutes les branches</a></li>
-     {% for branch in branches %}
-        <li role="presentation" class=""><a href="#{{ branch }}" aria-controls="{{ branch }}" role="tab" data-toggle="tab">{{ branch | capfirst}} <span class="close" style="">&nbsp; ×</span></a></li>
-     {% empty %}
-         <li role="presentation" class=""><a href="#{{ branch }}" aria-controls="{{ branch }}" role="tab" data-toggle="tab">Aucune branche <span class="close" style="">&nbsp; ×</span></a></li>
-     {% endfor %}
-     <li role="new"><a href="#" aria-controls="" role="tab" data-target="#myModal" data-toggle="modal">Créer une branche</a></li>
-  </ul>
+    <ul class="nav nav-tabs nav-pills" role="tablist">
+        <li role="presentation" class="active"><a href="#main" aria-controls="main" role="tab" data-toggle="tab">Toutes les branches</a></li>
+        {% for branch in branches %}
+            <li role="presentation" class=""><a href="#{{ branch }}" aria-controls="{{ branch }}" role="tab" data-toggle="tab">{{ branch | capfirst}} <span class="close" style="">&nbsp; ×</span></a></li>
+        {% empty %}
+            <li role="presentation" class=""><a href="#{{ branch }}" aria-controls="{{ branch }}" role="tab" data-toggle="tab">Aucune branche <span class="close" style="">&nbsp; ×</span></a></li>
+        {% endfor %}
+        <li role="new"><a href="#" aria-controls="" role="tab" data-target="#myModal" data-toggle="modal">Créer une branche</a></li>
+    </ul>
 
-  <!-- Tab panes -->
-  <div class="tab-content">
-     <div role="tabpanel" class="tab-pane active" id="main">
-         <ul class="list-group">
-            {% for commit in commits %}
-                <li class="list-group-item" >Commit du {{ commit.date }} : <a href="{% url 'repository-showRepositoryDeveloppement' repository.id %}">{{ commit.message | capfirst }}</a> <a href="{% url 'repository-mergeCommit' %}">Fusion version</a></li>
-            {% empty %}
+    <!-- Tab panes -->
+    <div class="tab-content">
+        <div role="tabpanel" class="tab-pane active" id="main">
+            <ul class="list-group">
+                {% for commit in commits %}
+                    <li class="list-group-item" >Commit du {{ commit.date }} : <a href="{% url 'repository-showRepositoryDeveloppement' repository.id %}">{{ commit.message | capfirst }}</a> <a href="{% url 'repository-mergeCommit' %}">Fusion version</a></li>
+                {% empty %}
 
-            {% endfor %}
-        </ul>
-
+                {% endfor %}
+            </ul>
+    
         <div class="text-center">
-        <ul class="pagination pagination-centered">
-            {% if commits.has_previous %}
-                <li><a href="?pageCommits={{ commits.previous_page_number }}&pageFiles={{ files.number }}&branch={{ branch }}">Précédente</a></li>
-            {% endif %}
-
-             <li class="active"><a>Page {{ commits.number }} sur {{ commits.paginator.num_pages }}</a></li>
-
-            {% if commits.has_next %}
-                <li><a href="?pageCommits={{ commits.next_page_number }}&pageFiles={{ files.number }}&branch={{ branch }}">Suivante</a></li>
-            {% endif %}
-        </ul>
+            <ul class="pagination pagination-centered">
+                {% if commits.has_previous %}
+                    <li><a href="?pageCommits={{ commits.previous_page_number }}&pageFiles={{ files.number }}&branch={{ branch }}">Précédente</a></li>
+                {% endif %}
+                <li class="active"><a>Page {{ commits.number }} sur {{ commits.paginator.num_pages }}</a></li>
+                {% if commits.has_next %}
+                    <li><a href="?pageCommits={{ commits.next_page_number }}&pageFiles={{ files.number }}&branch={{ branch }}">Suivante</a></li>
+                {% endif %}
+            </ul>
+        </div>
     </div>
-
-
+    
     {% for branch in branches %}
 
-    </div>
-    <div role="tabpanel" class="tab-pane" id="{{ branch }}">
-         <ul>
-            {% for commit in commits %}
-
+        <div role="tabpanel" class="tab-pane" id="{{ branch }}">
+            <ul>
+                {% for commit in commits %}
                     <li class="list-group-item" >Commit du {{ commit.date }} : {{ commit.message }} <a href="{% url 'repository-deleteCommit' 1 %}">Suprimmer version</a>  <a href="{% url 'repository-mergeCommit' %}">Fusion version</a></li>
-
-             {% empty %}
-            {% endfor %}
-        </ul>
-
-
-        <div class="text-center">
-        <ul class="pagination pagination-centered">
-            {% if commits.has_previous %}
-                <li><a href="?pageCommits={{ commits.previous_page_number }}&pageFiles={{ files.number }}&branch={{ branch }}">Précédente</a></li>
-            {% endif %}
-
-             <li class="active"><a>Page {{ commits.number }} sur {{ commits.paginator.num_pages }}</a></li>
-
-            {% if commits.has_next %}
-                <li><a href="?pageCommits={{ commits.next_page_number }}&pageFiles={{ files.number }}&branch={{ branch }}">Suivante</a></li>
-            {% endif %}
-        </ul>
-    </div>
-
-
-    </div>
-       {% empty %}
-     {% endfor %}
-
-
-</div>
-
-<!-- Modal -->
-<div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
-  <div class="modal-dialog" role="document">
-    <div class="modal-content">
-      <div class="modal-header">
-        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-        <h4 class="modal-title" id="myModalLabel">Créer une branche</h4>
-      </div>
-      <div class="modal-body">
-        <form method="post" id="myForm" action="">
-            {% csrf_token %}
+                {% empty %}
+                {% endfor %}
+            </ul>
             
-            {{ form.as_p }}
+            <div class="text-center">
+                <ul class="pagination pagination-centered">
+                    {% if commits.has_previous %}
+                        <li><a href="?pageCommits={{ commits.previous_page_number }}&pageFiles={{ files.number }}&branch={{ branch }}">Précédente</a></li>
+                    {% endif %}
 
-        </form>
+                    <li class="active"><a>Page {{ commits.number }} sur {{ commits.paginator.num_pages }}</a></li>
 
-            
-      </div>
-      <div class="modal-footer">
-         <input class="btn btn-primary" type="submit" value="Créer" id="submit_create">
-        <button type="button" class="btn btn-default" data-dismiss="modal">Fermer</button>
-      </div>
-    </div>
-  </div>
-</div>
-
-
-
-<br /><br />
-<script src="https://raw.githubusercontent.com/mgalante/jquery.redirect/master/jquery.redirect.js"></script>
-<script>
-$(document).ready(function () {
-    $("input#submit_create").click(function(){
-        //alert($("#id_parent_branch").val());
+                    {% if commits.has_next %}
+                        <li><a href="?pageCommits={{ commits.next_page_number }}&pageFiles={{ files.number }}&branch={{ branch }}">Suivante</a></li>
+                    {% endif %}
+                </ul>
+            </div>
+        </div>
         
-        $.redirect('{% url 'repository-createBranch' repository.id %}', {'name': $("#id_name").val(), 'parent_branch': $("#id_parent_branch").val()});
-       
-    });
-});
-</script>
- {% endblock %}
+    {% empty %}
+    {% endfor %}
+
+    <!-- Modal -->
+    <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title" id="myModalLabel">Créer une branche</h4>
+                </div>
+                <div class="modal-body">
+                    <form method="post" id="myForm" action="">{% csrf_token %}
+                        {{ form.as_p }}
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <input class="btn btn-primary" type="submit" value="Créer" id="submit_create">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Fermer</button>
+                </div>
+            </div>
+        </div>
+   </div>
+
+    <br /><br />
+    
+    <script src="https://raw.githubusercontent.com/mgalante/jquery.redirect/master/jquery.redirect.js"></script>
+    <script>
+        $(document).ready(function () {
+            $("input#submit_create").click(function(){
+                //alert($("#id_parent_branch").val());
+                $.redirect('{% url 'repository-createBranch' repository.id %}', {'name': $("#id_name").val(), 'parent_branch': $("#id_parent_branch").val()});
+            });
+        });
+    </script>
+    
+{% endblock %}

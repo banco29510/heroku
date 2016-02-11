@@ -34,16 +34,69 @@ from repository.models import *
 from git import Repo
 
 
+## \brief créer le dépot en ajoutant les fichiers
 @app.task
-def ampq_addFile(gitlabId=None, file=None, message=None, branch="master"):
+def ampq_createRepository(id=None):
     
-    # clone du dépot
-    #cloned_repo = Repo.clone_from('https://banco29510:antoine29510@bitbucket.org/banco29510/score_c9.git', temp, branch='master')
+    repository = get_object_or_404(Repository, pk=id)
+    temp = tempfile.mkdtemp()
     
-    git = gitlab.Gitlab(settings.GITLAB_URL, settings.GITLAB_TOKEN)
+    # création du dépot du dépot
+    repo = git.Repo.init(temp)
+    
+    
+    fichier = open(temp+'/'+'README.md', "w")
+    fichier.write('readme')
+    fichier.close()
+    repo.index.add('README.md') # ajout du readme
+    
+    fichier = open(temp+'/'+'.gitigore', "w")
+    fichier.write('')
+    fichier.close()
+    repo.index.add('.gitignore') # ajout du .gitigore
+    
+    fichier = open(temp+'/'+'licence.txt', "w")
+    fichier.write('licence libre')
+    fichier.close()
+    repo.index.add('licence.txt') # ajout licence
+    
+    author = Actor("An author", "author@example.com")
+    committer = Actor("A committer", "committer@example.com")
         
-    git.createfile(gitlabId, os.path.basename(file.file.name), branch, file.file.read(), message)
-    #pprint.pprint(file)
+    repo.index.commit('initial commit', author=author, committer=committer)
+    
+    # création de la branche dev
+    repo.create_head('dev', origin.refs.master).set_tracking_branch(origin.refs.master)
+    
+    #push des branches
+    for head in repo.heads:
+        head.push()
+        
+    return 1
+    
+@app.task
+def ampq_addFile(id=None, file=None, message=None, branch="master"):
+    
+    repository = get_object_or_404(Repository, pk=id)
+    temp = tempfile.mkdtemp()
+    # clone du dépot
+    cloned_repo = Repo.clone_from(repository.url, temp, branch=branch)
+    
+    copy2(file.file.path, temp)
+    files = os.listdir(temp)
+    pprint.pprint(files)
+    
+    print(temp+'/'+file.file.name+'/')
+    print(os.path.basename(file.file.name))
+    print(temp+'/'+os.path.basename(file.file.name))
+    
+    cloned_repo.index.add(temp+'/'+os.path.basename(file.file.name))
+    
+    author = Actor("Utilisateur", "mail@gmail.com")
+    committer = Actor("admin la maison des partitions", "lamaisondespartitions@gmail.com")
+        
+    cloned_repo.index.commit(message, author=author, committer=committer)
+        
     
     file.file.delete()
     file.delete()
@@ -77,11 +130,9 @@ def ampq_renameFile(gitlabId=None, oldFile=None, newFile=None):
     return 1
     
 @app.task
-def ampq_createBranch(gitlabId=None, branch="master", parent_branch='master'):
+def ampq_createBranch(id=None, branch="master", parent_branch='master'):
     
-    git = gitlab.Gitlab(settings.GITLAB_URL, settings.GITLAB_TOKEN)
-
-    git.createbranch(gitlabId, branch, parent_branch)
+    git.checkout('HEAD', b="branch")    
     
     return 1
     
@@ -204,7 +255,7 @@ def ampq_updateDatabase(pk=None):
     temp = tempfile.mkdtemp()
     
     # clone du dépot
-    cloned_repo = Repo.clone_from('https://banco29510:antoine29510@bitbucket.org/banco29510/score_c9.git', temp, branch='master')
+    cloned_repo = Repo.clone_from(repository.url, temp, branch='master')
     
     # list des branches
     branches = cloned_repo.heads
