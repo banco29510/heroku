@@ -174,6 +174,7 @@ EMAIL_HOST = 'smtp.gmail.com'
 EMAIL_PORT = 587
 EMAIL_HOST_USER = 'banco29510@gmail.com'
 EMAIL_HOST_PASSWORD = 'antoine29510'
+DEFAULT_FROM_EMAIL = 'banco29510@gmail.com'
 
 INTERNAL_IPS = ('127.0.0.1',)
 
@@ -197,4 +198,6 @@ SITE_ID = 1
 LOGIN_URL = 'account_login'
 LOGIN_REDIRECT_URL = 'main'
 LOGOUT_URL = 'account_logout'
+
+MESSAGE_STORAGE = 'django.contrib.messages.storage.session.SessionStorage'
 

@@ -31,7 +31,7 @@ import gitlab
 
 from repository.models import *
 
-from git import Repo
+from git import Repo, Actor, Head, Remote, Commit, Git, Blob, Tree
 
 
 ## \brief créer le dépot en ajoutant les fichiers
@@ -43,39 +43,38 @@ def ampq_createRepository(id=None):
     
     # création du dépot du dépot
     repo = Repo.init(temp+'/')
+    remote = repo.create_remote('origin', repository.url)
     
-    
-    fichier = open(temp+'/'+'readme.md', "w")
-    fichier.write('readme')
-    fichier.close()
     new_file_path = os.path.join(repo.working_tree_dir, 'readme.md')
-    open(new_file_path, 'w').close()
-    print(os.listdir(temp))
-    repo.index.add([new_file_path])  
+    open(new_file_path, 'wb').close()                            
+    repo.index.add([new_file_path]) 
     
-    #repo.index.add(new_file_path) # ajout du readme
+    new_file_path = os.path.join(repo.working_tree_dir, 'licence.txt')
+    open(new_file_path, 'wb').close()                            
+    repo.index.add([new_file_path]) 
     
-    fichier = open(temp+'/'+'.gitigore', "w")
-    fichier.write('')
-    fichier.close()
-    repo.index.add('.gitignore') # ajout du .gitigore
-    
-    fichier = open(temp+'/'+'licence.txt', "w")
-    fichier.write('licence libre')
-    fichier.close()
-    repo.index.add('licence.txt') # ajout licence
+    new_file_path = os.path.join(repo.working_tree_dir, '.gitignore')
+    open(new_file_path, 'wb').close()                            
+    repo.index.add([new_file_path]) 
     
     author = Actor("An author", "author@example.com")
     committer = Actor("A committer", "committer@example.com")
-        
-    repo.index.commit('initial commit', author=author, committer=committer)
+    
+    repo.index.commit("initial commit", author=author, committer=committer)
+    
+    print(os.listdir(temp))
     
     # création de la branche dev
-    repo.create_head('dev', origin.refs.master).set_tracking_branch(origin.refs.master)
+    repo.git.checkout('HEAD', b="dev")
+    remote.push()
+    
+    #changement pour la branche master
+    repo.git.checkout('master')
+    remote.push()
     
     #push des branches
     for head in repo.heads:
-        head.push()
+        print(head)
         
     return 1
     

@@ -747,8 +747,6 @@ def editMarkdown(request, pk=None, ):
     file = get_object_or_404(File, pk=pk)
     commit = file.commit
     repository = commit.repository
-
-    
     
 
     return render(request, 'repository/editMarkdown.html', {})

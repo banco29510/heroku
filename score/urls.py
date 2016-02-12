@@ -20,11 +20,13 @@ from django.views.generic import TemplateView
 from main import views
 
 urlpatterns = [
+    
+    url(r'^accounts/', include('allauth.urls')),
+    
     url(r'^admin/', include(admin.site.urls)),
     
     url(r'^$', views.main, name="main"), # page d'accueil
     
-    url(r'^accounts/', include('allauth.urls')),
 
     url(r'^main/', include('main.urls')),
     url(r'^repository/', include('repository.urls')),
