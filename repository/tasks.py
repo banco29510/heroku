@@ -31,7 +31,7 @@ import gitlab
 
 from repository.models import *
 
-from git import Repo, Actor, Head, Remote, Commit, Git, Blob, Tree
+from git import Repo, Actor, Head, Remote, Git, Blob, Tree
 
 
 ## \brief créer le dépot en ajoutant les fichiers
@@ -259,10 +259,12 @@ def ampq_updateDatabase(pk=None):
     temp = tempfile.mkdtemp()
     
     # clone du dépot
-    cloned_repo = Repo.clone_from(repository.url, temp, branch='master')
+    cloned_repo = Repo.clone_from(repository.url, temp)
     
     # list des branches
     branches = cloned_repo.heads
+    print(cloned_repo.heads)
+    
     for branch in branches:
         print(branch)
         if not Branche.objects.filter(name=str(branch), repository=repository).exists():

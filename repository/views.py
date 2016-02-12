@@ -118,9 +118,7 @@ def search(request):
 # \author A. H.
 @login_required
 def newScore(request):
-    repository = Repository.objects.get(name='bbbbbbbbbbbb')
-    ampq_createRepository.delay(repository.id)
-            
+    
     if request.method == 'POST':
         form = NewRepositoryForm(request.POST)
         if form.is_valid():
@@ -128,7 +126,7 @@ def newScore(request):
             scoreAuthor = form.cleaned_data['scoreAuthor']
 
             # creation dépot github
-            g = Github("banco29510@gmail.com", "antoine29510")
+            g = Github(settings.GIT_USERNAME, settings.GIT_PASSWORD)
             user = g.get_user()
             repo = user.create_repo(name)
         
@@ -219,8 +217,10 @@ def showRepositoryProduction(request, pk=None):
 
     repository = get_object_or_404(Repository, pk=pk)
     ampq_updateDatabase.delay(repository.id)
-    commits = Commit.objects.filter(repository=repository).order_by('-date')
+    
+    
     try:
+        commits = Commit.objects.filter(repository=repository).order_by('-date')
         commit = commits[0]
     except:
         commit = []
@@ -314,17 +314,17 @@ def downloadCommit(request, pk=None):
 @login_required
 def showRepositoryDeveloppement(request, pk=None):
 
-
     repository = get_object_or_404(Repository, pk=pk)
-    commits = Commit.objects.filter(repository=repository).order_by('-date')
-    
-    # si demande un commit en particulier
-    if request.GET.get('commit'):
-        commits = Commit.objects.filter(repository=repository, hash=request.GET['commit']) 
     
     try:
+        if request.GET.get('commit'):
+            commits = Commit.objects.filter(repository=repository, hash=request.GET['commit']) 
+        else:
+            commits = Commit.objects.filter(repository=repository).order_by('-date')
+            
         commit = commits[0]
     except:
+        commits = []
         commit = []
         
     try:
