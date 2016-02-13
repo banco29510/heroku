@@ -262,10 +262,14 @@ def ampq_updateDatabase(pk=None):
     cloned_repo = Repo.clone_from(repository.url, temp)
     
     # list des branches
-    branches = cloned_repo.heads
     print(cloned_repo.heads)
+    print(cloned_repo.remotes)
     
-    for branch in branches:
+    cloned_repo.git.checkout('master')
+    pprint.pprint(cloned_repo.heads)
+    
+    
+    for branch in cloned_repo.heads:
         print(branch)
         if not Branche.objects.filter(name=str(branch), repository=repository).exists():
             Branche(name=branch, repository=repository).save()
@@ -274,8 +278,10 @@ def ampq_updateDatabase(pk=None):
     for commit in cloned_repo.iter_commits():
         if not Commit.objects.filter(hash=str(commit.binsha)).exists():
             commitDatabase = Commit(repository=repository, message=commit.message, hash=str(commit.binsha), date=datetime.now(),).save()
-            
-        print(commit.tree.trees)
+          
+        pprint.pprint(commit)  
+        pprint.pprint(commit.tree)  
+        pprint.pprint(commit.tree.trees)
         commitDatabase = Commit.objects.get(repository=repository, hash=str(commit.binsha))
         for tree in commit.tree.trees:
             if not File.objects.filter(hash=str(tree.binsha)).exists():
