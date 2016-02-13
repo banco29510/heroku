@@ -83,27 +83,27 @@ def ampq_addFile(id=None, file=None, message=None, branch="master"):
     
     repository = get_object_or_404(Repository, pk=id)
     temp = tempfile.mkdtemp()
-    # clone du dépot
-    cloned_repo = Repo.clone_from(repository.url, temp, branch=branch)
     
-    copy2(file.file.path, temp)
-    files = os.listdir(temp)
-    pprint.pprint(files)
+    repo = Repo.clone_from(repository.url, temp, branch=branch) # clone du dépot
+    
+    
+    new_file_path = os.path.join(repo.working_tree_dir, os.path.basename(file.file.name))
+    fichier = open(new_file_path, 'wb')
+    fichier.write(file.file.read())
+    fichier.close()                            
+    repo.index.add([new_file_path]) 
     
     print(temp+'/'+file.file.name+'/')
     print(os.path.basename(file.file.name))
     print(temp+'/'+os.path.basename(file.file.name))
     
-    cloned_repo.index.add(temp+'/'+os.path.basename(file.file.name))
-    
     author = Actor("Utilisateur", "mail@gmail.com")
     committer = Actor("admin la maison des partitions", "lamaisondespartitions@gmail.com")
         
-    cloned_repo.index.commit(message, author=author, committer=committer)
+    repo.index.commit(message, author=author, committer=committer)
     
-    #remote.push()
+    repo.remotes.origin.push()
         
-    
     file.file.delete()
     file.delete()
 
