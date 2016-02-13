@@ -267,16 +267,13 @@ def downloadViewsFile(request, pk=None, pk_commit=None):
     commit = get_object_or_404(Commit, pk=pk_commit)
     repository = commit.repository
 
-    git = gitlab.Gitlab(settings.GITLAB_URL, settings.GITLAB_TOKEN)
-    file_64 = git.getfile(repository.gitlabId, file.name, commit.branch)
-    content = str(file_64['content'])
-    content = base64.b64decode(content)
+    content = str('aa')
 
     response = HttpResponse()
 
-    response['Content-Type'] = mimetype=mimetypes.guess_type(str(file_64['file_name']))[0]
-    response['Content-Disposition'] = 'inline; filename='+str(file_64['file_name'])
-    response['Content-Length'] = str(file_64['size'])
+    response['Content-Type'] = mimetype=mimetypes.guess_type(str(file.name))[0]
+    response['Content-Disposition'] = 'inline; filename='+str(file.name)
+    response['Content-Length'] = str(10)
     response.write(content)
 
     return response
@@ -317,8 +314,13 @@ def showRepositoryDeveloppement(request, pk=None):
     repository = get_object_or_404(Repository, pk=pk)
     
     try:
+        branches = Branche.objects.filter(repository=repository)
+    except:
+        branches = []
+    
+    try:
         if request.GET.get('commit'):
-            commits = Commit.objects.filter(repository=repository, hash=request.GET['commit']) 
+            commits = Commit.objects.filter(repository=repository, pk=request.GET['commit']) 
         else:
             commits = Commit.objects.filter(repository=repository).order_by('-date')
             
@@ -339,8 +341,6 @@ def showRepositoryDeveloppement(request, pk=None):
         readme = []
         tags = []
         
-        
-    
 
     return render(request, 'repository/showRepositoryDeveloppement.html', {'repository': repository, 
                                                                             'files': files, 
@@ -348,6 +348,7 @@ def showRepositoryDeveloppement(request, pk=None):
                                                                             'readme': readme,
                                                                             'commits': commits,
                                                                             'tags': tags,
+                                                                            'branches':branches,
                                                                             })
 
 
@@ -361,7 +362,7 @@ def renameFile(request, pk=None, pk_commit=None):
     commit = get_object_or_404(Commit, pk=pk_commit)
     repository = commit.repository
 
-    #ampq_renameFile.delay(repository.gitlabId, request.POST.get("name", ""))
+    #ampq_renameFile.delay(repository.id, request.POST.get("name", ""))
     #updateDatabase.delay()
 
     messages.add_message(request, messages.INFO, 'Le fichier est renommé, il sera pris en compte lors de la prochaine mise à jour.')
@@ -381,8 +382,8 @@ def deleteFile(request, pk=None, pk_commit=None):
 
         if form.is_valid():
             
-            ampq_deleteFile.delay(commit.repository.gitlabId, file, "supression fichier", file.commit.branch)
-            ampq_updateDatabase.delay(gitlabId=commit.repository.gitlabId) 
+            ampq_deleteFile.delay(commit.repository.id, file, "supression fichier", file.commit.branch)
+            ampq_updateDatabase.delay(gitlabId=commit.repository.id) 
                 
             messages.add_message(request, messages.INFO, 'Le fichier à été suprimmé, la mise à jour sera effectué sous peu.')
 
@@ -617,7 +618,7 @@ def createBranch(request, pk=None):
     branches = get_list_or_404(Branche, repository=repository.id)
     
     # création branche
-    ampq_createBranch.delay(repository.gitlabId, request.POST.get("name", ""), request.POST.get("parent_branch", ""))
+    ampq_createBranch.delay(repository.id, request.POST.get("name", ""), request.POST.get("parent_branch", ""))
 
     messages.add_message(request, messages.INFO, 'La branche à été enregistré, elle sera créé lors de la prochaine mise à jour.')
 
@@ -683,7 +684,7 @@ def tagCommit(request, pk=None):
     repository = commit.repository
     print(request.POST.get("name", ""))
     
-    ampq_tagCommit.delay(repository.gitlabId, commit, request.POST.get("name", "") )
+    ampq_tagCommit.delay(repository.id, commit, request.POST.get("name", "") )
     
     messages.add_message(request, messages.INFO, 'Le tag est enregistré, il sera pris en compte lors de la prochaine mise à jour.')
     
@@ -697,7 +698,7 @@ def updateDatabase(request, pk=None):
 
     repository = get_object_or_404(Repository, pk=pk)
         
-    ampq_updateDatabase.delay(gitlabId=repository.gitlabId) 
+    ampq_updateDatabase.delay(gitlabId=repository.id) 
                 
     messages.add_message(request, messages.INFO, 'La mise à jour sera effectué sous peu.')
 
@@ -710,7 +711,7 @@ def warningDownloadRepository(request, pk=None,):
 
     repository = get_object_or_404(Repository, pk=pk)
 
-    ampq_downloadRepository.delay(repository.gitlabId, request.user)
+    ampq_downloadRepository.delay(repository.id, request.user)
 
     return render(request, 'repository/warningDownloadRepository.html', {})
 
@@ -722,7 +723,7 @@ def warningDownloadCommit(request, pk=None, pk_commit=None):
     repository = get_object_or_404(Repository, pk=pk)
     commit = get_object_or_404(Commit, pk=pk_commit)
 
-    ampq_downloadCommit.delay(repository.gitlabId, request.user, commit)
+    ampq_downloadCommit.delay(repository.id, request.user, commit)
 
     return render(request, 'repository/warningDownloadCommit.html', { })
     
@@ -734,7 +735,7 @@ def warningDownloadFile(request, pk=None, pk_commit=None):
     file = get_object_or_404(File, pk=pk)
     commit = get_object_or_404(Commit, pk=pk_commit)
 
-    ampq_downloadFile(commit.repository.gitlabId, file, request.user)
+    ampq_downloadFile(repository.id, file, request.user)
     
 
     return render(request, 'repository/warningDownloadFile.html', {})
@@ -747,6 +748,8 @@ def editMarkdown(request, pk=None, ):
     file = get_object_or_404(File, pk=pk)
     commit = file.commit
     repository = commit.repository
+    
+    
     
 
     return render(request, 'repository/editMarkdown.html', {})

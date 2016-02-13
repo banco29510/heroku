@@ -104,6 +104,12 @@ class File(models.Model):
     #
     def extension(self):
         return os.path.splitext(self.name)[1].lower()
+       
+    ##
+    #
+    def extensionWithoutDot(self):
+        return os.path.splitext(self.name)[1].lower().replace('.', '') 
+
 
     ##
     #

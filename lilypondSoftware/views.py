@@ -77,12 +77,12 @@ def lilypondCompilation(request):
     open(temporary_folder+'/lilypond.pdf', 'wb+').close()
 
     file = open(temporary_folder+'/lilypond.ly', 'w+', encoding='UTF8')
-    if code != '':
+    if code:
         file.write(str(code))
     else:
         file.write(str("""
             \include "italiano.ly"\n
-            \version "2.18.2"\n
+            \\version "2.16.2"\n
             \header {
                 title = "titre"
                 subtitle = "sous titre"
@@ -100,8 +100,11 @@ def lilypondCompilation(request):
 
     file.close()
 
-    print(subprocess.call('lilypond -f '+format+' -o lilypond.pdf lilypond.ly &>tous.log lilypond.ly', shell=True, cwd=temporary_folder, universal_newlines=True))
+    #print(subprocess.call('lilypond -f '+format+' -o lilypond.pdf lilypond.ly &>tous.log lilypond.ly', shell=True, cwd=temporary_folder, universal_newlines=True))
 
+    print(subprocess.call('lilypond -f '+format+' lilypond.ly', shell=True, cwd=temporary_folder, universal_newlines=True))
+
+    
     response = HttpResponse()
 
     response['Content-Type'] = mimetype=mimetypes.guess_type('lilypond.pdf')[0]

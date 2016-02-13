@@ -100,6 +100,8 @@ def ampq_addFile(id=None, file=None, message=None, branch="master"):
     committer = Actor("admin la maison des partitions", "lamaisondespartitions@gmail.com")
         
     cloned_repo.index.commit(message, author=author, committer=committer)
+    
+    #remote.push()
         
     
     file.file.delete()
@@ -273,19 +275,25 @@ def ampq_updateDatabase(pk=None):
         print(branch)
         if not Branche.objects.filter(name=str(branch), repository=repository).exists():
             Branche(name=branch, repository=repository).save()
-    
+     
+     
     # liste des commits
     for commit in cloned_repo.iter_commits():
         if not Commit.objects.filter(hash=str(commit.binsha)).exists():
             commitDatabase = Commit(repository=repository, message=commit.message, hash=str(commit.binsha), date=datetime.now(),).save()
           
-        pprint.pprint(commit)  
-        pprint.pprint(commit.tree)  
-        pprint.pprint(commit.tree.trees)
+        #pprint.pprint(commit)  
+        #pprint.pprint(commit.tree)  
+        #pprint.pprint(commit.tree.trees)
+        #for entry in commit.tree:                                         
+        #    print(entry.name)
         commitDatabase = Commit.objects.get(repository=repository, hash=str(commit.binsha))
-        for tree in commit.tree.trees:
+        for tree in commit.tree:
             if not File.objects.filter(hash=str(tree.binsha)).exists():
-                treeDatabase = File(hash=str(tree.binsha), commit=commitDatabase, name=tree.name).save()
+                treeDatabase = File(hash=str(tree.binsha), commit=commitDatabase, name=tree.name, size=tree.size).save()
+                print('creation'+tree.name)
+            else:
+                print('existe deja'+tree.name)
     
     return 1
 

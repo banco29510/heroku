@@ -24,24 +24,8 @@
     {% for file in files %}
 
                 <td>
-                    {% if file.extension == '.jpg' or file.extension == '.jpeg' %}
-                        <img src="{% static "images/file_icon/jpg.svg" %}" alt="Icone {{ file.extension }}" width="50" height="25" class="img-responsive img-thumbnail">
-                    {% elif file.extension == '.ico' %}
-                        <img src="{% static "images/file_icon/ico.svg" %}" alt="Icone {{ file.extension }}" width="50" height="25" class="img-responsive img-thumbnail">
-                    {% elif file.extension == '.png' %}
-                        <img src="{% static "images/file_icon/png.svg" %}" alt="Icone {{ file.extension }}" width="50" height="25" class="img-responsive img-thumbnail">
-                    {% elif file.extension == '.html' %}
-                        <img src="{% static "images/file_icon/html.svg" %}" alt="Icone {{ file.extension }}" width="50" height="25" class="img-responsive img-thumbnail">
-                    {% elif file.extension == '.pdf' %}
-                        <img src="{% static "images/file_icon/pdf.svg" %}" alt="Icone {{ file.extension }}" width="50" height="25" class="img-responsive img-thumbnail">
-                    {% elif file.extension == '.svg' %}
-                        <img src="{% static "images/file_icon/svg.svg" %}" alt="Icone {{ file.extension }}" width="50" height="25" class="img-responsive img-thumbnail">
-                    {% elif file.extension == '.mp3' %}
-                        <img src="{% static "images/file_icon/mp3.svg" %}" alt="Icone {{ file.extension }}" width="50" height="25" class="img-responsive img-thumbnail">
-                    {% elif file.extension == '.ogg' %}
-                        <img src="{% static "images/file_icon/ogg.svg" %}" alt="Icone {{ file.extension }}" width="50" height="25" class="img-responsive img-thumbnail">
-                    {% elif file.extension == '.md' %}
-                        <img src="{% static "images/file_icon/md.svg" %}" alt="Icone {{ file.extension }}" width="50" height="25" class="img-responsive img-thumbnail">
+                    {% if file.extension %}
+                        <img src="{% static "images/file_icon/" %}{{file.extensionWithoutDot}}.svg" alt="Icone {{ file.extension }}" width="50" height="25" class="img-responsive img-thumbnail">
                     {% else %}
                         <img src="{% static "images/file_icon/blank_image.svg" %}" alt="Icone image" width="50" height="25" class="img-responsive img-thumbnail">{{ file.extension }}
                     {% endif %}

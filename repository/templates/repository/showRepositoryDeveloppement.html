@@ -5,66 +5,74 @@
 
   {% if commit.deprecated %}
   
-  <div class="alert alert-danger" role="alert">
-    <span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span>
-    <span class="sr-only">Error:</span>
-    La version est déprécié, elle sera bientôt suprimmé.
-  </div>
+      <div class="alert alert-danger" role="alert">
+          <span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span>
+          <span class="sr-only">Error:</span>La version est déprécié, elle sera bientôt suprimmé.
+      </div>
   
   {% endif %}
   {% if commit.lock %}
   
-  <div class="alert alert-danger" role="alert">
-    <span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span>
-    <span class="sr-only">Error:</span>
-    La version est bloqué, elle sera bientôt suprimmé.
-  </div>
+      <div class="alert alert-danger" role="alert">
+          <span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span>
+          <span class="sr-only">Error:</span>La version est bloqué, elle sera bientôt suprimmé.
+      </div>
   
   {% endif %}
   
 
-    <h2><em>Partition <a href="{% url 'repository-showRepositoryProduction' repository.id %}">{{ repository.name }}</a></em></h2> 
+  <h2><em>Partition <a href="{% url 'repository-showRepositoryProduction' repository.id %}">{{ repository.name }}</a></em></h2> 
  
-    {% if user.is_staff  %}
-    <h4><em>Auteur :
-        {% if repository.scoreAuthor.id != None %}
-            <a href="{% url 'author-detail' repository.scoreAuthor.id %}">{{ repository.scoreAuthor | capfirst}}</a>
-        {% else %}
-            <a href="{% url 'repository-search' repository.id %}">Non renseigné</a>
-        {% endif %}
-    </em></h4>
-{% endif %}
+      {% if user.is_staff  %}
+          <h4><em>Auteur :
+              {% if repository.scoreAuthor.id != None %}
+                  <a href="{% url 'author-detail' repository.scoreAuthor.id %}">{{ repository.scoreAuthor | capfirst}}</a>
+              {% else %}
+                  <a href="{% url 'repository-search' repository.id %}">Non renseigné</a>
+              {% endif %}
+          </em></h4>
+      {% endif %}
     <br />
 
-    <div>
+  <div>
 
   {% if commit %}
+      <div class="btn-group btn-group-justified" role="group" aria-label="...">
+          <div class="btn-group" role="group">
+              <a class="btn btn-default" href="{% url 'repository-listCommits' repository.id %}" role="button">Commits ({{ commits|length }})</a>
+          </div>
+          <div class="btn-group" role="group">
+              <a class="btn btn-default" href="{% url 'repository-listContributeurs' repository.id|urlencode %}" role="button">Contributeurs ({{ commits|length }})</a>
+          </div>
+      </div>
+      <br />
+  {% endif %}
 
-    <div class="btn-group btn-group-justified" role="group" aria-label="...">
-        <div class="btn-group" role="group">
-            <a class="btn btn-default" href="{% url 'repository-listCommits' repository.id %}" role="button">Commits ({{ commits|length }})</a>
-        </div>
-        <div class="btn-group" role="group">
-            <a class="btn btn-default" href="{% url 'repository-listContributeurs' repository.id|urlencode %}" role="button">Contributeurs ({{ commits|length }})</a>
-        </div>
+  {% if tags %}
+      <form>
+          <p>Tags :</p>
+          <select>
+              {% for tag in tags %}
+                  <option>{{ tag | capfirst }}</option>
+              {% endfor %}
+          </select>
 
-    </div>
-    <br />
+      </form>
     
-    {% endif %}
+  {% endif %}
+  
+  {% if branches %}
+      <form>
+          <p>Branches :</p>
+          <select>
+              {% for branch in branches %}
+                  <option>{{ branch | capfirst }}</option>
+              {% endfor %}
+          </select>
 
-    {% if tags %}
-    <form>
-        <p>Tags :</p>
-        <select>
-          {% for tag in tags %}
-            <option>{{ tag | capfirst }}</option>
-          {% endfor %}
-        </select>
-
-    </form>
+      </form>
     
-    {% endif %}
+  {% endif %}
 
 
 	<h3><center>Liste des fichiers  :</center></h3>
@@ -72,6 +80,7 @@
 	<table class="table table-striped table-hover ">
     <thead>
         <tr>
+            <th><center>Icone</center></th>
             <th><center>Nom</center></th>
             <th><center>Taille</center></th>
             <th><center>Action</center></th>
@@ -79,37 +88,43 @@
         </tr>
     </thead>
     <tbody>
-
         {% for file in files %}
             <tr>
-            <td><center><a href="{% url 'repository-showFile' file.id commit.id %}">{{ file.name | capfirst }}</a></center></td>
-            <td><center>{{ file.size|filesizeformat }}</center></td>
-            <td><center>
-                <a href="{ url 'repository-renameFile' }" data-target="#modalRename" data-toggle="modal"><span class="glyphicon glyphicon-edit" aria-hidden="true"></span></a>
-                <a href="{ url 'repository-deleteFile' }" data-target="#modalDelete" data-toggle="modal"><span class="glyphicon glyphicon-remove" aria-hidden="true"></span></a>
-                <a href="{ url 'repository-deleteFile' }" data-target="#modalReplace" data-toggle="modal"><span class="glyphicon glyphicon-share-alt" aria-hidden="true"></span></a>
-                <a href="{ url 'repository-deleteFile' }" data-target="#modalDownload" data-toggle="modal"><span class="glyphicon glyphicon-download" aria-hidden="true"></span></a>
-                <a href="{ url 'repository-deleteFile' }" data-target="#modalConvert" data-toggle="modal"><span class="glyphicon glyphicon-wrench" aria-hidden="true"></span></a>
-                {% if file.extension == '.md' %}
-                    <a href="{ url 'repository-editMarkdown' file.id }" data-target="#modalEditMarkdown" data-toggle="modal"><span class="glyphicon glyphicon-wrench" aria-hidden="true"></span> Modifier en ligne</a>
-                {% endif %}
-            </center></td>
+                <td>
+                    {% if file.extension %}
+                        <img src="{% static "images/file_icon/" %}{{file.extensionWithoutDot}}.svg" alt="Icone {{ file.extension }}" width="50" height="25" class="img-responsive img-thumbnail">
+                    {% else %}
+                        <img src="{% static "images/file_icon/blank_image.svg" %}" alt="Icone image" width="50" height="25" class="img-responsive img-thumbnail">{{ file.extension }}
+                    {% endif %}
+                </td>  
+                <td><center><a href="{% url 'repository-showFile' file.id commit.id %}">{{ file.name | capfirst }}</a></center></td>
+                <td><center>{{ file.size|filesizeformat }}</center></td>
+                <td><center>
+                    <a href="{ url 'repository-renameFile' }" data-target="#modalRename" data-toggle="modal"><span class="glyphicon glyphicon-edit" aria-hidden="true"></span></a>
+                    <a href="{ url 'repository-deleteFile' }" data-target="#modalDelete" data-toggle="modal"><span class="glyphicon glyphicon-remove" aria-hidden="true"></span></a>
+                    <a href="{ url 'repository-deleteFile' }" data-target="#modalReplace" data-toggle="modal"><span class="glyphicon glyphicon-share-alt" aria-hidden="true"></span></a>
+                    <a href="{ url 'repository-deleteFile' }" data-target="#modalDownload" data-toggle="modal"><span class="glyphicon glyphicon-download" aria-hidden="true"></span></a>
+                    <a href="{ url 'repository-deleteFile' }" data-target="#modalConvert" data-toggle="modal"><span class="glyphicon glyphicon-wrench" aria-hidden="true"></span></a>
+                    {% if file.extension == '.md' %}
+                        <a href="{ url 'repository-editMarkdown' file.id }" data-target="#modalEditMarkdown" data-toggle="modal"><span class="glyphicon glyphicon-wrench" aria-hidden="true"></span> Modifier en ligne</a>
+                    {% endif %}
+                </center></td>
             </tr>
-            {% empty %}
+        {% empty %}
             <tr>
               <td><center>Pas de fichier</center></td>
               <td></td>
               <td></td>
               
             </tr>
-            {% endfor %}
+        {% endfor %}
 
     </tbody>
     </table>
     
     {% if readme %}
 
-     <div class="panel panel-primary">
+    <div class="panel panel-primary">
         <div class="panel-heading">
             <center><h3 class="panel-title">Readme</h3></center>
         </div>
@@ -117,7 +132,7 @@
            <code class="language-markdown" name="code" id="code"></code>
         </div> 
         
-     </div>
+    </div>
              
             <script>
                 $('#code').append("<center><img src='{% static "images/ajax-loader.gif" %}' alt='ajax-loader' class='img-responsive' /></center>");
@@ -138,35 +153,33 @@
             </script>
      
      {% endif %}
-  
-    
 
       <a href="{% url 'repository-addFile' repository.id %}">Ajouter fichier</a><br />
       
       {% if commit %}
-      
-      <a href="{% url 'repository-warningDownloadCommit' repository.id commit.id %}">Télécharger la version</a><br />
-      {% if tags %}
-            <a href="" data-target="#modalTag" data-toggle="modal">Tagger</a><br />
-      {% else %}
-            <a href="{% url 'repository-tagCommit' 1 %}" data-target="#modalTag" data-toggle="modal">Modifier/suprimmer tag</a><br />
-      {% endif %}
-      {% if user.is_staff  %}
-            <a href="{% url 'repository-publishDemand' commit.id %}">Publier la version</a><br />
-            <a href="{% url 'repository-updateDatabase' repository.id %}">Mise à jour manuelle</a><br />
-            <a href="{% url 'repository-deleteCommit' repository.id %}">Suprimmer la version</a><br />
-            <a href="{% url 'repository-restartRepositoryByOldCommit' repository.id %}">Couper/recommencer à la version</a><br />
-            <a href="{% url 'repository-changeDeprecated' repository.id repository.id %}">Mettre la version en deprécié</a><br />
+          <a href="{% url 'repository-warningDownloadCommit' repository.id commit.id %}">Télécharger la version</a><br />
+          {% if tags %}
+              <a href="" data-target="#modalTag" data-toggle="modal">Tagger</a><br />
+          {% else %}
+              <a href="{% url 'repository-tagCommit' 1 %}" data-target="#modalTag" data-toggle="modal">Modifier/suprimmer tag</a><br />
+          {% endif %}
+          
+          {% if user.is_staff  %}
+              <a href="{% url 'repository-publishDemand' commit.id %}">Publier la version</a><br />
+              <a href="{% url 'repository-updateDatabase' repository.id %}">Mise à jour manuelle</a><br />
+              <a href="{% url 'repository-deleteCommit' repository.id %}">Suprimmer la version</a><br />
+              <a href="{% url 'repository-restartRepositoryByOldCommit' repository.id %}">Couper/recommencer à la version</a><br />
+              <a href="{% url 'repository-changeDeprecated' repository.id repository.id %}">Mettre la version en deprécié</a><br />
             
-            {% if commit.id %}
-              <a href="{% url 'repository-changeCommitVisibility' commit.id 0 %}">Désactiver l'accès à la version</a><br />
-            {% endif %}
-            <br />
-            <a href="{% url 'repository-editRepository' repository.id %}">Modifier le dépôt</a><br />
-            <a href="{% url 'repository-deleteRepository' repository.id %}">Suprimmer le dépôt</a><br />
-      {% endif%}
+              {% if commit.id %}
+                  <a href="{% url 'repository-changeCommitVisibility' commit.id 0 %}">Désactiver l'accès à la version</a><br />
+              {% endif %}
+              <br />
+              <a href="{% url 'repository-editRepository' repository.id %}">Modifier le dépôt</a><br />
+              <a href="{% url 'repository-deleteRepository' repository.id %}">Suprimmer le dépôt</a><br />
+          {% endif%}
       
-      {% endif %}
+     {% endif %}
 
 
 

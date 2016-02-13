@@ -24,31 +24,15 @@
     <tr>
 
         <td><center>
-            {% if file.extension == '.jpg' or file.extension == '.jpeg' %}
-                <img src="{% static "images/file_icon/jpg.svg" %}" alt="Icone jpg" width="50" height="25" class="img-responsive img-thumbnail">
-            {% elif file.extension == '.ico' %}
-                <img src="{% static "images/file_icon/ico.svg" %}" alt="Icone ico" width="50" height="25" class="img-responsive img-thumbnail">
-            {% elif file.extension == '.png' %}
-                <img src="{% static "images/file_icon/png.svg" %}" alt="Icone png" width="50" height="25" class="img-responsive img-thumbnail">
-            {% elif file.extension == '.html' %}
-                <img src="{% static "images/file_icon/html.svg" %}" alt="Icone html" width="50" height="25" class="img-responsive img-thumbnail">
-            {% elif file.extension == '.pdf' %}
-                <img src="{% static "images/file_icon/pdf.svg" %}" alt="Icone pdf" width="50" height="25" class="img-responsive img-thumbnail">
-            {% elif file.extension == '.svg' %}
-                <img src="{% static "images/file_icon/svg.svg" %}" alt="Icone svg" width="50" height="25" class="img-responsive img-thumbnail">
-            {% elif file.extension == '.mp3' %}
-                <img src="{% static "images/file_icon/mp3.svg" %}" alt="Icone {{ file.extension }}" width="50" height="25" class="img-responsive img-thumbnail">
-            {% elif file.extension == '.ogg' %}
-                <img src="{% static "images/file_icon/ogg.svg" %}" alt="Icone {{ file.extension }}" width="50" height="25" class="img-responsive img-thumbnail">
-            {% elif file.extension == '.md' %}
-                <img src="{% static "images/file_icon/md.svg" %}" alt="Icone {{ file.extension }}" width="50" height="25" class="img-responsive img-thumbnail">
+            {% if file.extension %}
+                <img src="{% static "images/file_icon/" %}{{file.extensionWithoutDot}}.svg" alt="Icone {{file.extensionWithoutDot}}" width="50" height="25" class="img-responsive img-thumbnail">
             {% else %}
                 <img src="{% static "images/file_icon/blank_image.svg" %}" alt="Icone image" width="50" height="25" class="img-responsive img-thumbnail">{{ file.extension }}
             {% endif %}
         </center></td>
         <td><center>{{ file.nameWithoutExtension | capfirst }}</center></td>
         <td><center>{{ file.size|filesizeformat }}</center></td>
-        <td><center><a href='{% url 'licence-detail' file.licence.id|urlencode %}'>{{ file.licence|default_if_none:'Non renseigné' | capfirst }}</a></center></td>
+        <td><center>{% if not file %} <a href='{% url 'licence-detail' file.licence.id|urlencode %}'>{{ file.licence|default_if_none:'Non renseigné' | capfirst }}</a></center> {% endif %}</td>
         <td><center>
             {% for instrument in instruments %}
                 <a href='{% url 'instrument-detail' instrument|urlencode %}'>{{ instrument | capfirst }}</a>
@@ -56,7 +40,7 @@
                 Non renseigné
             {% endfor %}
         </center></td>
-        <td><center><a href='{% url 'software-detail' file.software.id|urlencode %}'>{{ file.software|default_if_none:'Non renseigné' | capfirst }}</a></center></td>
+        <td><center>{% if not file %}  <a href='{% url 'software-detail' file.software.id|urlencode %}'>{{ file.software|default_if_none:'Non renseigné' | capfirst }}</a></center>{% endif %}</td>
 
 
     </tr>
@@ -75,7 +59,7 @@
         {% if extension == '.html' %}
             <div class="panel panel-primary">
             <div class="panel-heading">
-                <center><h3 class="panel-title">Readme.html</h3></center>
+                <center><h3 class="panel-title">Readme.md</h3></center>
             </div>
             <div class="panel-body">
                 <textarea name="editor1" id="previsualisation" rows="50" cols="80">
