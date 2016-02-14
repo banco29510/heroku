@@ -282,6 +282,9 @@ def ampq_updateDatabase(pk=None):
      
         # liste des commits
         for commit in cloned_repo.iter_commits():
+            print(str(commit.hexsha)+str(commit.tree))
+            print(str(hashlib.sha256(commit.tree.binsha).hexdigest()))
+            
             if not Commit.objects.filter(hash=str(commit.binsha)).exists():
                 commitDatabase = Commit(repository=repository, message=commit.message, hash=str(commit.binsha), date=datetime.now(), branch=branchDatabase, size=10).save()
           
