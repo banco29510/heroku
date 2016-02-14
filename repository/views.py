@@ -679,6 +679,16 @@ def listDownload(request):
     
     listDownload = DownloadUser.objects.filter(user=request.user).order_by('-dateUpload')
     
+    paginator = Paginator(listDownload, 20)
+
+    page = request.GET.get('page', 1)
+    try:
+        listDownload = paginator.page(page)
+    except PageNotAnInteger:
+        listDownload = paginator.page(1)
+    except EmptyPage:
+        listDownload = paginator.page(paginator.num_pages)
+    
     return render(request, 'repository/listDownload.html', {'user': request.user, 'listDownload': listDownload, })
     
     
@@ -696,7 +706,6 @@ def tagCommit(request, pk=None):
     messages.add_message(request, messages.INFO, 'Le tag est enregistré, il sera pris en compte lors de la prochaine mise à jour.')
     
     return redirect('repository-showRepositoryDeveloppement', repository.id)
-    
     
 ## \brief met a jour la base de donnée de façon manuel
 # \author A. H.
@@ -742,9 +751,8 @@ def warningDownloadFile(request, pk=None, pk_commit=None):
     file = get_object_or_404(File, pk=pk)
     commit = get_object_or_404(Commit, pk=pk_commit)
 
-    ampq_downloadFile(repository.id, file, request.user)
+    ampq_downloadFile.delay(commit.repository.id, file, request.user)
     
-
     return render(request, 'repository/warningDownloadFile.html', {})
     
 ## \brief  edit les fichier markdown

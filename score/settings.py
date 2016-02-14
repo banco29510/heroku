@@ -53,12 +53,7 @@ INSTALLED_APPS = [
     'bootstrap3',
     'kombu.transport.django',
     'djcelery',
-    
-    'allauth',
-    'allauth.account',
-    'allauth.socialaccount',
-    'allauth.socialaccount.providers.google',
-    
+
     
     'main',
     'repository',
@@ -68,6 +63,11 @@ INSTALLED_APPS = [
     'instrument',
     'administration',
     'lilypondSoftware',
+    
+    'allauth',
+    'allauth.account',
+    'allauth.socialaccount',
+    'allauth.socialaccount.providers.google',
     
     
 ]

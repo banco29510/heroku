@@ -215,17 +215,20 @@ def ampq_downloadCommit(id=None, user=None, commit=None):
 @app.task
 def ampq_downloadFile(id=None, file=None, user=None):
 
-    git = gitlab.Gitlab(settings.GITLAB_URL, settings.GITLAB_TOKEN)
+    repository = get_object_or_404(Repository, pk=id)
+    temp = tempfile.mkdtemp()
     
-    raw = git.getrawfile(gitlabId, file.commit.hashCommit, filepath='readme.md')
+    repo = Repo.clone_from(repository.url, temp, branch=file.commit.branch.name) # clone du dépot
     
-    print(file.hashFile)
-    print(raw)
+    fichier = open(temp+'/'+file.name, "rb")
+    content = ContentFile(fichier.read())
+    fichier.close()
+
     
     temp = DownloadUser()
     temp.name = file.name
     temp.user = user
-    temp.file.save(file.name, ContentFile(raw), save=True)
+    temp.file.save(file.name, content, save=True)
     temp.save()
 
     # envoi de email

@@ -1,10 +1,10 @@
-# -*- coding: utf-8 -*-
 from django.db import models
 from django.conf import settings
 from django.utils import timezone
 from django.contrib.auth.models import User
 
 import os, json
+from datetime import datetime, timedelta
 
 from licence.models import *
 from instrument.models import *
@@ -126,7 +126,6 @@ class File(models.Model):
     def extensionWithoutDot(self):
         return os.path.splitext(self.name)[1].lower().replace('.', '') 
 
-
     ##
     #
     def nameWithoutExtension(self):
@@ -167,6 +166,25 @@ class DownloadUser(models.Model):
     #
     def __str__(self):
         return "%s" % self.name
+        
+    def dateDelete(self):
+        return self.dateUpload+timedelta(days=7)
+        
+    ##
+    #
+    def extension(self):
+        return os.path.splitext(self.name)[1].lower()
+       
+    ##
+    #
+    def extensionWithoutDot(self):
+        return os.path.splitext(self.name)[1].lower().replace('.', '') 
+
+    ##
+    #
+    def nameWithoutExtension(self):
+        return os.path.splitext(self.name)[0]
+        
         
     
 

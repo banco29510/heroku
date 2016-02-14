@@ -8,13 +8,25 @@
     <br />
 <table class="table">
     <tr>
+        <td>Icone</td>
         <td>Nom</td>
         <td>Lien</td>
+        <td>Date de création</td>
+        <td>Date de supression</td>
     </tr>
          {% for download in listDownload %}
          <tr>
-             <td>{{ download | capfirst}}</td>
-              <td><a href="{% url 'repository-downloadFile' download.id|urlencode %}">Lien vers {{ download }}</a></td>
+             <td>
+                {% if download.extension %}
+                    <img src="{% static "images/file_icon/" %}{{download.extensionWithoutDot}}.svg" alt="Icone {{ download.extension }}" width="50" height="25" class="img-responsive img-thumbnail">
+                {% else %}
+                    <img src="{% static "images/file_icon/blank_image.svg" %}" alt="Icone image" width="50" height="25" class="img-responsive img-thumbnail">{{ file.extension }}
+                {% endif %}
+                </td>
+             <td>{{ download.nameWithoutExtension | capfirst}}</td>
+             <td><a href="{% url 'repository-downloadFile' download.id|urlencode %}">Lien vers {{ download }}</a></td>
+             <td>{{ download.dateUpload }}</td>
+             <td>{{ download.dateDelete }}</a></td>
          </tr>
           {% empty %}
             <tr>
@@ -23,6 +35,18 @@
           {% endfor %}
           
 </table>
+
+     <div class="text-center">
+            <ul class="pagination pagination-centered">
+                {% if listDownload.has_previous %}
+                    <li><a href="?page={{ listDownload.previous_page_number }}">Précédente</a></li>
+                {% endif %}
+                <li class="active"><a>Page {{ listDownload.number }} sur {{ listDownload.paginator.num_pages }}</a></li>
+                {% if commits.has_next %}
+                    <li><a href="?page={{ listDownload.next_page_number }}">Suivante</a></li>
+                {% endif %}
+            </ul>
+        </div>
 
 <br /><br />
 
