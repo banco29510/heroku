@@ -19,7 +19,7 @@ from django.core.exceptions import ObjectDoesNotExist
 from django.views.generic.edit import *
 from django.conf import settings
 
-import os, sys, glob, mimetypes, re, logging, pickle, tempfile, time, subprocess, json, base64, pprint, hashlib
+import os, sys, glob, mimetypes, re, logging, pickle, tempfile, time, subprocess, json, base64, pprint, hashlib, shutil
 from datetime import datetime
 from subprocess import *
 from shutil import *
@@ -110,7 +110,7 @@ def ampq_addFile(id=None, file=None, message=None, branch="master"):
     return 1
     
 @app.task
-def ampq_deleteFile(gitlabId=None, file=None, message=None, branch="master"):
+def ampq_deleteFile(id=None, file=None, message=None, branch="master"):
     
     git = gitlab.Gitlab(settings.GITLAB_URL, settings.GITLAB_TOKEN)
 
@@ -119,7 +119,7 @@ def ampq_deleteFile(gitlabId=None, file=None, message=None, branch="master"):
     return 1
     
 @app.task
-def ampq_renameFile(gitlabId=None, oldFile=None, newFile=None):
+def ampq_renameFile(id=None, oldFile=None, newFile=None):
     
     git = gitlab.Gitlab(settings.GITLAB_URL, settings.GITLAB_TOKEN)
 
@@ -142,34 +142,36 @@ def ampq_createBranch(id=None, branch="master", parent_branch='master'):
     
     return 1
     
+## \brief Prépare une archive avec l'ensemble des fichiers d'un dépot
+#
 @app.task
 def ampq_downloadRepository(id=None, user=None):
     
-    BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-    temporary_folder = str(tempfile.mkdtemp())
+    repository = get_object_or_404(Repository, pk=id)
+    temp = tempfile.mkdtemp()
+    temp_archive = tempfile.mkdtemp()
     
-    git = gitlab.Gitlab(settings.GITLAB_URL, settings.GITLAB_TOKEN)
-    content = git.getfilearchive(gitlabId, filepath=temporary_folder+'/archive.tar.gz')
+    repo = Repo.clone_from(repository.url, temp, ) # clone du dépot
     
-    fichier = open(temporary_folder+'/archive.tar.gz', "rb")
-    content = ContentFile(base64.b64decode(fichier.read()))
+    shutil.make_archive(temp_archive+'/archive', 'zip', temp)
+    
+    fichier = open(temp_archive+'/archive.zip', "rb")
+    content = ContentFile(fichier.read())
     fichier.close()
- 
 
     temp = DownloadUser()
     temp.user = user
-    temp.name = 'archive.tar.gz'
-    temp.file.save('archive.tar.gz', content)
+    temp.name = 'archive.zip'
+    temp.file.save('archive.zip', content)
     temp.save()
     
-
     # envoi de email
     #send_mail('Votre fichier est prêt - la maison des partitions', 'Votre fichier est prêt. Vous pouvez le télécharger en cliquant sur le lien suivant <a>Lien</a>', 'banco29510@gmail.com', ['antoine.hemedy@gmail.com'], fail_silently=False)
 
-    return temp
+    return 1
     
 @app.task
-def ampq_downloadCommit(gitlabId=None, user=None, commit=None):
+def ampq_downloadCommit(id=None, user=None, commit=None):
     
     temporary_folder = str(tempfile.mkdtemp())
     
@@ -211,7 +213,7 @@ def ampq_downloadCommit(gitlabId=None, user=None, commit=None):
     return temp
     
 @app.task
-def ampq_downloadFile(gitlabId=None, file=None, user=None):
+def ampq_downloadFile(id=None, file=None, user=None):
 
     git = gitlab.Gitlab(settings.GITLAB_URL, settings.GITLAB_TOKEN)
     
@@ -232,7 +234,7 @@ def ampq_downloadFile(gitlabId=None, file=None, user=None):
     return temp
     
 @app.task
-def ampq_tagCommit(gitlabId=None, commit=None, tag_name=None):
+def ampq_tagCommit(id=None, commit=None, tag_name=None):
 
     git = gitlab.Gitlab(settings.GITLAB_URL, settings.GITLAB_TOKEN)
     
@@ -246,7 +248,7 @@ def ampq_tagCommit(gitlabId=None, commit=None, tag_name=None):
     return 1
 
 @app.task
-def ampq_mergeBranch(gitlabId=None, source_branch=None, target_branch='master'):
+def ampq_mergeBranch(id=None, source_branch=None, target_branch='master'):
 
     git = gitlab.Gitlab(settings.GITLAB_URL, settings.GITLAB_TOKEN)
     
@@ -254,6 +256,7 @@ def ampq_mergeBranch(gitlabId=None, source_branch=None, target_branch='master'):
 
     return 1
 
+## \brief remplit la BDD à partir du dépot
 @app.task
 def ampq_updateDatabase(pk=None):
     
@@ -282,10 +285,10 @@ def ampq_updateDatabase(pk=None):
      
         # liste des commits
         for commit in cloned_repo.iter_commits():
-            print(str(commit.hexsha)+str(commit.tree))
+            print(str(commit.hexsha)+'***'+str(commit.tree)+'***'+str(commit.binsha))
             print(str(hashlib.sha256(commit.tree.binsha).hexdigest()))
             
-            if not Commit.objects.filter(hash=str(commit.binsha)).exists():
+            if not Commit.objects.filter(hash=str(commit.binsha), repository=repository, branch=branchDatabase).exists():
                 commitDatabase = Commit(repository=repository, message=commit.message, hash=str(commit.binsha), date=datetime.now(), branch=branchDatabase, size=10).save()
           
             #pprint.pprint(commit)  
@@ -293,7 +296,7 @@ def ampq_updateDatabase(pk=None):
             #pprint.pprint(commit.tree.trees)
             #for entry in commit.tree:                                         
             #    print(entry.name)
-            commitDatabase = Commit.objects.get(repository=repository, hash=str(commit.binsha))
+            commitDatabase = Commit.objects.get(repository=repository, branch=branchDatabase, hash=str(commit.binsha))
             for tree in commit.tree:
                 #print(str(tree.binsha) + str(tree.name) + str(hashlib.sha256(tree.name.encode('utf8')).hexdigest()))
                 if not File.objects.filter(hash=str(hashlib.sha256(tree.name.encode('utf8')).hexdigest())).exists():
