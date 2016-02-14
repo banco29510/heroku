@@ -266,14 +266,21 @@ def downloadViewsFile(request, pk=None, pk_commit=None):
     file = get_object_or_404(File, pk=pk)
     commit = get_object_or_404(Commit, pk=pk_commit)
     repository = commit.repository
-
-    content = str('aa')
+    
+    temp = tempfile.mkdtemp()
+    repo = Repo.clone_from(repository.url, temp, branch=commit.branch)
+    
+    #repo.git.checkout(commit.hash)
+    
+    fichier = open(temp+'/'+file.name, 'rb')
+    content = fichier.read()
+    fichier.close()
 
     response = HttpResponse()
 
     response['Content-Type'] = mimetype=mimetypes.guess_type(str(file.name))[0]
     response['Content-Disposition'] = 'inline; filename='+str(file.name)
-    response['Content-Length'] = str(10)
+    response['Content-Length'] = os.path.getsize(repo.working_tree_dir+'/'+file.name)
     response.write(content)
 
     return response
