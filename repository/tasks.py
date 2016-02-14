@@ -19,7 +19,7 @@ from django.core.exceptions import ObjectDoesNotExist
 from django.views.generic.edit import *
 from django.conf import settings
 
-import os, sys, glob, mimetypes, re, logging, pickle, tempfile, time, subprocess, json, base64, pprint
+import os, sys, glob, mimetypes, re, logging, pickle, tempfile, time, subprocess, json, base64, pprint, hashlib
 from datetime import datetime
 from subprocess import *
 from shutil import *
@@ -143,7 +143,7 @@ def ampq_createBranch(id=None, branch="master", parent_branch='master'):
     return 1
     
 @app.task
-def ampq_downloadRepository(gitlabId=None, user=None):
+def ampq_downloadRepository(id=None, user=None):
     
     BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
     temporary_folder = str(tempfile.mkdtemp())
@@ -275,25 +275,28 @@ def ampq_updateDatabase(pk=None):
         print(branch)
         if not Branche.objects.filter(name=str(branch), repository=repository).exists():
             Branche(name=branch, repository=repository).save()
+            branchDatabase = Branche.objects.get(name=str(branch), repository=repository)
+        else:
+            branchDatabase = Branche.objects.get(name=str(branch), repository=repository)
      
      
-    # liste des commits
-    for commit in cloned_repo.iter_commits():
-        if not Commit.objects.filter(hash=str(commit.binsha)).exists():
-            commitDatabase = Commit(repository=repository, message=commit.message, hash=str(commit.binsha), date=datetime.now(),).save()
+        # liste des commits
+        for commit in cloned_repo.iter_commits():
+            if not Commit.objects.filter(hash=str(commit.binsha)).exists():
+                commitDatabase = Commit(repository=repository, message=commit.message, hash=str(commit.binsha), date=datetime.now(), branch=branchDatabase, size=10).save()
           
-        #pprint.pprint(commit)  
-        #pprint.pprint(commit.tree)  
-        #pprint.pprint(commit.tree.trees)
-        #for entry in commit.tree:                                         
-        #    print(entry.name)
-        commitDatabase = Commit.objects.get(repository=repository, hash=str(commit.binsha))
-        for tree in commit.tree:
-            if not File.objects.filter(hash=str(tree.binsha)).exists():
-                treeDatabase = File(hash=str(tree.binsha), commit=commitDatabase, name=tree.name, size=tree.size).save()
-                print('creation'+tree.name)
-            else:
-                print('existe deja'+tree.name)
+            #pprint.pprint(commit)  
+            #pprint.pprint(commit.tree)  
+            #pprint.pprint(commit.tree.trees)
+            #for entry in commit.tree:                                         
+            #    print(entry.name)
+            commitDatabase = Commit.objects.get(repository=repository, hash=str(commit.binsha))
+            for tree in commit.tree:
+                #print(str(tree.binsha) + str(tree.name) + str(hashlib.sha256(tree.name.encode('utf8')).hexdigest()))
+                if not File.objects.filter(hash=str(hashlib.sha256(tree.name.encode('utf8')).hexdigest())).exists():
+                    treeDatabase = File(hash=str(hashlib.sha256(tree.name.encode('utf8')).hexdigest()), commit=commitDatabase, name=tree.name, size=os.path.getsize(cloned_repo.working_tree_dir+'/'+tree.name),).save()
+                
+                    
     
     return 1
 

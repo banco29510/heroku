@@ -5,7 +5,6 @@
 
     <h2><center><em>Liste des versions et branches de la partitions <a href="{% url 'repository-showRepositoryDeveloppement' repository.id %}">{{ repository }}</a></em></center></h2>
 
-    <!-- Nav tabs -->
     <ul class="nav nav-tabs nav-pills" role="tablist">
         <li role="presentation" class="active"><a href="#main" aria-controls="main" role="tab" data-toggle="tab">Toutes les branches</a></li>
         {% for branch in branches %}
@@ -16,7 +15,6 @@
         <li role="new"><a href="#" aria-controls="" role="tab" data-target="#myModal" data-toggle="modal">Créer une branche</a></li>
     </ul>
 
-    <!-- Tab panes -->
     <div class="tab-content">
         <div role="tabpanel" class="tab-pane active" id="main">
             <ul class="list-group">
@@ -41,9 +39,13 @@
     </div>
     
     {% for branch in branches %}
+    {{ commit.branch }} == {{ branch }}
 
         <div role="tabpanel" class="tab-pane" id="{{ branch }}">
             <ul>
+                {% if commit.branch = branch %}
+                    {{ commit.branch }} == {{ branch }}
+                {% endif %}
                 {% for commit in commits %}
                     <li class="list-group-item" >Commit du {{ commit.date }} : {{ commit.message }} <a href="{% url 'repository-deleteCommit' 1 %}">Suprimmer version</a>  <a href="{% url 'repository-mergeCommit' %}">Fusion version</a></li>
                 {% empty %}
