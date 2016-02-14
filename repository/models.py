@@ -43,6 +43,21 @@ class Branche(models.Model):
     #
     def __str__(self):
         return u"%s" % self.name
+
+##
+# \brief Model des auteur
+# \author A. H.
+# \class Author(models.Model):
+#
+class Author(models.Model):
+    name = models.CharField(max_length=100, verbose_name="Nom", default=None)
+    email = models.CharField(max_length=100, verbose_name="Mail", default=None)
+    user = models.ForeignKey(User, null=True, verbose_name="User")
+
+    ##
+    #
+    def __str__(self):
+        return u"%s" % self.name    
         
 ##
 # \brief Révision des commits
@@ -52,7 +67,7 @@ class Branche(models.Model):
 class Commit(models.Model):
     repository = models.ForeignKey(Repository, null=False)
     branch = models.ForeignKey(Branche, null=True, verbose_name="Branche")
-    author = models.CharField(max_length=100, null=True , default=None)
+    author = models.ForeignKey(Author, null=True, verbose_name="Author")
     hash = models.CharField(max_length=100)
     date = models.DateTimeField(null=True,)
     message = models.CharField(max_length=10000)
@@ -80,6 +95,7 @@ class Tag(models.Model):
     #
     def __str__(self):
         return u"%s" % self.name
+    
         
 ##
 # \brief Liste des fichiers
