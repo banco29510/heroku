@@ -686,7 +686,8 @@ def tagCommit(request, pk=None):
     repository = commit.repository
     print(request.POST.get("name", ""))
     
-    ampq_tagCommit.delay(repository.id, commit, request.POST.get("name", "") )
+    ampq_tagCommit.delay(repository.id, commit.id, request.POST.get("name", "") )
+    ampq_updateDatabase.delay(repository.id)
     
     messages.add_message(request, messages.INFO, 'Le tag est enregistré, il sera pris en compte lors de la prochaine mise à jour.')
     

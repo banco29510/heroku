@@ -153,7 +153,7 @@
       
       {% if commit %}
           <a href="{% url 'repository-warningDownloadCommit' repository.id commit.id %}">Télécharger la version</a><br />
-          {% if tags %}
+          {% if not tags %}
               <a href="" data-target="#modalTag" data-toggle="modal">Tagger</a><br />
           {% else %}
               <a href="{% url 'repository-tagCommit' 1 %}" data-target="#modalTag" data-toggle="modal">Modifier/suprimmer tag</a><br />
@@ -180,7 +180,7 @@
 <br /><br />
 
 {% if commit %}
-
+<script src="https://raw.githubusercontent.com/mgalante/jquery.redirect/master/jquery.redirect.js"></script>
 <!-- Modal rename -->
 {% for file in files %}
 
@@ -219,7 +219,7 @@ $(document).ready(function () {
 <!-- Modal  tag-->
 {% for file in files %}
 
-<div class="modal fade" id="modalTag{{file.id}}" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+<div class="modal fade" id="modalTag" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
   <div class="modal-dialog" role="document">
     <div class="modal-content">
       <div class="modal-header">
@@ -228,29 +228,31 @@ $(document).ready(function () {
       </div>
       <div class="modal-body">
         <form>
-            <p>Nom : <input type="text" id='tag_name' /></p>
+            
+            <p>Nom : <input type="text" name="tag_name" ></p>
+            
         </form>
       </div>
       <div class="modal-footer">
-        <input class="btn btn-primary" type="submit" value="Tagger" id="submit_tag{{file.id}}">
-        <button type="button" class="btn btn-default" data-dismiss="modal">Fermer</button>
+        <input class="btn btn-default" type="submit" value="Tagger" id="submit_tag">
+        <button type="button" class="btn btn-default" data-dismiss="modal" >Fermer</button>
       </div>
     </div>
   </div>
 </div>
 
-<script src="https://raw.githubusercontent.com/mgalante/jquery.redirect/master/jquery.redirect.js"></script>
 <script>
 $(document).ready(function () {
-    $("input#submit_tag{{file.id}}").click(function(){
-
+    $("input#submit_tag").click(function(){
         $.redirect('{% url 'repository-tagCommit' commit.id %}', {'name': $('#tag_name').val(),});
        
     });
 });
 </script>
 
+
 {% endfor %}
+
 
 
 <!-- Modal delete -->

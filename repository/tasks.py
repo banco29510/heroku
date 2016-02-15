@@ -283,12 +283,17 @@ def ampq_downloadFile(id=None, file=None, user=None):
     
 @app.task
 def ampq_tagCommit(id=None, commit=None, tag_name=None):
-
-    git = gitlab.Gitlab(settings.GITLAB_URL, settings.GITLAB_TOKEN)
     
-    git.createrepositorytag(gitlabId, tag_name, commit.hashCommit, message='Ajout du tag '+tag_name)
+    repository = get_object_or_404(Repository, pk=id)
+    commit = get_object_or_404(Commit, pk=commit)
+    temp = tempfile.mkdtemp()
     
-    Tag(name=str(tag_name), commit=commit).save()
+    repo = Repo.clone_from(repository.url, temp, branch=commit.branch.name) # clone du dépot
+    
+    past = cloned_repo.create_tag('past', ref=repo.heads.master,  message="This is a tag-object pointing to ")
+    
+    repo.remotes.origin.push()
+    
 
     # envoi de email
     #send_mail('Votre fichier est prêt - la maison des partitions', 'Votre fichier est prêt. Vous pouvez le télécharger en cliquant sur le lien suivant <a>Lien</a>', 'banco29510@gmail.com', ['antoine.hemedy@gmail.com'], fail_silently=False)
@@ -298,9 +303,11 @@ def ampq_tagCommit(id=None, commit=None, tag_name=None):
 @app.task
 def ampq_mergeBranch(id=None, source_branch=None, target_branch='master'):
 
-    git = gitlab.Gitlab(settings.GITLAB_URL, settings.GITLAB_TOKEN)
+    repository = get_object_or_404(Repository, pk=id)
     
-    merge = git.createmergerequest(gitlabId, source_branch, target_branch, 'Fusion de '+source_branch+' et de '+target_branch+'', )
+    temp = tempfile.mkdtemp()
+    
+    repo = Repo.clone_from(repository.url, temp, branch=source_branch) # clone du dépot
 
     return 1
 
