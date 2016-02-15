@@ -300,9 +300,6 @@ def downloadCommit(request, pk=None):
     repository = get_object_or_404(Repository, pk=commit.repository.id)
     temporary_folder = tempfile.mkdtemp()
     print(temporary_folder)
-    cred = pygit2.UserPass('banco29510@gmail.com', 'antoine29510')
-    repo = pygit2.clone_repository(repository.url, temporary_folder, bare=False, credentials=cred)
-
 
     response = HttpResponse()
 
@@ -428,12 +425,6 @@ def downloadFile(request, pk=None,):
 
     return response
 
-## \brief telechargement du fichier
-# \author A. H.
-@login_required
-def downloadCommit(request):
-    return render(request, 'repository/deleteFile.html', {})
-
 ## \brief liste des commits et des branches
 # \author A. H.
 @login_required
@@ -492,20 +483,6 @@ def listContributeurs(request, pk=None):
             authors.append(commit.author.capitalize())
 
     return render(request, 'repository/listContributeurs.html', {'repository': repository, 'authors': authors})
-
-## \brief demande de publication
-# \author A. H.
-@login_required
-def publishDemand(request, pk=None):
-    commit = get_object_or_404(Commit, pk=pk)
-    repository = commit.repository
-    
-    ampq_mergeBranch.delay(repository.gitlabId, commit.branch.name, 'master')
-    
-    messages.add_message(request, messages.INFO, 'L\' opération est en cours, la publication sera effectué sous peu.')
-    
-    return redirect('repository-showRepositoryDeveloppement', repository.id)
-
 
 ## \brief supprime un commit
 # \author A. H.
@@ -758,7 +735,7 @@ def warningDownloadFile(request, pk=None, pk_commit=None):
     
     return render(request, 'repository/warningDownloadFile.html', {})
     
-## \brief  edit les fichier markdown
+## \brief edit les fichiers markdown
 # \author A. H.
 @login_required
 def editMarkdown(request, pk=None, ):
@@ -771,3 +748,35 @@ def editMarkdown(request, pk=None, ):
     
 
     return render(request, 'repository/editMarkdown.html', {})
+    
+## \brief convertit les fichiers
+# \author A. H.
+@login_required
+def convertFile(request, pk=None, ):
+
+    file = get_object_or_404(File, pk=pk)
+    commit = file.commit
+    repository = commit.repository
+    
+    extension_convert = ['.jpg', '.jpeg', '.txt'] 
+    extension = file.extension()
+    
+    if request.method == 'POST':
+        form = ConvertFileForm(request.POST, request.FILES)
+
+        if form.is_valid():
+
+            form_extension = form.cleaned_data['extension']
+
+            # conversion ampq cloud convert
+            
+            messages.add_message(request, messages.INFO, 'La conversion sera ajouté au dépot lors de la prochaine mise à jour.')
+
+            return redirect('repository-search',)
+
+    else:
+
+        form = ConvertFileForm(initial='',)
+
+    
+    return render(request, 'repository/convert.html', {'file': file, 'form': form})

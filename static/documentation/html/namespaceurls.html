@@ -120,28 +120,30 @@ Including another URLconf
       </table>
 </div><div class="memdoc">
 <b>Valeur initiale :</b><div class="fragment"><div class="line"><a name="l00001"></a><span class="lineno"><a class="line" href="namespaceurls.html">    1</a></span>&#160;= [</div>
-<div class="line"><a name="l00002"></a><span class="lineno">    2</span>&#160;    url(<span class="stringliteral">r&#39;^admin/&#39;</span>, include(admin.site.urls)),</div>
-<div class="line"><a name="l00003"></a><span class="lineno">    3</span>&#160;    </div>
-<div class="line"><a name="l00004"></a><span class="lineno">    4</span>&#160;    url(<span class="stringliteral">r&#39;^$&#39;</span>, views.main, name=<span class="stringliteral">&quot;main&quot;</span>), <span class="comment"># page d&#39;accueil</span></div>
-<div class="line"><a name="l00005"></a><span class="lineno">    5</span>&#160;    </div>
-<div class="line"><a name="l00006"></a><span class="lineno">    6</span>&#160;    url(<span class="stringliteral">r&#39;^accounts/&#39;</span>, include(<span class="stringliteral">&#39;allauth.urls&#39;</span>)),</div>
-<div class="line"><a name="l00007"></a><span class="lineno">    7</span>&#160;</div>
-<div class="line"><a name="l00008"></a><span class="lineno">    8</span>&#160;    url(<span class="stringliteral">r&#39;^main/&#39;</span>, include(<span class="stringliteral">&#39;main.urls&#39;</span>)),</div>
-<div class="line"><a name="l00009"></a><span class="lineno">    9</span>&#160;    url(<span class="stringliteral">r&#39;^repository/&#39;</span>, include(<span class="stringliteral">&#39;repository.urls&#39;</span>)),</div>
-<div class="line"><a name="l00010"></a><span class="lineno">   10</span>&#160;    url(<span class="stringliteral">r&#39;^instrument/&#39;</span>, include(<span class="stringliteral">&#39;instrument.urls&#39;</span>)),</div>
-<div class="line"><a name="l00011"></a><span class="lineno">   11</span>&#160;    url(<span class="stringliteral">r&#39;^licence/&#39;</span>, include(<span class="stringliteral">&#39;licence.urls&#39;</span>)),</div>
-<div class="line"><a name="l00012"></a><span class="lineno">   12</span>&#160;    url(<span class="stringliteral">r&#39;^author/&#39;</span>, include(<span class="stringliteral">&#39;author.urls&#39;</span>)),</div>
-<div class="line"><a name="l00013"></a><span class="lineno">   13</span>&#160;    url(<span class="stringliteral">r&#39;^software/&#39;</span>, include(<span class="stringliteral">&#39;software.urls&#39;</span>)),</div>
-<div class="line"><a name="l00014"></a><span class="lineno">   14</span>&#160;    url(<span class="stringliteral">r&#39;^administration/&#39;</span>, include(<span class="stringliteral">&#39;administration.urls&#39;</span>)),</div>
-<div class="line"><a name="l00015"></a><span class="lineno">   15</span>&#160;    url(<span class="stringliteral">r&#39;^lilypondSoftware/&#39;</span>, include(<span class="stringliteral">&#39;lilypondSoftware.urls&#39;</span>)),</div>
-<div class="line"><a name="l00016"></a><span class="lineno">   16</span>&#160;]</div>
+<div class="line"><a name="l00002"></a><span class="lineno">    2</span>&#160;    </div>
+<div class="line"><a name="l00003"></a><span class="lineno">    3</span>&#160;    url(<span class="stringliteral">r&#39;^accounts/&#39;</span>, include(<span class="stringliteral">&#39;allauth.urls&#39;</span>)),</div>
+<div class="line"><a name="l00004"></a><span class="lineno">    4</span>&#160;    </div>
+<div class="line"><a name="l00005"></a><span class="lineno">    5</span>&#160;    url(<span class="stringliteral">r&#39;^admin/&#39;</span>, include(admin.site.urls)),</div>
+<div class="line"><a name="l00006"></a><span class="lineno">    6</span>&#160;    </div>
+<div class="line"><a name="l00007"></a><span class="lineno">    7</span>&#160;    url(<span class="stringliteral">r&#39;^$&#39;</span>, views.main, name=<span class="stringliteral">&quot;main&quot;</span>), <span class="comment"># page d&#39;accueil</span></div>
+<div class="line"><a name="l00008"></a><span class="lineno">    8</span>&#160;    </div>
+<div class="line"><a name="l00009"></a><span class="lineno">    9</span>&#160;</div>
+<div class="line"><a name="l00010"></a><span class="lineno">   10</span>&#160;    url(<span class="stringliteral">r&#39;^main/&#39;</span>, include(<span class="stringliteral">&#39;main.urls&#39;</span>)),</div>
+<div class="line"><a name="l00011"></a><span class="lineno">   11</span>&#160;    url(<span class="stringliteral">r&#39;^repository/&#39;</span>, include(<span class="stringliteral">&#39;repository.urls&#39;</span>)),</div>
+<div class="line"><a name="l00012"></a><span class="lineno">   12</span>&#160;    url(<span class="stringliteral">r&#39;^instrument/&#39;</span>, include(<span class="stringliteral">&#39;instrument.urls&#39;</span>)),</div>
+<div class="line"><a name="l00013"></a><span class="lineno">   13</span>&#160;    url(<span class="stringliteral">r&#39;^licence/&#39;</span>, include(<span class="stringliteral">&#39;licence.urls&#39;</span>)),</div>
+<div class="line"><a name="l00014"></a><span class="lineno">   14</span>&#160;    url(<span class="stringliteral">r&#39;^author/&#39;</span>, include(<span class="stringliteral">&#39;author.urls&#39;</span>)),</div>
+<div class="line"><a name="l00015"></a><span class="lineno">   15</span>&#160;    url(<span class="stringliteral">r&#39;^software/&#39;</span>, include(<span class="stringliteral">&#39;software.urls&#39;</span>)),</div>
+<div class="line"><a name="l00016"></a><span class="lineno">   16</span>&#160;    url(<span class="stringliteral">r&#39;^administration/&#39;</span>, include(<span class="stringliteral">&#39;administration.urls&#39;</span>)),</div>
+<div class="line"><a name="l00017"></a><span class="lineno">   17</span>&#160;    url(<span class="stringliteral">r&#39;^lilypondSoftware/&#39;</span>, include(<span class="stringliteral">&#39;lilypondSoftware.urls&#39;</span>)),</div>
+<div class="line"><a name="l00018"></a><span class="lineno">   18</span>&#160;]</div>
 </div><!-- fragment -->
 </div>
 </div>
 </div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Généré le Mercredi 10 Février 2016 15:30:57 pour La maison des partitions par &#160;<a href="http://www.doxygen.org/index.html">
+Généré le Lundi 15 Février 2016 09:52:12 pour La maison des partitions par &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="doxygen.png" alt="doxygen"/>
 </a> 1.8.6
 </small></address>

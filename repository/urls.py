@@ -38,10 +38,10 @@ urlpatterns = [
 
     url(r'^commits/(?P<pk>\d+)$', views.listCommits, name="repository-listCommits"),
     url(r'^listContributeurs/(?P<pk>\d+)$', views.listContributeurs, name="repository-listContributeurs"),
-    url(r'^publishDemand/(?P<pk>\d+)$', views.publishDemand, name="repository-publishDemand"),
     
     url(r'^listDownload$', views.listDownload, name="repository-listDownload"),
     url(r'^tagCommit/(?P<pk>\d+)$', views.tagCommit, name="repository-tagCommit"),
+    url(r'^convertFile/(?P<pk>\d+)$', views.convertFile, name="repository-convertFile"),
 
 
 ]

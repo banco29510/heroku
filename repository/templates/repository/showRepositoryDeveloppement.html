@@ -87,13 +87,13 @@
                 <td><center><a href="{% url 'repository-showFile' file.id commit.id %}">{{ file.name | capfirst }}</a></center></td>
                 <td><center>{{ file.size|filesizeformat }}</center></td>
                 <td><center>
-                    <a href="" data-target="#modalRename" data-toggle="modal"><span class="glyphicon glyphicon-edit" aria-hidden="true"></span></a>
+                    <a href="" data-target="#modalRename{{file.id}}" data-toggle="modal"><span class="glyphicon glyphicon-edit" aria-hidden="true"></span></a>
                     <a href="" data-target="#modalDelete{{file.id}}" data-toggle="modal"><span class="glyphicon glyphicon-remove" aria-hidden="true"></span></a>
-                    <a href="" data-target="#modalReplace" data-toggle="modal"><span class="glyphicon glyphicon-share-alt" aria-hidden="true"></span></a>
-                    <a href="" data-target="#modalDownload" data-toggle="modal"><span class="glyphicon glyphicon-download" aria-hidden="true"></span></a>
-                    <a href="" data-target="#modalConvert" data-toggle="modal"><span class="glyphicon glyphicon-wrench" aria-hidden="true"></span></a>
+                    <a href="" data-target="#modalReplace{{file.id}}" data-toggle="modal"><span class="glyphicon glyphicon-share-alt" aria-hidden="true"></span></a>
+                    <a href="" data-target="#modalDownload{{file.id}}" data-toggle="modal"><span class="glyphicon glyphicon-download" aria-hidden="true"></span></a>
+                    <a href="" data-target="#modalConvert{{file.id}}" data-toggle="modal"><span class="glyphicon glyphicon-wrench" aria-hidden="true"></span></a>
                     {% if file.extension == '.md' %}
-                        <a href="" data-target="#modalEditMarkdown" data-toggle="modal"><span class="glyphicon glyphicon-wrench" aria-hidden="true"></span> Modifier en ligne</a>
+                        <a href="" data-target="#modalEditMarkdown{{file.id}}" data-toggle="modal"><span class="glyphicon glyphicon-wrench" aria-hidden="true"></span> Modifier en ligne</a>
                     {% endif %}
                 </center></td>
             </tr>
@@ -152,7 +152,6 @@
           {% endif %}
           
           {% if user.is_staff  %}
-              <a href="{% url 'repository-publishDemand' commit.id %}">Publier la version</a><br />
               <a href="{% url 'repository-updateDatabase' repository.id %}">Mise à jour manuelle</a><br />
               <a href="{% url 'repository-deleteCommit' repository.id %}">Suprimmer la version</a><br />
               <a href="{% url 'repository-restartRepositoryByOldCommit' repository.id %}">Couper/recommencer à la version</a><br />
@@ -174,42 +173,45 @@
 
 {% if commit %}
 
-<!-- Modal -->
-<div class="modal fade" id="modalRename" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+<!-- Modal rename -->
+{% for file in files %}
+
+<div class="modal fade" id="modalRename{{file.id}}" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
   <div class="modal-dialog" role="document">
     <div class="modal-content">
       <div class="modal-header">
         <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-        <h4 class="modal-title" id="myModalLabel">Renommer le fichier</h4>
+        <h4 class="modal-title" id="myModalLabel">Renommer le fichier {{ file.name }}</h4>
       </div>
       <div class="modal-body">
         <form>
-            <p>Nom : <input type="text" id='rename_name'/></p>
+            <p>Nom : <input type="text" id='rename_name{{file.id}}'/></p>
         </form>
       </div>
       <div class="modal-footer">
-        <input class="btn btn-primary" type="submit" value="Renommer" id="submit_rename">
-        <button type="button" class="btn btn-default" data-dismiss="modal">Fermer</button>
+        <input class="btn btn-danger" type="submit" value="Renommer" id="submit_rename{{file.id}}">
+        <button type="button" class="btn btn-default" data-dismiss="modal" >Fermer</button>
       </div>
     </div>
   </div>
 </div>
 
-<script src="https://raw.githubusercontent.com/mgalante/jquery.redirect/master/jquery.redirect.js"></script>
 <script>
 $(document).ready(function () {
-    $("input#submit_rename").click(function(){
-      
-        //$(location).attr('href', '{% url 'repository-renameFile' repository.id commit.id %}');
-        $.redirect('{% url 'repository-tagCommit' commit.id %}', {'name': $('#rename_name').val(),});
+    $("input#submit_rename{{file.id}}").click(function(){
+        $.redirect('{% url 'repository-renameFile' file.id commit.id %}', {'name': $('#rename_name{{file.id}}').val(),});
+       
     });
 });
 </script>
 
+
+{% endfor %}
+
 <!-- Modal  tag-->
 {% for file in files %}
 
-<div class="modal fade" id="modalTag" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+<div class="modal fade" id="modalTag{{file.id}}" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
   <div class="modal-dialog" role="document">
     <div class="modal-content">
       <div class="modal-header">
@@ -222,7 +224,7 @@ $(document).ready(function () {
         </form>
       </div>
       <div class="modal-footer">
-        <input class="btn btn-primary" type="submit" value="Tagger" id="submit_tag">
+        <input class="btn btn-primary" type="submit" value="Tagger" id="submit_tag{{file.id}}">
         <button type="button" class="btn btn-default" data-dismiss="modal">Fermer</button>
       </div>
     </div>
@@ -232,7 +234,7 @@ $(document).ready(function () {
 <script src="https://raw.githubusercontent.com/mgalante/jquery.redirect/master/jquery.redirect.js"></script>
 <script>
 $(document).ready(function () {
-    $("input#submit_tag").click(function(){
+    $("input#submit_tag{{file.id}}").click(function(){
 
         $.redirect('{% url 'repository-tagCommit' commit.id %}', {'name': $('#tag_name').val(),});
        
@@ -279,8 +281,10 @@ $(document).ready(function () {
 
 {% endfor %}
 
-<!-- Modal -->
-<div class="modal fade" id="modalConvert" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+<!-- Modal convert -->
+{% for file in files %}
+
+<div class="modal fade" id="modalConvert{{file.id}}" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
   <div class="modal-dialog" role="document">
     <div class="modal-content">
       <div class="modal-header">
@@ -289,19 +293,33 @@ $(document).ready(function () {
       </div>
       <div class="modal-body">
         <form>
-            <p>Etes vous sur de vouloir convertir le fichier</p>
+            <p>Voulez-vous convertir le fichier {{ file.name }}</p>
+
         </form>
       </div>
       <div class="modal-footer">
-        <button type="button" class="btn btn-primary">Convertir</button>
-        <button type="button" class="btn btn-default" data-dismiss="modal">Fermer</button>
+        <input class="btn btn-danger" type="submit" value="Convertir" id="submit_convert{{file.id}}">
+        <button type="button" class="btn btn-default" data-dismiss="modal" >Fermer</button>
       </div>
     </div>
   </div>
 </div>
 
-<!-- Modal -->
-<div class="modal fade" id="modalReplace" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+<script>
+$(document).ready(function () {
+    $("input#submit_convert{{file.id}}").click(function(){
+        $(location).attr('href', '{% url 'repository-convertFile' file.id %}');
+       
+    });
+});
+</script>
+
+
+{% endfor %}
+
+
+<!-- Modal replace-->
+<div class="modal fade" id="modalReplace{{file.id}}" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
   <div class="modal-dialog" role="document">
     <div class="modal-content">
       <div class="modal-header">

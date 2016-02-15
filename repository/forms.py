@@ -103,4 +103,18 @@ class createBranchForm(forms.Form):
 class EditRepositoryForm(ModelForm):
     class Meta:
          model = Repository
-         exclude = ('size', 'gitlabId')
+         exclude = ('size',)
+         
+##
+# \brief Formulaire de conversion des fichiers
+# \author A. H.
+#
+class ConvertFileForm(forms.Form):
+
+    parent_branch = forms.ChoiceField(
+        label="Extension",
+        required=True,
+        widget=forms.Select(
+            attrs={'placeholder':'Extension','class':'form-control input-xlarge',}
+        )
+    )

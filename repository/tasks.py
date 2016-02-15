@@ -172,13 +172,15 @@ def ampq_renameFile(id=None, oldFile=None, newFile=None):
 @app.task
 def ampq_createBranch(id=None, branch="master", parent_branch='master'):
     
-    #repository = get_object_or_404(Repository, pk=id)
-    #temp = tempfile.mkdtemp()
+    repository = get_object_or_404(Repository, pk=id)
+    temp = tempfile.mkdtemp()
     
     # clone du dépot
-    #cloned_repo = Repo.clone_from(repository.url, temp)
+    repo = Repo.clone_from(repository.url, temp)
     
-    #git.checkout('HEAD', b="branch")    
+    repo.git.checkout('HEAD', b=branch)   
+    
+    repo.remotes.origin.push()
     
     return 1
     

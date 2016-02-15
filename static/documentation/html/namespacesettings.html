@@ -168,6 +168,9 @@ string&#160;</td><td class="memItemRight" valign="bottom"><b>EMAIL_HOST_USER</b>
 <tr class="memitem:aada68746420c568faf1e3f80f6872970"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="aada68746420c568faf1e3f80f6872970"></a>
 string&#160;</td><td class="memItemRight" valign="bottom"><b>EMAIL_HOST_PASSWORD</b> = 'antoine29510'</td></tr>
 <tr class="separator:aada68746420c568faf1e3f80f6872970"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a842ca5a5de438df49187ce735db6c87c"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a842ca5a5de438df49187ce735db6c87c"></a>
+string&#160;</td><td class="memItemRight" valign="bottom"><b>DEFAULT_FROM_EMAIL</b> = 'banco29510@gmail.com'</td></tr>
+<tr class="separator:a842ca5a5de438df49187ce735db6c87c"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:abe4e9a5673d1e9cdd47e84a7ae56f431"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="abe4e9a5673d1e9cdd47e84a7ae56f431"></a>
 tuple&#160;</td><td class="memItemRight" valign="bottom"><b>INTERNAL_IPS</b> = ('127.0.0.1',)</td></tr>
 <tr class="separator:abe4e9a5673d1e9cdd47e84a7ae56f431"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -192,7 +195,7 @@ string&#160;</td><td class="memItemRight" valign="bottom"><b>GITLAB_URL</b> = 'h
 string&#160;</td><td class="memItemRight" valign="bottom"><b>GITLAB_TOKEN</b> = 'zsyZdf3goQ4sCkxDVNTQ'</td></tr>
 <tr class="separator:a30c5a2e71df5d2ebf4afa04c85ab6534"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a58d3a3cbf8c75d4c59d85444956b0bb0"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a58d3a3cbf8c75d4c59d85444956b0bb0"></a>
-string&#160;</td><td class="memItemRight" valign="bottom"><b>GIT_USERNAME</b> = &quot;banco29510@gmail.com&quot;</td></tr>
+string&#160;</td><td class="memItemRight" valign="bottom"><b>GIT_USERNAME</b> = &quot;banco29510&quot;</td></tr>
 <tr class="separator:a58d3a3cbf8c75d4c59d85444956b0bb0"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ad6ac30ff8eddafaaaaf0a3e0ac2ec0d9"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ad6ac30ff8eddafaaaaf0a3e0ac2ec0d9"></a>
 string&#160;</td><td class="memItemRight" valign="bottom"><b>GIT_PASSWORD</b> = &quot;antoine29510&quot;</td></tr>
@@ -201,14 +204,17 @@ string&#160;</td><td class="memItemRight" valign="bottom"><b>GIT_PASSWORD</b> = 
 int&#160;</td><td class="memItemRight" valign="bottom"><b>SITE_ID</b> = 1</td></tr>
 <tr class="separator:ac59af5076aa247b8562164d2a3cd8628"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a1fa8e7ae78f826d20d3656f8b29a20a1"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a1fa8e7ae78f826d20d3656f8b29a20a1"></a>
-string&#160;</td><td class="memItemRight" valign="bottom"><b>LOGIN_URL</b> = 'main-login'</td></tr>
+string&#160;</td><td class="memItemRight" valign="bottom"><b>LOGIN_URL</b> = 'account_login'</td></tr>
 <tr class="separator:a1fa8e7ae78f826d20d3656f8b29a20a1"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a612f8eb7f7df46bed82e3a75be567996"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a612f8eb7f7df46bed82e3a75be567996"></a>
 string&#160;</td><td class="memItemRight" valign="bottom"><b>LOGIN_REDIRECT_URL</b> = 'main'</td></tr>
 <tr class="separator:a612f8eb7f7df46bed82e3a75be567996"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aa7085323b8b4730b165256cf435f4c97"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="aa7085323b8b4730b165256cf435f4c97"></a>
-string&#160;</td><td class="memItemRight" valign="bottom"><b>LOGOUT_URL</b> = 'main-logout'</td></tr>
+string&#160;</td><td class="memItemRight" valign="bottom"><b>LOGOUT_URL</b> = 'account_logout'</td></tr>
 <tr class="separator:aa7085323b8b4730b165256cf435f4c97"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad05243bc2f62c6aeadfc2d65fc055b57"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ad05243bc2f62c6aeadfc2d65fc055b57"></a>
+string&#160;</td><td class="memItemRight" valign="bottom"><b>MESSAGE_STORAGE</b> = 'django.contrib.messages.storage.session.SessionStorage'</td></tr>
+<tr class="separator:ad05243bc2f62c6aeadfc2d65fc055b57"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Description détaillée</h2>
 <div class="textblock"><pre class="fragment">Django settings for score project.
@@ -390,7 +396,7 @@ https://docs.djangoproject.com/en/1.9/ref/settings/
 </div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Généré le Mercredi 10 Février 2016 15:30:57 pour La maison des partitions par &#160;<a href="http://www.doxygen.org/index.html">
+Généré le Lundi 15 Février 2016 09:52:12 pour La maison des partitions par &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="doxygen.png" alt="doxygen"/>
 </a> 1.8.6
 </small></address>
