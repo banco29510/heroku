@@ -270,6 +270,7 @@ def downloadViewsFile(request, pk=None, pk_commit=None):
     temp = tempfile.mkdtemp()
     repo = Repo.clone_from(repository.url, temp, branch=commit.branch)
     
+    
     #repo.git.checkout(commit.hash)
     
     fichier = open(temp+'/'+file.name, 'rb')
@@ -383,14 +384,16 @@ def deleteFile(request, pk=None, pk_commit=None):
 
     file = get_object_or_404(File, pk=pk)
     commit = get_object_or_404(Commit, pk=pk_commit)
+    print(file.name)
+    print(commit.message)
     
     if request.method == 'POST':
         form = DeleteFileForm(request.POST, request.FILES)
 
         if form.is_valid():
             
-            ampq_deleteFile.delay(commit.repository.id, file, "supression fichier", file.commit.branch)
-            ampq_updateDatabase.delay(gitlabId=commit.repository.id) 
+            ampq_deleteFile.delay(commit.repository.id, file, "Supression du fichier "+str(file.name), file.commit.branch.name)
+            ampq_updateDatabase.delay(pk=commit.repository.id) 
                 
             messages.add_message(request, messages.INFO, 'Le fichier à été suprimmé, la mise à jour sera effectué sous peu.')
 
@@ -440,7 +443,7 @@ def listCommits(request, pk=None):
     branches = Branche.objects.filter(repository=repository)
     
     try:
-        commits = get_list_or_404(Commit, repository=repository)
+        commits = get_list_or_404(Commit.objects.order_by('-date'), repository=repository)
     except:
         commits = []
         

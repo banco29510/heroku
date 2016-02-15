@@ -86,7 +86,6 @@ def ampq_addFile(id=None, file=None, message=None, branch="master"):
     
     repo = Repo.clone_from(repository.url, temp, branch=branch) # clone du dépot
     
-    
     new_file_path = os.path.join(repo.working_tree_dir, os.path.basename(file.file.name))
     fichier = open(new_file_path, 'wb')
     fichier.write(file.file.read())
@@ -112,31 +111,72 @@ def ampq_addFile(id=None, file=None, message=None, branch="master"):
 @app.task
 def ampq_deleteFile(id=None, file=None, message=None, branch="master"):
     
-    git = gitlab.Gitlab(settings.GITLAB_URL, settings.GITLAB_TOKEN)
-
-    git.deletefile(gitlabId, file.file.name, branch,  message)
+    repository = get_object_or_404(Repository, pk=id)
+    temp = tempfile.mkdtemp()
+    
+    # clone du dépot
+    repo = Repo.clone_from(repository.url, temp, branch=branch) # clone du dépot
+    
+    #repo.git.checkout(branch)
+    
+    new_file_path = os.path.join(repo.working_tree_dir, os.path.basename(file.name))                           
+    repo.index.remove([new_file_path]) 
+    
+    print(temp+'/'+file.name+'/')
+    print(os.path.basename(file.name))
+    print(temp+'/'+os.path.basename(file.name))
+    
+    author = Actor("Utilisateur", "mail@gmail.com")
+    committer = Actor("admin la maison des partitions", "lamaisondespartitions@gmail.com")
+        
+    repo.index.commit(str(message), author=author, committer=committer)
+    
+    repo.remotes.origin.push()
+    
     
     return 1
     
 @app.task
 def ampq_renameFile(id=None, oldFile=None, newFile=None):
     
-    git = gitlab.Gitlab(settings.GITLAB_URL, settings.GITLAB_TOKEN)
-
-    # recuperation et stockage fichier
-    raw = git.getrawfile(gitlabId, oldFile.commit.hashCommit, filepath=oldFile.name)
-
-    #supression du fichier
-    git.deletefile(gitlabId, oldFile.name, oldFile.commit.branch,  "Supresion du fichier "+oldFile.name)
+    repository = get_object_or_404(Repository, pk=id)
+    temp = tempfile.mkdtemp()
     
-    # ajout du fichier
-    git.createfile(gitlabId, oldFile.name, oldFile.commit.branch, raw, 'Ajout du fichier '+newFile.name)
+    # clone du dépot
+    cloned_repo = Repo.clone_from(repository.url, temp, branch='master')
+    
+    #repo.git.checkout(branch)
+    
+    new_file_path = os.path.join(repo.working_tree_dir, os.path.basename(file.file.name)).close()                            
+    repo.index.remove([new_file_path]) # suprimme le fichier
+    
+    repo.index.add([new_file_path]) # remet le fichier avec un nouveau nom
+    
+    
+    
+    print(temp+'/'+file.file.name+'/')
+    print(os.path.basename(file.file.name))
+    print(temp+'/'+os.path.basename(file.file.name))
+    
+    author = Actor("Utilisateur", "mail@gmail.com")
+    committer = Actor("admin la maison des partitions", "lamaisondespartitions@gmail.com")
+        
+    repo.index.commit(message, author=author, committer=committer)
+    
+    repo.remotes.origin.push()
+    
     
     
     return 1
     
 @app.task
 def ampq_createBranch(id=None, branch="master", parent_branch='master'):
+    
+    #repository = get_object_or_404(Repository, pk=id)
+    #temp = tempfile.mkdtemp()
+    
+    # clone du dépot
+    #cloned_repo = Repo.clone_from(repository.url, temp)
     
     #git.checkout('HEAD', b="branch")    
     
@@ -270,15 +310,17 @@ def ampq_updateDatabase(pk=None):
     cloned_repo = Repo.clone_from(repository.url, temp)
     
     # list des branches
-    print(cloned_repo.heads)
-    print(cloned_repo.remotes)
+    #print(cloned_repo.heads)
+    #print(cloned_repo.remotes)
     
     cloned_repo.git.checkout('master')
     pprint.pprint(cloned_repo.heads)
     
     
     for branch in cloned_repo.heads:
-        print(branch)
+        print('branche : '+str(branch))
+        cloned_repo.git.checkout(branch)
+        
         if not Branche.objects.filter(name=str(branch), repository=repository).exists():
             Branche(name=branch, repository=repository).save()
             branchDatabase = Branche.objects.get(name=str(branch), repository=repository)
@@ -288,8 +330,8 @@ def ampq_updateDatabase(pk=None):
      
         # liste des commits
         for commit in cloned_repo.iter_commits():
-            print(str(commit.hexsha)+'***'+str(commit.tree)+'***'+str(commit.binsha))
-            print(str(hashlib.sha256(commit.tree.binsha).hexdigest()))
+            #print(str(commit.hexsha)+'***'+str(commit.tree)+'***'+str(commit.binsha))
+            #print(str(hashlib.sha256(commit.tree.binsha).hexdigest()))
             
             if not Commit.objects.filter(hash=str(commit.binsha), repository=repository, branch=branchDatabase).exists():
                 commitDatabase = Commit(repository=repository, message=commit.message, hash=str(commit.binsha), date=datetime.now(), branch=branchDatabase, size=10).save()
@@ -301,11 +343,11 @@ def ampq_updateDatabase(pk=None):
             #    print(entry.name)
             commitDatabase = Commit.objects.get(repository=repository, branch=branchDatabase, hash=str(commit.binsha))
             for tree in commit.tree:
+                print('fichier :'+str(tree.name))
                 #print(str(tree.binsha) + str(tree.name) + str(hashlib.sha256(tree.name.encode('utf8')).hexdigest()))
-                if not File.objects.filter(hash=str(hashlib.sha256(tree.name.encode('utf8')).hexdigest())).exists():
+                if not File.objects.filter(hash=str(hashlib.sha256(tree.name.encode('utf8')).hexdigest()), commit=commitDatabase).exists():
                     treeDatabase = File(hash=str(hashlib.sha256(tree.name.encode('utf8')).hexdigest()), commit=commitDatabase, name=tree.name, size=os.path.getsize(cloned_repo.working_tree_dir+'/'+tree.name),).save()
                 
-                    
     
     return 1
 

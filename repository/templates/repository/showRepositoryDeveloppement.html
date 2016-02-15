@@ -39,10 +39,10 @@
   {% if commit %}
       <div class="btn-group btn-group-justified" role="group" aria-label="...">
           <div class="btn-group" role="group">
-              <a class="btn btn-default" href="{% url 'repository-listCommits' repository.id %}" role="button">Commits ({{ commits|length }})</a>
+              <a class="btn btn-default" href="{% url 'repository-listCommits' repository.id %}" role="button"> {{ commits|length }} Commit(s) dans la branche {{ commit.branch.name | capfirst}}</a>
           </div>
           <div class="btn-group" role="group">
-              <a class="btn btn-default" href="{% url 'repository-listContributeurs' repository.id|urlencode %}" role="button">Contributeurs ({{ commits|length }})</a>
+              <a class="btn btn-default" href="{% url 'repository-listContributeurs' repository.id|urlencode %}" role="button">Contributeurs ({{ commits.author|length }})</a>
           </div>
       </div>
       <br />
@@ -54,19 +54,6 @@
           <select>
               {% for tag in tags %}
                   <option>{{ tag | capfirst }}</option>
-              {% endfor %}
-          </select>
-
-      </form>
-    
-  {% endif %}
-  
-  {% if branches %}
-      <form>
-          <p>Branches :</p>
-          <select>
-              {% for branch in branches %}
-                  <option>{{ branch | capfirst }}</option>
               {% endfor %}
           </select>
 
@@ -100,13 +87,13 @@
                 <td><center><a href="{% url 'repository-showFile' file.id commit.id %}">{{ file.name | capfirst }}</a></center></td>
                 <td><center>{{ file.size|filesizeformat }}</center></td>
                 <td><center>
-                    <a href="{ url 'repository-renameFile' }" data-target="#modalRename" data-toggle="modal"><span class="glyphicon glyphicon-edit" aria-hidden="true"></span></a>
-                    <a href="{ url 'repository-deleteFile' }" data-target="#modalDelete" data-toggle="modal"><span class="glyphicon glyphicon-remove" aria-hidden="true"></span></a>
-                    <a href="{ url 'repository-deleteFile' }" data-target="#modalReplace" data-toggle="modal"><span class="glyphicon glyphicon-share-alt" aria-hidden="true"></span></a>
-                    <a href="{ url 'repository-deleteFile' }" data-target="#modalDownload" data-toggle="modal"><span class="glyphicon glyphicon-download" aria-hidden="true"></span></a>
-                    <a href="{ url 'repository-deleteFile' }" data-target="#modalConvert" data-toggle="modal"><span class="glyphicon glyphicon-wrench" aria-hidden="true"></span></a>
+                    <a href="" data-target="#modalRename" data-toggle="modal"><span class="glyphicon glyphicon-edit" aria-hidden="true"></span></a>
+                    <a href="" data-target="#modalDelete{{file.id}}" data-toggle="modal"><span class="glyphicon glyphicon-remove" aria-hidden="true"></span></a>
+                    <a href="" data-target="#modalReplace" data-toggle="modal"><span class="glyphicon glyphicon-share-alt" aria-hidden="true"></span></a>
+                    <a href="" data-target="#modalDownload" data-toggle="modal"><span class="glyphicon glyphicon-download" aria-hidden="true"></span></a>
+                    <a href="" data-target="#modalConvert" data-toggle="modal"><span class="glyphicon glyphicon-wrench" aria-hidden="true"></span></a>
                     {% if file.extension == '.md' %}
-                        <a href="{ url 'repository-editMarkdown' file.id }" data-target="#modalEditMarkdown" data-toggle="modal"><span class="glyphicon glyphicon-wrench" aria-hidden="true"></span> Modifier en ligne</a>
+                        <a href="" data-target="#modalEditMarkdown" data-toggle="modal"><span class="glyphicon glyphicon-wrench" aria-hidden="true"></span> Modifier en ligne</a>
                     {% endif %}
                 </center></td>
             </tr>
@@ -221,6 +208,7 @@ $(document).ready(function () {
 
 <!-- Modal  tag-->
 {% for file in files %}
+
 <div class="modal fade" id="modalTag" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
   <div class="modal-dialog" role="document">
     <div class="modal-content">
@@ -257,7 +245,8 @@ $(document).ready(function () {
 
 <!-- Modal delete -->
 {% for file in files %}
-<div class="modal fade" id="modalDelete" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+
+<div class="modal fade" id="modalDelete{{file.id}}" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
   <div class="modal-dialog" role="document">
     <div class="modal-content">
       <div class="modal-header">
@@ -266,12 +255,12 @@ $(document).ready(function () {
       </div>
       <div class="modal-body">
         <form>
-            <p>Etes vous sur de vouloir suprimmer le fichier</p>
+            <p>Etes vous sur de vouloir suprimmer le fichier {{ file.name }}</p>
 
         </form>
       </div>
       <div class="modal-footer">
-        <input class="btn btn-danger" type="submit" value="Suprimmer" id="submit_delete">
+        <input class="btn btn-danger" type="submit" value="Suprimmer" id="submit_delete{{file.id}}">
         <button type="button" class="btn btn-default" data-dismiss="modal" >Fermer</button>
       </div>
     </div>
@@ -280,7 +269,7 @@ $(document).ready(function () {
 
 <script>
 $(document).ready(function () {
-    $("input#submit_delete").click(function(){
+    $("input#submit_delete{{file.id}}").click(function(){
         $(location).attr('href', '{% url 'repository-deleteFile' file.id commit.id %}');
        
     });
