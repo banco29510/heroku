@@ -3,16 +3,19 @@
 
 {% block content %}
 
-    <h2><center><em>Liste des versions et branches de la partitions <a href="{% url 'repository-showRepositoryDeveloppement' repository.id %}">{{ repository }}</a></em></center></h2>
+    <h2><center><em>Liste des versions et branches de la partitions <a href="{% url 'repository-showRepositoryDeveloppement' repository.id %}">{{ repository | capfirst}}</a></em></center></h2>
 
     <ul class="nav nav-tabs nav-pills" role="tablist">
         <li role="presentation" class="active"><a href="#main" aria-controls="main" role="tab" data-toggle="tab">Toutes les branches</a></li>
         {% for branch in branches %}
-            <li role="presentation" class=""><a href="#{{ branch }}" aria-controls="{{ branch }}" role="tab" data-toggle="tab">{{ branch | capfirst}} <span class="close" style="">&nbsp; ×</span></a></li>
+            <li role="presentation" class=""><a href="#{{ branch }}" aria-controls="{{ branch }}" role="tab" data-toggle="tab">{{ branch | capfirst}}</a></li>
         {% empty %}
-            <li role="presentation" class=""><a href="#{{ branch }}" aria-controls="{{ branch }}" role="tab" data-toggle="tab">Aucune branche <span class="close" style="">&nbsp; ×</span></a></li>
+            <li role="presentation" class=""><a href="#{{ branch }}" aria-controls="{{ branch }}" role="tab" data-toggle="tab">Aucune branche </a></li>
         {% endfor %}
-        <li role="new"><a href="#" aria-controls="" role="tab" data-target="#myModal" data-toggle="modal">Créer une branche</a></li>
+        <li role="new"><a href="#" aria-controls="" role="tab" data-target="#myModal" data-toggle="modal">Créer une branche </a></li>
+        {% if branches %}
+            <li role="new"><a href="#" aria-controls="" role="tab" data-target="#ModalDeleteBranch" data-toggle="modal">Supprimer une branche </a></li>
+        {% endif %}
     </ul>
 
     <div class="tab-content">
@@ -99,6 +102,40 @@
             $("input#submit_create").click(function(){
                 //alert($("#id_parent_branch").val());
                 $.redirect('{% url 'repository-createBranch' repository.id %}', {'name': $("#id_name").val(), 'parent_branch': $("#id_parent_branch").val()});
+            });
+        });
+    </script>
+    
+    
+    <!-- Modal delete branch -->
+    <div class="modal fade" id="ModalDeleteBranch" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title" id="myModalLabel">Supprimer une branche</h4>
+                </div>
+                <div class="modal-body">
+                    <form method="post" id="myForm" action="">{% csrf_token %}
+                        {{ form_deleteBranch.as_p }}
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <input class="btn btn-primary" type="submit" value="Supprimer" id="submit_delete">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Fermer</button>
+                </div>
+            </div>
+        </div>
+   </div>
+
+    <br /><br />
+    
+    <script src="https://raw.githubusercontent.com/mgalante/jquery.redirect/master/jquery.redirect.js"></script>
+    <script>
+        $(document).ready(function () {
+            $("input#submit_delete").click(function(){
+                //alert($("#id_parent_branch").val());
+                $.redirect('{% url 'repository-deleteBranch' repository.id %}', {'branch': $("#id_branch").val()});
             });
         });
     </script>

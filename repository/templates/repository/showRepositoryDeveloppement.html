@@ -41,10 +41,16 @@
   {% if commit %}
       <div class="btn-group btn-group-justified" role="group" aria-label="...">
           <div class="btn-group" role="group">
-              <a class="btn btn-default" href="{% url 'repository-listCommits' repository.id %}" role="button"> {{ commits|length }} Commit(s) dans la branche {{ commit.branch.name | capfirst}}</a>
+              <a class="btn btn-default" href="{% url 'repository-listCommits' repository.id %}" role="button"> 
+                {% if commits == 1 %}
+                  Commit{{ commits |pluralize }} ({{ commits|length }})
+                {% else %}
+                  Commit{{ commits |pluralize }} ({{ commits|length }})
+                {% endif %}
+              </a>
           </div>
           <div class="btn-group" role="group">
-              <a class="btn btn-default" href="{% url 'repository-listContributeurs' repository.id|urlencode %}" role="button">Contributeurs ({{ commits.author|length }})</a>
+              <a class="btn btn-default" href="{% url 'repository-listContributeurs' repository.id|urlencode %}" role="button">Contributeur{{ commits.author |pluralize }}({{ commits.author|length }})</a>
           </div>
       </div>
       <br />
@@ -143,7 +149,7 @@
      
      {% endif %}
 
-      <a href="{% url 'repository-addFile' repository.id %}">Ajouter fichier</a><br />
+      <a href="{% url 'repository-addFile' repository.id %}">Ajouter un fichier</a><br />
       
       {% if commit %}
           <a href="{% url 'repository-warningDownloadCommit' repository.id commit.id %}">Télécharger la version</a><br />
@@ -187,7 +193,7 @@
       </div>
       <div class="modal-body">
         <form>
-            <p>Nom : <input type="text" id='rename_name{{file.id}}'/></p>
+            <p>Nom : <input type="text" value='{{ file.nameWithoutExtension }}' id='rename_name{{file.id}}'/></p>
         </form>
       </div>
       <div class="modal-footer">
@@ -321,6 +327,8 @@ $(document).ready(function () {
 
 
 <!-- Modal replace-->
+{% for file in files %}
+
 <div class="modal fade" id="modalReplace{{file.id}}" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
   <div class="modal-dialog" role="document">
     <div class="modal-content">
@@ -330,33 +338,16 @@ $(document).ready(function () {
       </div>
       <div class="modal-body">
         <form>
-            <p>Etes vous sur de vouloir remplacer le fichier</p>
-        </form>
-      </div>
-      <div class="modal-footer">
-        <button type="button" class="btn btn-primary">Remplacer</button>
-        <button type="button" class="btn btn-default" data-dismiss="modal">Fermer</button>
-      </div>
-    </div>
-  </div>
-</div>
+            <p>Voulez-vous remplacer le fichier {{ file.name }} ?</p>
+            
+            <p>Fichier de remplacement :</p>
+            <input type="file" name="file" accept="">
 
-<!-- Modal -->
-<div class="modal fade" id="modalDownload" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
-  <div class="modal-dialog" role="document">
-    <div class="modal-content">
-      <div class="modal-header">
-        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-        <h4 class="modal-title" id="myModalLabel">Télécharger le fichier</h4>
-      </div>
-      <div class="modal-body">
-        <form id='form-download'>
-            <p>Etes vous sur de vouloir telecharger le fichier</p>
         </form>
       </div>
       <div class="modal-footer">
-        <input class="btn btn-primary" type="submit" value="Télécharger" id="submit">
-        <button type="button" class="btn btn-default" data-dismiss="modal">Fermer</button>
+        <input class="btn btn-danger" type="submit" value="Remplacer" id="submit_replace{{file.id}}">
+        <button type="button" class="btn btn-default" data-dismiss="modal" >Fermer</button>
       </div>
     </div>
   </div>
@@ -364,12 +355,50 @@ $(document).ready(function () {
 
 <script>
 $(document).ready(function () {
-    $("input#submit").click(function(){
-        $(location).attr('href', '{% url 'repository-warningDownloadFile' repository.id commit.id %}');
+    $("input#submit_replace{{file.id}}").click(function(){
+        $(location).attr('href', '{% url 'repository-warningDownloadFile' file.id file.commit.id %}');
        
     });
 });
 </script>
+
+{% endfor %}
+
+<!-- Modal download -->
+{% for file in files %}
+
+<div class="modal fade" id="modalDownload{{file.id}}" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        <h4 class="modal-title" id="myModalLabel">Télécharger le fichier</h4>
+      </div>
+      <div class="modal-body">
+        <form>
+            <p>Voulez-vous télécharger le fichier {{ file.name }} ?</p>
+
+        </form>
+      </div>
+      <div class="modal-footer">
+        <input class="btn btn-danger" type="submit" value="Télécharger" id="submit_download{{file.id}}">
+        <button type="button" class="btn btn-default" data-dismiss="modal" >Fermer</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+$(document).ready(function () {
+    $("input#submit_download{{file.id}}").click(function(){
+        $(location).attr('href', '{% url 'repository-warningDownloadFile' file.id file.commit.id %}');
+       
+    });
+});
+</script>
+
+
+{% endfor %}
 
 
 <!-- Modal edit markdown -->

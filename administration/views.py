@@ -32,6 +32,8 @@ import zipfile, tarfile, bz2
 
 import psutil
 
+from git import Repo, Actor, Head, Remote, Git, Blob, Tree
+
 from repository.models import *
 
 ##
@@ -116,6 +118,38 @@ def documentation(request):
 
     return render(request, 'dashboard/documentation.html', {})
 
+
+##
+# \brief page pour le ci 
+# \author A. H.
+# \fn 
+# \return 
+#
+@login_required
+@staff_member_required
+@csrf_exempt
+def ci(request):
+    
+    temp = tempfile.mkdtemp()
+    commits = []
+    
+    repo = Repo.clone_from('https://banco29510:antoine29510@bitbucket.org/banco29510/score_c9.git', temp, branch='master') # clone du dépot
+    
+    for commit in repo.iter_commits():
+        commits.append(str(commit.binsha.decode('utf-8', 'ignore')))
+        
+    paginator = Paginator(commits, 20)
+
+    page = request.GET.get('page', 1)
+    try:
+        commits = paginator.page(page)
+    except PageNotAnInteger:
+        commits = paginator.page(1)
+    except EmptyPage:
+        commits = paginator.page(paginator.num_pages)
+
+
+    return render(request, 'dashboard/ci.html', {'commits': commits})
 
 
 

@@ -1,0 +1,41 @@
+{% extends "main/layout.html" %}
+
+{% block content %}
+
+<div class="row">
+ {% include 'dashboard/menu.html' %}
+  <div class="col-lg-10">
+
+    <h3><center>Intégration  continue:</center></h3>
+    
+    <p>Semaphore :</p>
+    {% for commit in commits %}
+        <a href='https://semaphoreci.com/banco29510/score_c9'> <img src='https://semaphoreci.com/api/v1/projects/{{ commit }}/688602/badge.svg' alt='Build Status'></a>
+        {{ commit }}
+        <br />
+    {% endfor %}
+    
+    
+    {% if not is_paginated %}
+        <div class="text-center">
+            <ul class="pagination pagination-centered">
+                {% if commits.has_previous %}
+                    <li><a href="?page={{ commits.previous_page_number }}">Précédente</a></li>
+                {% endif %}
+
+                 <li class="active"><a>Page {{ commits.number }} sur {{ commits.paginator.num_pages }}</a></li>
+
+                {% if commits.has_next %}
+                    <li><a href="?page={{commits.next_page_number }}">Suivante</a></li>
+                {% endif %}
+            </ul>
+    </div>
+    {% endif %}
+        
+
+</div>
+
+</div>
+
+
+{% endblock %}

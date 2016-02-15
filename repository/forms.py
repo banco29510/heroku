@@ -95,6 +95,21 @@ class createBranchForm(forms.Form):
     def clean_name(self):
         name = self.cleaned_data['name'].strip().capitalize()
         return name
+        
+##
+# \brief Formulaire suppression branche
+# \author A. H.
+#
+class deleteBranchForm(forms.Form):
+
+    branch = forms.ChoiceField(
+        label="Branche",
+        required=True,
+        widget=forms.Select(
+            attrs={'placeholder':'Branche','class':'form-control input-xlarge',}
+        )
+    )
+
 
 ##
 # \brief Formulaire de ajout d'un fichier
@@ -111,7 +126,7 @@ class EditRepositoryForm(ModelForm):
 #
 class ConvertFileForm(forms.Form):
 
-    parent_branch = forms.ChoiceField(
+    extension = forms.ChoiceField(
         label="Extension",
         required=True,
         widget=forms.Select(

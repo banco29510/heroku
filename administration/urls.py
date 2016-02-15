@@ -8,4 +8,5 @@ urlpatterns = [
     url(r'^seo$', views.seo, name='administration-seo'),
     url(r'^admin-commands$', views.managementCommands, name='administration-managementCommands'),
     url(r'^documentation$', views.documentation, name='administration-documentation'),
+    url(r'^ci$', views.ci, name='administration-ci'),
 ]

@@ -446,6 +446,10 @@ def listCommits(request, pk=None):
     form = createBranchForm(initial='',)
     form.fields['parent_branch'].choices = form_branches
     form.fields['parent_branch'].initial = [0]
+    
+    form_deleteBranch = deleteBranchForm(initial='',)
+    form_deleteBranch.fields['branch'].choices = form_branches
+    form_deleteBranch.fields['branch'].initial = [0]
 
 
     paginator = Paginator(commits, 20)
@@ -464,6 +468,7 @@ def listCommits(request, pk=None):
         'commits': commits, 
         'branches': branches, 
         'form': form,
+        'form_deleteBranch': form_deleteBranch,
     })
 
 ## \brief liste des contributeurs et statistiques
@@ -758,7 +763,9 @@ def convertFile(request, pk=None, ):
     commit = file.commit
     repository = commit.repository
     
-    extension_convert = ['.jpg', '.jpeg', '.txt'] 
+    
+    
+    extension_convert = [('.jpg', 'Image jpg'), ('.jpeg', 'Image jpeg'), ('.png', 'Image png'), ('.pdf', 'Document pdf'), ('.txt', 'Texte' )] 
     extension = file.extension()
     
     if request.method == 'POST':
@@ -767,8 +774,10 @@ def convertFile(request, pk=None, ):
         if form.is_valid():
 
             form_extension = form.cleaned_data['extension']
+            form.fields['extension'].choices = extension_convert
 
             # conversion ampq cloud convert
+            
             
             messages.add_message(request, messages.INFO, 'La conversion sera ajouté au dépot lors de la prochaine mise à jour.')
 
@@ -777,6 +786,7 @@ def convertFile(request, pk=None, ):
     else:
 
         form = ConvertFileForm(initial='',)
+        form.fields['extension'].choices = extension_convert
 
     
     return render(request, 'repository/convert.html', {'file': file, 'form': form})
