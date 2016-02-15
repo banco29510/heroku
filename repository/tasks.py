@@ -137,35 +137,38 @@ def ampq_deleteFile(id=None, file=None, message=None, branch="master"):
     return 1
     
 @app.task
-def ampq_renameFile(id=None, oldFile=None, newFile=None):
+def ampq_renameFile(id=None, file=None, newNameFile=None):
     
     repository = get_object_or_404(Repository, pk=id)
     temp = tempfile.mkdtemp()
     
     # clone du dépot
-    cloned_repo = Repo.clone_from(repository.url, temp, branch='master')
+    repo = Repo.clone_from(repository.url, temp, branch=file.commit.branch.name)
     
-    #repo.git.checkout(branch)
+    print(repo.working_tree_dir)
+    print(file.name)
+    print(str(file.extension()))
     
-    new_file_path = os.path.join(repo.working_tree_dir, os.path.basename(file.file.name)).close()                            
+    # recuperation du contenu
+    fichier = open(repo.working_tree_dir+'/'+file.name, 'rb')
+    content = fichier.read()
+    fichier.close()
+    
+    new_file_path = os.path.join(repo.working_tree_dir, os.path.basename(file.name))                      
     repo.index.remove([new_file_path]) # suprimme le fichier
     
-    repo.index.add([new_file_path]) # remet le fichier avec un nouveau nom
-    
-    
-    
-    print(temp+'/'+file.file.name+'/')
-    print(os.path.basename(file.file.name))
-    print(temp+'/'+os.path.basename(file.file.name))
+    new_file_path = os.path.join(repo.working_tree_dir, newNameFile+str(file.extension()))
+    fichier = open(new_file_path, 'wb')
+    fichier.write(content)
+    fichier.close()                            
+    repo.index.add([new_file_path])  # remet le fichier avec un nouveau nom
     
     author = Actor("Utilisateur", "mail@gmail.com")
     committer = Actor("admin la maison des partitions", "lamaisondespartitions@gmail.com")
         
-    repo.index.commit(message, author=author, committer=committer)
+    repo.index.commit('Renommage du fichier '+ file.name+' en '+newNameFile , author=author, committer=committer)
     
     repo.remotes.origin.push()
-    
-    
     
     return 1
     

@@ -367,8 +367,8 @@ def renameFile(request, pk=None, pk_commit=None):
     commit = get_object_or_404(Commit, pk=pk_commit)
     repository = commit.repository
 
-    #ampq_renameFile.delay(repository.id, request.POST.get("name", ""))
-    #updateDatabase.delay()
+    ampq_renameFile.delay(repository.id, file, request.POST.get("name", ""))
+    ampq_updateDatabase.delay(repository.id)
 
     messages.add_message(request, messages.INFO, 'Le fichier est renommé, il sera pris en compte lors de la prochaine mise à jour.')
     

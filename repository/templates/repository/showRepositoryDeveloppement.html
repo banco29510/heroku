@@ -21,7 +21,7 @@
   {% endif %}
   
 
-  <h2><em>Partition <a href="{% url 'repository-showRepositoryProduction' repository.id %}">{{ repository.name }}</a></em></h2> 
+  <h2><em>Partition <a href="{% url 'repository-showRepositoryProduction' repository.id %}">{{ repository.name | capfirst}}</a></em></h2> 
  
       {% if user.is_staff  %}
           <h4><em>Auteur :
@@ -32,6 +32,8 @@
               {% endif %}
           </em></h4>
       {% endif %}
+      <p>[{{ commit.branch.name | capfirst}}] Commit du  {{ commit.date }} : {{ commit.message }}</p>
+      
     <br />
 
   <div>
