@@ -26,3 +26,4 @@ cloudconvert
 django-allauth
 pygithub
 gitpython
+pylint

@@ -316,6 +316,8 @@ def ampq_mergeBranch(id=None, source_branch=None, target_branch='master'):
 def ampq_updateDatabase(pk=None):
     
     repository = get_object_or_404(Repository, pk=pk)
+    softwares = get_list_or_404(Software)
+    licences = get_list_or_404(Licence)
     temp = tempfile.mkdtemp()
     
     # clone du dépot
@@ -344,6 +346,9 @@ def ampq_updateDatabase(pk=None):
         for commit in cloned_repo.iter_commits():
             #print(str(commit.hexsha)+'***'+str(commit.tree)+'***'+str(commit.binsha))
             #print(str(hashlib.sha256(commit.tree.binsha).hexdigest()))
+            print(str(commit.binsha.decode('utf8', 'ignore')))
+            print(commit.hexsha)
+            
             
             if not Commit.objects.filter(hash=str(commit.binsha), repository=repository, branch=branchDatabase).exists():
                 commitDatabase = Commit(repository=repository, message=commit.message, hash=str(commit.binsha), date=datetime.now(), branch=branchDatabase, size=10).save()
@@ -355,11 +360,26 @@ def ampq_updateDatabase(pk=None):
             #    print(entry.name)
             commitDatabase = Commit.objects.get(repository=repository, branch=branchDatabase, hash=str(commit.binsha))
             for tree in commit.tree:
-                print('fichier :'+str(tree.name))
+                #print('fichier :'+str(tree.name))
                 #print(str(tree.binsha) + str(tree.name) + str(hashlib.sha256(tree.name.encode('utf8')).hexdigest()))
                 if not File.objects.filter(hash=str(hashlib.sha256(tree.name.encode('utf8')).hexdigest()), commit=commitDatabase).exists():
                     treeDatabase = File(hash=str(hashlib.sha256(tree.name.encode('utf8')).hexdigest()), commit=commitDatabase, name=tree.name, size=os.path.getsize(cloned_repo.working_tree_dir+'/'+tree.name),).save()
-             
+                
+                
+                fileDatabase = File.objects.filter(hash=str(hashlib.sha256(tree.name.encode('utf8')).hexdigest()), commit=commitDatabase)
+                for fileDatabase in fileDatabase:
+                    #print(fileDatabase)
+                    for software in softwares:
+                        if fileDatabase.extension() == software.extension:
+                            fileDatabase.software = software
+                            
+                    for licence in licences:
+                            if licence.name == 'Copyright':
+                                fileDatabase.licence = licence
+                            
+                    fileDatabase.save()
+                            
+                
                 
     
     return 1
