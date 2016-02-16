@@ -352,16 +352,22 @@ def ampq_updateDatabase(pk=None):
 
             if not Commit.objects.filter(hash=binascii.hexlify(commit.binsha).decode('utf-8'), repository=repository, branch=branchDatabase).exists():
                 commitDatabase = Commit(repository=repository, message=commit.message, hash=binascii.hexlify(commit.binsha).decode('utf-8'), date=datetime.now(), branch=branchDatabase, size=10).save()
-          
+            else:
+                cloned_repo.git.checkout(binascii.hexlify(commit.binsha).decode('utf-8'))
+                
+                
             #pprint.pprint(commit)  
             #pprint.pprint(commit.tree)  
             #pprint.pprint(commit.tree.trees)
             #for entry in commit.tree:                                         
             #    print(entry.name)
             commitDatabase = Commit.objects.get(repository=repository, branch=branchDatabase, hash=binascii.hexlify(commit.binsha).decode('utf-8'))
+            
             for tree in commit.tree:
                 #print('fichier :'+str(tree.name))
                 #print(str(tree.binsha) + str(tree.name) + str(hashlib.sha256(tree.name.encode('utf8')).hexdigest()))
+                #print(hashlib.sha256(tree.name.encode('utf8')).hexdigest())
+                #print(cloned_repo.working_tree_dir)
                 if not File.objects.filter(hash=str(hashlib.sha256(tree.name.encode('utf8')).hexdigest()), commit=commitDatabase).exists():
                     treeDatabase = File(hash=str(hashlib.sha256(tree.name.encode('utf8')).hexdigest()), commit=commitDatabase, name=tree.name, size=os.path.getsize(cloned_repo.working_tree_dir+'/'+tree.name),).save()
                 

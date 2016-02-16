@@ -270,8 +270,7 @@ def downloadViewsFile(request, pk=None, pk_commit=None):
     temp = tempfile.mkdtemp()
     repo = Repo.clone_from(repository.url, temp, branch=commit.branch)
     
-    
-    #repo.git.checkout(commit.hash)
+    repo.git.checkout(commit.hash)
     
     fichier = open(temp+'/'+file.name, 'rb')
     content = fichier.read()
@@ -656,7 +655,6 @@ def changeCommitVisibility(request, pk=None, boolean=True):
 
     return redirect('repository-search',)
     
-    
 ## \brief affiche la liste des dépot demandé en téléchargement
 # \author A. H.
 @login_required
@@ -675,7 +673,6 @@ def listDownload(request):
         listDownload = paginator.page(paginator.num_pages)
     
     return render(request, 'repository/listDownload.html', {'user': request.user, 'listDownload': listDownload, })
-    
     
 ## \brief affiche le formulaire pour tagger un commit
 # \author A. H.
