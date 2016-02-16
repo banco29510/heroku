@@ -20,6 +20,8 @@ from django.views.decorators.csrf import csrf_exempt
 
 import pprint, tempfile, os, sys, json, datetime, time, mimetypes, zipfile, shutil, base64, subprocess
 
+import cloudconvert
+
 from gitlab import *
 from github import Github
 
@@ -297,8 +299,14 @@ def downloadCommit(request, pk=None):
 
     commit = get_object_or_404(Commit, pk=pk)
     repository = get_object_or_404(Repository, pk=commit.repository.id)
-    temporary_folder = tempfile.mkdtemp()
+    temp = tempfile.mkdtemp()
     print(temporary_folder)
+    
+    repo = Repo.clone_from(repository.url, temp, branch=commit.branch)
+    
+    repo.git.checkout(commit.hash)
+    
+    
 
     response = HttpResponse()
 
@@ -775,6 +783,17 @@ def convertFile(request, pk=None, ):
             form.fields['extension'].choices = extension_convert
 
             # conversion ampq cloud convert
+            api = cloudconvert.Api('GI7ghKswxOEU9BioxyKc3yVIFQ_Um_gbfYRZdwaP2s0vG-n5um3u0v6yqfKddpT-azj8s4tLr_RiYwRb1Ilq6w')
+            process = api.convert({
+                'inputformat': extension,
+                'outputformat': form_extension,
+                'input': 'upload',
+                'file': open(file.file.path, 'rb')
+            })
+            process.wait()
+            process.downloadAll()
+            
+            ampq_updateDatabase.delay(file.commit.repository.id)
             
             
             messages.add_message(request, messages.INFO, 'La conversion sera ajouté au dépot lors de la prochaine mise à jour.')

@@ -31,6 +31,7 @@ import os, sys, datetime, glob, shutil, mimetypes, re, logging, hashlib, random,
 import zipfile, tarfile, bz2
 
 import psutil
+import binascii
 
 from git import Repo, Actor, Head, Remote, Git, Blob, Tree
 
@@ -136,7 +137,7 @@ def ci(request):
     repo = Repo.clone_from('https://banco29510:antoine29510@bitbucket.org/banco29510/score_c9.git', temp, branch='master') # clone du dépot
     
     for commit in repo.iter_commits():
-        commits.append(str(commit.binsha.decode('utf-8', 'ignore')))
+        commits.append(str(binascii.hexlify(commit.binsha).decode('utf-8')))
         
     paginator = Paginator(commits, 20)
 

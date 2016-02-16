@@ -265,6 +265,8 @@ def ampq_downloadFile(id=None, file=None, user=None):
     
     repo = Repo.clone_from(repository.url, temp, branch=file.commit.branch.name) # clone du dépot
     
+    repo.git.checkout(file.commit.hash)
+    
     fichier = open(temp+'/'+file.name, "rb")
     content = ContentFile(fichier.read())
     fichier.close()
