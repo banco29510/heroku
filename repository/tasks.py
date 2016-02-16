@@ -19,7 +19,7 @@ from django.core.exceptions import ObjectDoesNotExist
 from django.views.generic.edit import *
 from django.conf import settings
 
-import os, sys, glob, mimetypes, re, logging, pickle, tempfile, time, subprocess, json, base64, pprint, hashlib, shutil
+import os, sys, glob, mimetypes, re, logging, pickle, tempfile, time, subprocess, json, base64, pprint, hashlib, shutil, binascii
 from datetime import datetime
 from subprocess import *
 from shutil import *
@@ -346,19 +346,19 @@ def ampq_updateDatabase(pk=None):
         for commit in cloned_repo.iter_commits():
             #print(str(commit.hexsha)+'***'+str(commit.tree)+'***'+str(commit.binsha))
             #print(str(hashlib.sha256(commit.tree.binsha).hexdigest()))
-            print(str(commit.binsha.decode('utf8', 'ignore')))
-            print(commit.hexsha)
-            
-            
-            if not Commit.objects.filter(hash=str(commit.binsha), repository=repository, branch=branchDatabase).exists():
-                commitDatabase = Commit(repository=repository, message=commit.message, hash=str(commit.binsha), date=datetime.now(), branch=branchDatabase, size=10).save()
+            #print(str(commit.binsha.decode('utf8', 'ignore')))
+            #print(commit.hexsha)
+            #print(binascii.hexlify(commit.binsha).decode('utf-8'))
+
+            if not Commit.objects.filter(hash=binascii.hexlify(commit.binsha).decode('utf-8'), repository=repository, branch=branchDatabase).exists():
+                commitDatabase = Commit(repository=repository, message=commit.message, hash=binascii.hexlify(commit.binsha).decode('utf-8'), date=datetime.now(), branch=branchDatabase, size=10).save()
           
             #pprint.pprint(commit)  
             #pprint.pprint(commit.tree)  
             #pprint.pprint(commit.tree.trees)
             #for entry in commit.tree:                                         
             #    print(entry.name)
-            commitDatabase = Commit.objects.get(repository=repository, branch=branchDatabase, hash=str(commit.binsha))
+            commitDatabase = Commit.objects.get(repository=repository, branch=branchDatabase, hash=binascii.hexlify(commit.binsha).decode('utf-8'))
             for tree in commit.tree:
                 #print('fichier :'+str(tree.name))
                 #print(str(tree.binsha) + str(tree.name) + str(hashlib.sha256(tree.name.encode('utf8')).hexdigest()))

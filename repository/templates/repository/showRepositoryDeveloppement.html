@@ -153,13 +153,13 @@
       
       {% if commit %}
           <a href="{% url 'repository-warningDownloadCommit' repository.id commit.id %}">Télécharger la version</a><br />
-          {% if not tags %}
-              <a href="" data-target="#modalTag" data-toggle="modal">Tagger</a><br />
-          {% else %}
-              <a href="{% url 'repository-tagCommit' 1 %}" data-target="#modalTag" data-toggle="modal">Modifier/suprimmer tag</a><br />
-          {% endif %}
           
           {% if user.is_staff  %}
+              {% if not tags %}
+                  <a href="" data-target="#modalTag" data-toggle="modal">Tagger</a><br />
+              {% else %}
+                  <a href="{% url 'repository-tagCommit' 1 %}" data-target="#modalTag" data-toggle="modal">Modifier/suprimmer tag</a><br />
+              {% endif %}
               <a href="{% url 'repository-updateDatabase' repository.id %}">Mise à jour manuelle</a><br />
               <a href="{% url 'repository-deleteCommit' repository.id %}">Suprimmer la version</a><br />
               <a href="{% url 'repository-restartRepositoryByOldCommit' repository.id %}">Couper/recommencer à la version</a><br />
