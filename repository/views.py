@@ -556,8 +556,8 @@ def restartRepositoryByOldCommit(request, pk=None):
 @login_required
 def mergeCommit(request,):
 
-    temporary_folder = tempfile.mkdtemp()
-    print(temporary_folder)
+    #commit = get_object_or_404(Commit, pk=pk)
+    
 
     return render(request, 'repository/mergeCommit.html', {})
 

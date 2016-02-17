@@ -5,11 +5,12 @@
 <h1>Instrument {{ instrument.name }} :</h1>
 
         <br>
+        {% if user.is_staff %}
             <ul class="list-unstyled" >
 
                 <li><a href="{% url 'instrument-update' instrument.id %}"> <span class="glyphicon glyphicon-cog" aria-hidden="true"></span> Modifier informations sur l'instrument</a></li>
                 <li><a href="{% url 'instrument-delete' instrument.id %}"> <span class="glyphicon glyphicon-trash" aria-hidden="true"></span> Suprimmer l'instrument</a></li>
             </ul>
-
+        {% endif %}
 
 {% endblock %}

@@ -6,12 +6,13 @@
 
 
 
+        {% if user.is_staff %}
             <ul class="list-unstyled">
 
                 <li><a href="{% url 'licence-update' licence.id %}"> <span class="glyphicon glyphicon-cog" aria-hidden="true"></span> Modifier la licence</a></li>
                 <li><a href="{% url 'licence-delete' licence.id %}"><span class="glyphicon glyphicon-trash" aria-hidden="true"></span> Suprimmer la licence</a></li>
             </ul>
 
-
+        {% endif %}
 
 {% endblock %}

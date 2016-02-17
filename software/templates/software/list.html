@@ -50,6 +50,7 @@
 
 </div>
     <br /><br />
+    {% if user.is_staff %}
        <a href="{% url 'software-create' %}"> <span class="glyphicon glyphicon-plus" aria-hidden="true"></span> Créer logiciel</a>
-
+    {% endif %}
 {% endblock %}

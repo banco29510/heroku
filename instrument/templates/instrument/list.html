@@ -51,6 +51,8 @@
 
 </div>
     <br /><br />
+    {% if user.is_staff %}
        <a href="{% url 'instrument-create' %}"><span class="glyphicon glyphicon-plus" aria-hidden="true"></span> Ajouter un instrument</a>
-
+    {% endif %}
+    
 {% endblock %}

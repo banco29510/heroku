@@ -7,12 +7,13 @@
 
         <p>Licence : {{ software.licence | default_if_none:'Non renseigné'}}</p>
         <br><br>
+        {% if user.is_staff %}
             <ul class="list-unstyled">
 
                 <li><a href="{% url 'software-update' software.id %}"> <span class="glyphicon glyphicon-cog" aria-hidden="true"></span> Modifier informations sur le logiciel</a></li>
                 <li><a href="{% url 'software-delete' software.id %}"><span class="glyphicon glyphicon-trash" aria-hidden="true"></span> Suprimmer le logiciel</a></li>
             </ul>
-
+        {% endif %}
 
 
 {% endblock %}
