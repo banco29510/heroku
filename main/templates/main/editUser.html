@@ -1,0 +1,34 @@
+{% extends "main/layout.html" %}
+{% load staticfiles %}
+{% load bootstrap3 %}
+{% block title %} Compte utilisateur {% endblock %}
+{% block content %}
+
+
+    <h2><center><em>Utilisateur {{ user.username }} </em></center></h2>
+
+    <div class="row">
+        <div class="col-md-3">
+            
+            <form action="{% url 'main-editUser' %}" method="post" class="form-horizontal">{% csrf_token %}
+                {{ form.as_p }}
+                
+                {% buttons %}
+                    <button type="submit" class="btn btn-default">Modifier</button>
+                {% endbuttons %}
+
+            </form>
+     
+         </div>
+     </div>
+
+    
+ 
+
+
+
+
+
+<br /><br />
+
+ {% endblock %}

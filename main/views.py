@@ -54,3 +54,40 @@ def cgu(request):
 def profile(request):
     return render(request, 'main/profile.html', {'user': request.user,})
     
+    
+# \brief modifie les informations de l'utilisateur
+@login_required
+def editUser(request):
+    
+    if request.method == 'POST':
+        form = EditUserForm(request.POST)
+
+        if form.is_valid():
+            username = form.cleaned_data['username']
+            firstName = form.cleaned_data['firstName']
+            lastName = form.cleaned_data['lastName']
+            
+            request.user.firstName = firstName
+            request.user.lastName = lastName
+            request.user.username = username
+            
+            request.user.save()
+            
+
+            return redirect('main-profile',)
+
+    else:
+
+        form = EditUserForm(initial={'username': request.user.username, 'firstName': request.user.first_name, 'lastName': request.user.last_name,})
+
+    
+    return render(request, 'main/editUser.html', {'user': request.user, 'form': form})
+    
+# \brief desinscrit l'utilisateur
+@login_required
+def unregister(request):
+    
+    logout()
+    request.user.delete()
+    return redirect('main')
+    
