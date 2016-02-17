@@ -774,16 +774,32 @@ def warningDownloadFile(request, pk=None, pk_commit=None):
 ## \brief edit les fichiers markdown
 # \author A. H.
 @login_required
-def editMarkdown(request, pk=None, ):
+def editMarkdown(request, pk=None, pk_file=None):
 
-    file = get_object_or_404(File, pk=pk)
+    file = get_object_or_404(File, pk=pk_file)
     commit = file.commit
     repository = commit.repository
+    source = ''
     
     
+    if request.method == 'POST':
+        form = EditFileMarkdownForm(request.POST)
+
+        if form.is_valid():
+
+            form_extension = form.cleaned_data['source']
+            
+            messages.add_message(request, messages.INFO, 'La conversion sera ajouté au dépot lors de la prochaine mise à jour.')
+
+            return redirect('repository-showRepositoryDeveloppement', file.commit.repository.id)
+
+    else:
+
+        form = EditFileMarkdownForm(initial={'source': source, },)
+        
     
 
-    return render(request, 'repository/editMarkdown.html', {})
+    return render(request, 'repository/editMarkdown.html', {'form': form, 'file': file, 'commit': file.commit,})
     
 ## \brief convertit les fichiers
 # \author A. H.
@@ -794,9 +810,33 @@ def convertFile(request, pk=None, ):
     commit = file.commit
     repository = commit.repository
     
+    extension_texte = [('.md', 'Document markdown'), 
+                      ('.txt', 'Document Texte'), ]
+    
+    extension_music = [('.mp3', 'Document MP3'), 
+                      ('.ogg', 'Document OGG'), 
+                      ('.wma', 'Document WMA'), ]
+                      
+    extension_image = [('.jpg', 'Image jpg'), 
+                      ('.jpeg', 'Image jpeg'), 
+                      ('.svg', 'Image svg'),
+                      ('.png', 'Image png'),]
+    
+    extension_convert = [] 
+    
+    for extension in extension_texte:
+        if extension[0] == file.extension():
+            extension_convert = extension_texte
+            #i = 0
+            #for extension_convert in extension_convert:
+            #    #extension_convert[:]
+            #    i+=1
+            
     
     
-    extension_convert = [('.jpg', 'Image jpg'), ('.jpeg', 'Image jpeg'), ('.png', 'Image png'), ('.pdf', 'Document pdf'), ('.txt', 'Texte' )] 
+    
+                        
+                        
     extension = file.extension()
     
     if request.method == 'POST':

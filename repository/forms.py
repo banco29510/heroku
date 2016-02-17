@@ -140,3 +140,12 @@ class ConvertFileForm(forms.Form):
 #
 class DeleteRepositoryForm(forms.Form):
     pass
+
+##
+# \brief editiot ndes fichiers markdown
+# \author A. H.
+#
+class EditFileMarkdownForm(forms.Form):
+   
+    source = forms.CharField(widget=forms.Textarea(attrs={'rows': 20, 'cols': 80}))
+    

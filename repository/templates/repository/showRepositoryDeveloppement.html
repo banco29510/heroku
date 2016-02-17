@@ -204,8 +204,9 @@
 
 <br /><br />
 
-{% if commit %}
 <script src="https://raw.githubusercontent.com/mgalante/jquery.redirect/master/jquery.redirect.js"></script>
+{% if commit %}
+
 <!-- Modal rename -->
 {% for file in files %}
 
@@ -429,19 +430,23 @@ $(document).ready(function () {
 
 
 <!-- Modal edit markdown -->
-<div class="modal fade" id="modalEditMarkdown" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+{% for file in files %}
+
+<div class="modal fade" id="modalEditMarkdown{{file.id}}" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
   <div class="modal-dialog" role="document">
     <div class="modal-content">
       <div class="modal-header">
         <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-        <h4 class="modal-title" id="myModalLabel">Éditer le fichier markdown</h4>
+        <h4 class="modal-title" id="myModalLabel">Editer le fichier {{ file.name | capfirst }}</h4>
       </div>
       <div class="modal-body">
-       
+        <form>
+            
+        </form>
       </div>
       <div class="modal-footer">
-        <input class="btn btn-primary" type="submit" value="Éditer" id="submit">
-        <button type="button" class="btn btn-default" data-dismiss="modal">Fermer</button>
+        <input class="btn btn-danger" type="submit" value="Editer" id="submit_edit{{file.id}}">
+        <button type="button" class="btn btn-default" data-dismiss="modal" >Fermer</button>
       </div>
     </div>
   </div>
@@ -449,12 +454,15 @@ $(document).ready(function () {
 
 <script>
 $(document).ready(function () {
-    $("input#submit").click(function(){
-        $(location).attr('href', '{% url 'repository-editMarkdown' commit.id %}');
+    $("input#submit_edit{{file.id}}").click(function(){
+        $(location).attr('href', '{% url 'repository-editMarkdown' commit.id file.id %}');
+        
        
     });
 });
 </script>
+
+{% endfor %}
 
 {% endif %}
 

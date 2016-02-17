@@ -21,7 +21,7 @@ urlpatterns = [
     url(r'^createBranch/(?P<pk>.+)/$', views.createBranch, name="repository-createBranch"),
     url(r'^updateDatabase/(?P<pk>.+)/$', views.updateDatabase, name="repository-updateDatabase"),
     url(r'^deleteBranch/(?P<pk>.+)/$', views.deleteBranch, name="repository-deleteBranch"),
-    url(r'^editMarkdown/(?P<pk>.+)/$', views.editMarkdown, name="repository-editMarkdown"),
+    url(r'^editMarkdown/(?P<pk>.+)/(?P<pk_file>.+)$', views.editMarkdown, name="repository-editMarkdown"),
 
     url(r'^warningDownloadFile/(?P<pk>\d+)/(?P<pk_commit>\d+)$', views.warningDownloadFile, name="repository-warningDownloadFile"),
     url(r'^downloadFile/(?P<pk>.+)/$', views.downloadFile, name="repository-downloadFile"),

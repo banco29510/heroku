@@ -1,21 +1,45 @@
 {% extends "main/layout.html" %}
 {% load staticfiles %}
+{% load bootstrap3 %}
 
 {% block content %}
 
-	<h1>Partition <a href="{% url 'repository-showRepositoryDeveloppement' commit.repository.id %}">{{ commit.repository.name | capfirst }}</a> :</h1>
+	<h1>Edition du fichier {{ file.name | capfirst }} :</h1>
+	
+	<div id='loader'></div>
+	<div class="row">
+        <div class="col-md-3">
+            
+            <form action="{% url 'repository-editMarkdown' file.commit.id file.id %}" method="post" class="form-horizontal">{% csrf_token %}
 
-    <br />
+                {{ form.as_p }}
+                
+                <p>Markdown :</p>
+                <div id='id_markdown'></div>
+                
+                {% buttons %}
+                    <button type="submit" class="btn btn-default">Editer</button>
+                {% endbuttons %}
 
-            <pre id="pre_code" name="pr_code"><code class="language-markdown" name="code" id="code"></code></pre>
-            <script>
-                $('#code').append("<center><img src='{% static "images/ajax-loader.gif" %}' alt='ajax-loader' class='img-responsive' /></center>");
+            </form>
+     
+         </div>
+     </div>
+     
+     
+     <script src='https://cdnjs.cloudflare.com/ajax/libs/showdown/1.3.0/showdown.min.js'></script>
+    <script>
+                $('#loader').append("<center><img src='{% static "images/ajax-loader.gif" %}' alt='ajax-loader' class='img-responsive' /></center>");
 
             $.ajax({
                 url : '{% url 'repository-downloadViewsFile' file.id|urlencode commit.id|urlencode %}',
                 type : 'GET',
                 success : function(code, statut){
-                    $("#code").text(code);
+                    $("#loader").html('');
+                    $("#id_source").text(code);
+                    var converter = new showdown.Converter(),
+                    html = converter.makeHtml(code);
+                    $("#id_markdown").html(html);
                 },
                 error : function(resultat, statut, erreur){
                 },
@@ -25,13 +49,8 @@
             });
 
             </script>
-       
 
-    <br /><br />
-
-    <a href="{% url 'repository-warningDownloadFile' file.id commit.id|urlencode %}">Télecharger</a><br />
-
-
+    
 
 <br /><br />
 
