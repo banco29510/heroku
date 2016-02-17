@@ -19,6 +19,15 @@
       </div>
   
   {% endif %}
+ {% if not commit.visible %}
+  
+      <div class="alert alert-danger" role="alert">
+          <span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span>
+          <span class="sr-only">Error:</span>La version est invisible.
+      </div>
+  
+  {% endif %}
+ 
   
 
   <h2><em>Partition <a href="{% url 'repository-showRepositoryProduction' repository.id %}">{{ repository.name | capfirst}}</a></em></h2> 
@@ -116,7 +125,7 @@
             <tr>
             <td><b>Total</b></td>
             <td></td>
-            <td>{{ size_commit|filesizeformat }}</td>
+            <td><center>{{ size_commit|filesizeformat }}</center></td>
             <td></td>
 
         </tr>
@@ -172,10 +181,17 @@
               <a href="{% url 'repository-updateDatabase' repository.id %}">Mise à jour manuelle</a><br />
               <a href="{% url 'repository-deleteCommit' repository.id %}">Suprimmer la version</a><br />
               <a href="{% url 'repository-restartRepositoryByOldCommit' repository.id %}">Couper/recommencer à la version</a><br />
-              <a href="{% url 'repository-changeDeprecated' repository.id repository.id %}">Mettre la version en deprécié</a><br />
-            
+              {% if commit.deprecated == True %}
+                <a href="{% url 'repository-changeDeprecated' commit.id 0 %}">Mettre la version en non deprécié</a><br />
+              {% else %}
+                <a href="{% url 'repository-changeDeprecated' commit.id 1 %}">Mettre la version en deprécié</a><br />
+              {% endif %}
               {% if commit.id %}
-                  <a href="{% url 'repository-changeCommitVisibility' commit.id 0 %}">Désactiver l'accès à la version</a><br />
+                  {% if commit.visible == True %}
+                    <a href="{% url 'repository-changeCommitVisibility' commit.id 0 %}">Désactiver l'accès à la version</a><br />
+                  {% else %}
+                    <a href="{% url 'repository-changeCommitVisibility' commit.id 1 %}">Réactiver l'accès à la version</a><br />
+                  {% endif %}
               {% endif %}
               <br />
               <a href="{% url 'repository-editRepository' repository.id %}">Modifier le dépôt</a><br />

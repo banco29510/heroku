@@ -133,3 +133,10 @@ class ConvertFileForm(forms.Form):
             attrs={'placeholder':'Extension','class':'form-control input-xlarge',}
         )
     )
+
+##
+# \brief Formulaire suppression dépot
+# \author A. H.
+#
+class DeleteRepositoryForm(forms.Form):
+    pass

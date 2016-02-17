@@ -523,7 +523,12 @@ def deleteCommit(request, pk=None):
 def changeDeprecated(request, pk=None, boolean=True):
 
     commit = get_object_or_404(Commit, pk=pk)
-
+    
+    if int(boolean) == 0:
+        boolean = False
+    else:
+        boolean = True
+      
     commit.deprecated = boolean
     commit.save()
 
@@ -533,7 +538,7 @@ def changeDeprecated(request, pk=None, boolean=True):
         messages.add_message(request, messages.INFO, 'Le dépot n\'est plus déprécié.')
 
 
-    return render(request, 'repository/changeDeprecated.html', {})
+    return redirect('repository-showRepositoryDeveloppement', commit.repository.id)
 
 ## \brief
 @login_required
@@ -571,7 +576,7 @@ def editRepository(request, pk=None):
 
             repository.name = form.cleaned_data['name']
             repository.url = form.cleaned_data['url']
-            repository.username = form.cleaned_data['login']
+            repository.username = form.cleaned_data['name']
             repository.password = form.cleaned_data['password']
             repository.scoreAuthor = form.cleaned_data['scoreAuthor']
 
@@ -579,7 +584,7 @@ def editRepository(request, pk=None):
 
             messages.add_message(request, messages.INFO, 'Le dépot à été modifié.')
 
-            return redirect('repository-search',)
+            return redirect('repository-showRepositoryDeveloppement', repository.id)
 
     else:
 
@@ -597,21 +602,22 @@ def deleteRepository(request, pk=None):
     repository = get_object_or_404(Repository, pk=pk)
 
     if request.method == 'POST':
-        form = AddFileForm(request.POST, request.FILES)
+        form = DeleteRepositoryForm(request.POST)
 
         if form.is_valid():
-            message = form.cleaned_data['comment']
-            file = request.FILES['file']
-            branch = form.cleaned_data['branch']
-            reference = 'refs/heads/master'
-
+            
+            #ampq_deleteRepository.delay(repository)
+            
             repository.delete()
+            
+            
+            messages.add_message(request, messages.INFO, 'Le dépot à été supprimé.')
 
             return redirect('repository-search',)
 
     else:
 
-        form = AddFileForm(initial='',)
+        form = DeleteRepositoryForm(initial='',)
 
 
     return render(request, 'repository/deleteRepository.html', {'form': form, 'repository': repository,})
@@ -663,6 +669,15 @@ def changeCommitVisibility(request, pk=None, boolean=True):
 
     commit = get_object_or_404(Commit, pk=pk)
 
+    print(boolean)
+    
+    if int(boolean) == 0:
+        boolean = False
+    else:
+        boolean = True
+        
+    print(boolean)
+        
     commit.visible = boolean
     commit.save()
 
@@ -671,7 +686,7 @@ def changeCommitVisibility(request, pk=None, boolean=True):
     else:
         messages.add_message(request, messages.INFO, 'Le commit est invisible.')
 
-    return redirect('repository-search',)
+    return redirect('repository-showRepositoryDeveloppement', commit.repository.id)
     
 ## \brief affiche la liste des dépot demandé en téléchargement
 # \author A. H.

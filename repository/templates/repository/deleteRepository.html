@@ -5,9 +5,10 @@
 {% block content %}
 
 
-    <h2><center><em>Supprimer le dépot</em></center></h2>
+    <h2><center><em>Supprimer le dépot {{ repository | capfirst }} </em></center></h2>
 
 
+    <p>Etes vous sur de vouloir supprimer le dépot {{ repository | capfirst }} ?</p>
     <form action="" method="post">{% csrf_token %}
 
         {{ form.as_p }}

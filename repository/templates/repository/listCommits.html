@@ -22,7 +22,7 @@
         <div role="tabpanel" class="tab-pane active" id="main">
             <ul class="list-group">
                 {% for commit in commits %}
-                    <li class="list-group-item" >[{{ commit.branch |capfirst }}]Commit du {{ commit.date }} : <a href="{% url 'repository-showRepositoryDeveloppement' repository.id %}?commit={{commit.id}}">{{ commit.message | capfirst }}</a> <a href="{% url 'repository-mergeCommit' %}">Fusion version</a></li>
+                    <li class="list-group-item" >[{{ commit.branch |capfirst }}] Commit du {{ commit.date }} : <a href="{% url 'repository-showRepositoryDeveloppement' repository.id %}?commit={{commit.id}}">{{ commit.message | capfirst }}</a> <a href="{% url 'repository-mergeCommit' %}">Fusion version</a></li>
                 {% empty %}
 
                 {% endfor %}
