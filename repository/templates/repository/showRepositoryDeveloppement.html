@@ -113,8 +113,15 @@
               
             </tr>
         {% endfor %}
+            <tr>
+            <td><b>Total</b></td>
+            <td></td>
+            <td>{{ size_commit|filesizeformat }}</td>
+            <td></td>
 
+        </tr>
     </tbody>
+    
     </table>
     
     {% if readme %}

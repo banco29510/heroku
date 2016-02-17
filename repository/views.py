@@ -230,8 +230,12 @@ def showRepositoryProduction(request, pk=None):
         
     try:
         files = File.objects.filter(commit = commits[0])
+        size_commit = 0
+        for file in files:
+            size_commit = size_commit + file.size
     except:
         files = []
+        size_commit = 0
         
     try:
         readme = File.objects.get(commit = commits[0], name="readme.md")
@@ -240,7 +244,7 @@ def showRepositoryProduction(request, pk=None):
         
     print(readme)
 
-    return render(request, 'repository/showRepositoryProduction.html', {'repository': repository, 'files': files, 'readme': readme, 'commit': commit,})
+    return render(request, 'repository/showRepositoryProduction.html', {'repository': repository, 'files': files, 'readme': readme, 'commit': commit, 'size_commit': size_commit,})
 
 ## \brief  Voir un fichier
 # \author A. H.
@@ -343,8 +347,13 @@ def showRepositoryDeveloppement(request, pk=None):
         
     try:
         files = File.objects.filter(commit = commits[0])
+        size_commit = 0
+        for file in files:
+            size_commit = size_commit + file.size
+        
     except:
         files = []
+        size_commit = 0
         
     try:
         readme = File.objects.get(commit = commits[0], name = "readme.md")
@@ -357,6 +366,7 @@ def showRepositoryDeveloppement(request, pk=None):
     return render(request, 'repository/showRepositoryDeveloppement.html', {'repository': repository, 
                                                                             'files': files, 
                                                                             'commit': commit, 
+                                                                            'size_commit': size_commit,
                                                                             'readme': readme,
                                                                             'commits': commits,
                                                                             'tags': tags,
