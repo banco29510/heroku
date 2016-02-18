@@ -11,6 +11,7 @@
         <td>Icone</td>
         <td>Nom</td>
         <td>Lien</td>
+        <td>Taille</td>
         <td>Date de création</td>
         <td>Date de supression</td>
     </tr>
@@ -25,6 +26,7 @@
                 </td>
              <td>{{ download.nameWithoutExtension | capfirst}}</td>
              <td><a href="{% url 'repository-downloadFile' download.id|urlencode %}">Lien vers {{ download }}</a></td>
+             <td>{{ download.file.size | filesizeformat }}</td>
              <td>{{ download.dateUpload }}</td>
              <td>{{ download.dateDelete }}</a></td>
          </tr>

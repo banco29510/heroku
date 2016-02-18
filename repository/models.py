@@ -44,20 +44,6 @@ class Branche(models.Model):
     def __str__(self):
         return u"%s" % self.name
 
-##
-# \brief Model des auteur
-# \author A. H.
-# \class Author(models.Model):
-#
-class Author(models.Model):
-    name = models.CharField(max_length=100, verbose_name="Nom", default=None)
-    email = models.CharField(max_length=100, verbose_name="Mail", default=None)
-    user = models.ForeignKey(User, null=True, verbose_name="User")
-
-    ##
-    #
-    def __str__(self):
-        return u"%s" % self.name    
         
 ##
 # \brief Révision des commits
@@ -67,7 +53,6 @@ class Author(models.Model):
 class Commit(models.Model):
     repository = models.ForeignKey(Repository, null=False)
     branch = models.ForeignKey(Branche, null=True, verbose_name="Branche")
-    author = models.ForeignKey(Author, null=True, verbose_name="Author")
     hash = models.CharField(max_length=100)
     date = models.DateTimeField(null=True,)
     message = models.CharField(max_length=10000)
@@ -81,7 +66,22 @@ class Commit(models.Model):
     def __str__(self):
         return u"%s" % self.message
 
+##
+# \brief Model des auteur
+# \author A. H.
+# \class Author(models.Model):
+#
+class Author(models.Model):
+    commit = models.ForeignKey(Commit, null=False, default=None, verbose_name="Commit")
+    name = models.CharField(max_length=100, verbose_name="Nom", default=None)
+    email = models.CharField(max_length=100, verbose_name="Mail", default=None)
+    user = models.ForeignKey(User, null=True, verbose_name="User")
 
+    ##
+    #
+    def __str__(self):
+        return u"%s" % self.name    
+        
 ##
 # \brief Model des tags
 # \author A. H.

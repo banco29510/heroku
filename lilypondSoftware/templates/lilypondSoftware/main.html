@@ -3,6 +3,7 @@
 {% block title %} Logiciel lylipond {% endblock %}
 
 {% block content %}
+<script src="https://raw.githubusercontent.com/mgalante/jquery.redirect/master/jquery.redirect.js"></script>
 
 
         {% if file != None %}
@@ -56,7 +57,7 @@
         </textarea>
     </div>
     <div class="col-lg-5">
-        <iframe src="{% url 'lilypondSoftware-compilation' %}?code=" width="800" height="700" id="iframe">
+        <iframe src="{% url 'lilypondSoftware-compilation' %}" width="800" height="700" id="iframe">
             <p>Votre navigateur ne supporte pas l'élément iframe</p>
         </iframe>
     </div>
@@ -69,6 +70,7 @@
         </textarea>
 
 </div>
+<script src="https://raw.githubusercontent.com/js-cookie/js-cookie/master/src/js.cookie.js"></script>
 
  <script>
 
@@ -79,8 +81,24 @@
     function code()
     {
             var code = $("textarea#lylipond").val();
-            $("#iframe").attr("src", "{% url 'lilypondSoftware-compilation' %}?code="+code+"");
+            Cookies.set('code', code, { expires: 7 });
+            $("#iframe").attr("src", "{% url 'lilypondSoftware-compilation' %}");
+            
+            $.ajax({
+                url : '{% url 'lilypondSoftware-compilation' %}',
+                type : 'POST',
+                success : function(code, statut){
+                    
+                },
+                error : function(resultat, statut, erreur){
+                },
 
+                complete : function(resultat, statut){
+                }
+            });
+
+
+            
             ErrorsCompilation()
     }
 
@@ -127,7 +145,7 @@
 
     function newScore()
     {
-        $("textarea#lylipond").prepend("\\version \"2.18.2\"\n\n\\include \"italiano.ly\"\n\n\\header {\n \ttitle = \"titre\"\n \tsubtitle = \"sous titre\"\n \tcomposer = \"compositeur\"\n \tdedication = \"Dédicace\"\n \tinstrument = \"\"\n \tcopyright = \"\"\n }\n { do re mi }");
+        $("textarea#lylipond").prepend("\\version \"2.16.2\"\n\n\\include \"italiano.ly\"\n\n\\header {\n \ttitle = \"titre\"\n \tsubtitle = \"sous titre\"\n \tcomposer = \"compositeur\"\n \tdedication = \"Dédicace\"\n \tinstrument = \"\"\n \tcopyright = \"\"\n }\n { do re mi }");
 
     }
 

@@ -24,6 +24,9 @@ class TagAdmin(admin.ModelAdmin):
 class DownloadUserAdmin(admin.ModelAdmin):
     pass
 
+class AuthorAdmin(admin.ModelAdmin):
+    pass
+
 
 admin.site.register(Repository, RepositoryAdmin)
 admin.site.register(Commit, CommitAdmin)
@@ -32,3 +35,4 @@ admin.site.register(TemporaryFile, TemporaryFileAdmin)
 admin.site.register(Branche, BrancheAdmin)
 admin.site.register(Tag, TagAdmin)
 admin.site.register(DownloadUser, DownloadUserAdmin)
+admin.site.register(Author, AuthorAdmin)

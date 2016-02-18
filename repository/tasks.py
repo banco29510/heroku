@@ -383,6 +383,16 @@ def ampq_updateDatabase(pk=None):
             #    print(entry.name)
             commitDatabase = Commit.objects.get(repository=repository, branch=branchDatabase, hash=binascii.hexlify(commit.binsha).decode('utf-8'))
             
+            
+            # ajoute les auteurs
+            
+            #print(commit.author.name)
+            #print(commit.author.email)
+            #if not 
+            author_commit = Author(commit=commitDatabase, name=str(commit.author.name), email=str(commit.author.email)).save()
+            #else:
+            #
+            
             for tree in commit.tree:
                 #print('fichier :'+str(tree.name))
                 #print(str(tree.binsha) + str(tree.name) + str(hashlib.sha256(tree.name.encode('utf8')).hexdigest()))
@@ -393,7 +403,7 @@ def ampq_updateDatabase(pk=None):
                 
                 
                 fileDatabase = File.objects.filter(hash=str(hashlib.sha256(tree.name.encode('utf8')).hexdigest()), commit=commitDatabase)
-                
+                repo_size = 0
                 for fileDatabase in fileDatabase:
                     #print(fileDatabase)
                     for software in softwares:
@@ -404,10 +414,11 @@ def ampq_updateDatabase(pk=None):
                             if licence.name == 'Copyright':
                                 fileDatabase.licence = licence
                                 
-                    
+                    repo_size = int(repo_size) + int(fileDatabase.size)
                             
                     fileDatabase.save()
-                            
+                    
+                repository.size = repo_size # ajoute la taille du dépot   
                 
                 
     

@@ -73,6 +73,9 @@ def lilypondCompilation(request):
     format = 'pdf'
 
     code = request.GET.get("code", None)
+    #code = request.POST.get("code", None)
+    #code = request.COOKIES.get("code", None)
+    #print(code)
 
     open(temporary_folder+'/lilypond.pdf', 'wb+').close()
 
@@ -102,7 +105,7 @@ def lilypondCompilation(request):
 
     #print(subprocess.call('lilypond -f '+format+' -o lilypond.pdf lilypond.ly &>tous.log lilypond.ly', shell=True, cwd=temporary_folder, universal_newlines=True))
 
-    print(subprocess.call('lilypond -f '+format+' lilypond.ly', shell=True, cwd=temporary_folder, universal_newlines=True))
+    subprocess.call('lilypond -f '+format+' lilypond.ly', shell=True, cwd=temporary_folder, universal_newlines=True)
 
     
     response = HttpResponse()
