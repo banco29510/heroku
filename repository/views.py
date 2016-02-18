@@ -848,8 +848,6 @@ def convertFile(request, pk=None, ):
             #for extension_convert in extension_convert:
             #    #extension_convert[:]
             #    i+=1
-            
-        
                         
     extension = file.extension()
     
