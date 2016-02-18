@@ -14,6 +14,7 @@ urlpatterns = [
     url(r'^deleteFile/(?P<pk>\d+)/(?P<pk_commit>\d+)$', views.deleteFile, name="repository-deleteFile"),
     url(r'^deleteCommit/(?P<pk>\d+)$', views.deleteCommit, name="repository-deleteCommit"),
     url(r'^renameFile/(?P<pk>\d+)/(?P<pk_commit>\d+)$', views.renameFile, name="repository-renameFile"),
+    url(r'^replaceFile/(?P<pk>\d+)/$', views.replaceFile, name="repository-replaceFile"),
     url(r'^mergeCommit/(?P<pk>\d+)$', views.mergeCommit, name="repository-mergeCommit"),
     url(r'^showFile/(?P<pk>\d+)/(?P<pk_commit>\d+)$', views.showFile, name="repository-showFile"),
     url(r'^downloadViewsFile/(?P<pk>.+)/(?P<pk_commit>.+)$', views.downloadViewsFile, name="repository-downloadViewsFile"),

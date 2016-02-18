@@ -391,6 +391,21 @@ def renameFile(request, pk=None, pk_commit=None):
     messages.add_message(request, messages.INFO, 'Le fichier est renommé, il sera pris en compte lors de la prochaine mise à jour.')
     
     return redirect('repository-showRepositoryDeveloppement', repository.id)
+    
+## \brief renomme un fichier
+# \author A. H.
+@login_required
+@csrf_exempt
+def replaceFile(request, pk=None,):
+
+    file = get_object_or_404(File, pk=pk)
+    
+    #ampq_replaceFile.delay(repository.id, file, )
+    ampq_updateDatabase.delay(file.commit.repository.id)
+
+    messages.add_message(request, messages.INFO, 'Le fichier est remplacé, il sera pris en compte lors de la prochaine mise à jour.')
+    
+    return redirect('repository-showRepositoryDeveloppement', file.commit.repository.id)
 
 ## \brief suprimme un fichier
 # \author A. H.
