@@ -221,14 +221,12 @@ def showRepositoryProduction(request, pk=None):
     repository = get_object_or_404(Repository, pk=pk)
     ampq_updateDatabase.delay(repository.id)
     
-    
     try:
         commits = Commit.objects.filter(repository=repository).order_by('-date')
         commit = commits[0]
     except:
         commit = []
-        
-        
+    
     try:
         files = File.objects.filter(commit = commits[0])
         size_commit = 0
@@ -242,10 +240,14 @@ def showRepositoryProduction(request, pk=None):
         readme = File.objects.get(commit = commits[0], name="readme.md")
     except:
         readme = []
-        
-    print(readme)
 
-    return render(request, 'repository/showRepositoryProduction.html', {'repository': repository, 'files': files, 'readme': readme, 'commit': commit, 'size_commit': size_commit,})
+
+    return render(request, 'repository/showRepositoryProduction.html', {'repository': repository, 
+                                                                        'files': files, 
+                                                                        'readme': readme,
+                                                                        'commit': commit,
+                                                                        'size_commit': size_commit,
+                                                                        })
 
 ## \brief  Voir un fichier
 # \author A. H.
@@ -305,20 +307,18 @@ def downloadCommit(request, pk=None):
     commit = get_object_or_404(Commit, pk=pk)
     repository = get_object_or_404(Repository, pk=commit.repository.id)
     temp = tempfile.mkdtemp()
-    print(temporary_folder)
+    print(temp)
     
     repo = Repo.clone_from(repository.url, temp, branch=commit.branch)
     
     repo.git.checkout(commit.hash)
-    
-    
 
     response = HttpResponse()
 
     response['Content-Type'] = mimetype=mimetypes.guess_type(repository.name+'.zip')[0]
     response['Content-Disposition'] = 'attachment; filename='+repository.name+'.zip'
-    response['Content-Length'] = os.path.getsize(temporary_folder+'/'+repository.name+'.zip')
-    response.write(open(temporary_folder+'/'+repository.name+'.zip', 'rb').read())
+    response['Content-Length'] = os.path.getsize(temp+'/'+repository.name+'.zip')
+    response.write(open(temp+'/'+repository.name+'.zip', 'rb').read())
 
     return response
 
@@ -363,6 +363,9 @@ def showRepositoryDeveloppement(request, pk=None):
         readme = []
         tags = []
         
+        
+    replace_form = ReplaceFileForm(initial='',)
+        
 
     return render(request, 'repository/showRepositoryDeveloppement.html', {'repository': repository, 
                                                                             'files': files, 
@@ -372,6 +375,7 @@ def showRepositoryDeveloppement(request, pk=None):
                                                                             'commits': commits,
                                                                             'tags': tags,
                                                                             'branches':branches,
+                                                                            'replace_form': replace_form,
                                                                             })
 
 
@@ -397,15 +401,26 @@ def renameFile(request, pk=None, pk_commit=None):
 @login_required
 @csrf_exempt
 def replaceFile(request, pk=None,):
-
+    
     file = get_object_or_404(File, pk=pk)
     
-    #ampq_replaceFile.delay(repository.id, file, )
-    ampq_updateDatabase.delay(file.commit.repository.id)
-
-    messages.add_message(request, messages.INFO, 'Le fichier est remplacé, il sera pris en compte lors de la prochaine mise à jour.')
+    form = ReplaceFileForm(request.POST, request.FILES)
     
-    return redirect('repository-showRepositoryDeveloppement', file.commit.repository.id)
+    if form.is_valid():
+        
+        file_form = form.cleaned_data['file']
+        
+        temp_file = TemporaryFile(name=file_form.name, file=file_form).save()
+            
+        ampq_replaceFile.delay(file.commit.repository.id, file, temp_file)
+        ampq_updateDatabase.delay(file.commit.repository.id)
+
+        messages.add_message(request, messages.INFO, 'Le fichier est remplacé, il sera pris en compte lors de la prochaine mise à jour.')
+    
+        return HttpResponse('true')
+    else:
+        messages.add_message(request, messages.INFO, 'Une erreur est survenue.')
+        return HttpResponse('false')
 
 ## \brief suprimme un fichier
 # \author A. H.
@@ -523,9 +538,12 @@ def listContributeurs(request, pk=None):
         commits = []
 
     authors = []
+    
+    
     for commit in commits:
-        if not commit.author in authors and commit.author != None:
-            authors.append(commit.author.capitalize())
+        authorsDatabase = Author.objects.filter(commit=commit)
+        for author in authorsDatabase:
+            authors.append(author.name.capitalize())
 
     return render(request, 'repository/listContributeurs.html', {'repository': repository, 'authors': authors})
 
@@ -666,6 +684,8 @@ def createBranch(request, pk=None):
     
     # création branche
     ampq_createBranch.delay(repository.id, request.POST.get("name", ""), request.POST.get("parent_branch", ""))
+    
+    ampq_updateDatabase.delay(repository.id)
 
     messages.add_message(request, messages.INFO, 'La branche à été enregistré, elle sera créé lors de la prochaine mise à jour.')
 
@@ -673,26 +693,19 @@ def createBranch(request, pk=None):
 
 ## \brief suprimme une branche dans le dépot
 @login_required
+@csrf_exempt
 def deleteBranch(request, pk=None):
 
     repository = get_object_or_404(Repository, pk=pk)
+    
+    #ampq_deleteBranch.delay(repository.id)
 
-    if request.method == 'POST':
-        form = AddFileForm(request.POST, request.FILES)
-
-        if form.is_valid():
-            message = form.cleaned_data['comment']
-            file = request.FILES['file']
-            branch = form.cleaned_data['branch']
-
-            return redirect('repository-search',)
-
-    else:
-
-        form = AddFileForm(initial='',)
+    ampq_updateDatabase.delay(repository.id)
+    
+    messages.add_message(request, messages.INFO, 'La branche à été supprimé, elle sera supprimé lors de la prochaine mise à jour.')
 
 
-    return render(request, 'repository/deleteRepository.html', {'form': form, 'repository': repository,})
+    return redirect('repository-showRepositoryDeveloppement', repository.id)
 
 ## \brief
 # \author A. H.

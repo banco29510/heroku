@@ -32,7 +32,7 @@
         </center></td>
         <td><center>{{ file.nameWithoutExtension | capfirst }}</center></td>
         <td><center>{{ file.size|default_if_none:'Non renseigné' |filesizeformat }}</center></td>
-        <td><center>{% if not file %} <a href='{% url 'licence-detail' file.licence.id|urlencode %}'>{{ file.licence.name|default_if_none:'Non renseigné' | capfirst }}</a></center> {% endif %}</td>
+        <td><center>{% if file and file.licence %} <a href='{% url 'licence-detail' file.licence.id|urlencode %}'>{{ file.licence.name|default_if_none:'Non renseigné' | capfirst }}</a>{% else %} Non renseigné {% endif %}</center></td>
         <td><center>
             {% for instrument in instruments %}
                 <a href='{% url 'instrument-detail' instrument|urlencode %}'>{{ instrument|default_if_none:'Non renseigné' | capfirst }}</a>
@@ -40,7 +40,7 @@
                 Non renseigné
             {% endfor %}
         </center></td>
-        <td><center>{% if not file %}  <a href='{% url 'software-detail' file.software.id|urlencode %}'>{{ file.software.name|default_if_none:'Non renseigné' | capfirst }}</a></center>{% endif %}</td>
+        <td><center>{% if file and file.software %}  <a href='{% url 'software-detail' file.software.id|urlencode %}'>{{ file.software.name|default_if_none:'Non renseigné' | capfirst }}</a>{% else %} Non renseigné {% endif %}</center></td>
 
 
     </tr>

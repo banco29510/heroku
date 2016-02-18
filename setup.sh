@@ -1,6 +1,6 @@
-#sudo mv /usr/bin/python /usr/bin/python2
-#sudo ln -s /usr/bin/python3 /usr/bin/python
-#mysql-ctl start
+sudo mv /usr/bin/python /usr/bin/python2
+sudo ln -s /usr/bin/python3 /usr/bin/python
+mysql-ctl start
 
 #sudo apt-get update -y
 #sudo apt-get upgrade -y
@@ -26,9 +26,9 @@ sudo python manage.py createcachetable
 #sudo python manage.py createsuperuser --username=admin --email=admin@example.com
 #sudo python manage.py collectstatic
 
-cd www
-wget http://builds.piwik.org/piwik.zip && unzip piwik.zip
-cd ..
+#cd www
+#wget http://builds.piwik.org/piwik.zip && unzip piwik.zip
+#cd ..
 
 sudo doxygen
 

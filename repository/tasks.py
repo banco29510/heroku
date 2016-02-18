@@ -46,13 +46,15 @@ def ampq_createRepository(id=None):
     remote = repo.create_remote('origin', repository.url)
     
     new_file_path = os.path.join(repo.working_tree_dir, 'readme.md')
-    fichier = open(new_file_path, 'wb')
-    fichier.write('Partition')
+    fichier = open(new_file_path, 'w')
+    fichier.write('### Partition ' + repository.name)
     fichier.close()                            
     repo.index.add([new_file_path]) 
     
     new_file_path = os.path.join(repo.working_tree_dir, 'licence.txt')
-    open(new_file_path, 'wb').close()                            
+    fichier = open(new_file_path, 'w')
+    fichier.write('Licence libre')
+    fichier.close()        
     repo.index.add([new_file_path]) 
     
     author = Actor("An author", "author@example.com")
@@ -425,3 +427,34 @@ def ampq_updateDatabase(pk=None):
     return 1
 
 
+@app.task
+def ampq_replaceFile(id=None, file=None, replacefile=None):
+    
+    repository = get_object_or_404(Repository, pk=id)
+    temp = tempfile.mkdtemp()
+    
+    # clone du dépot
+    repo = Repo.clone_from(repository.url, temp, branch=file.commit.branch.name)
+    
+    # recuperation du contenu
+    fichier = open(repo.working_tree_dir+'/'+file.name, 'rb')
+    content = fichier.read()
+    fichier.close()
+    
+    new_file_path = os.path.join(repo.working_tree_dir, os.path.basename(file.name))                      
+    repo.index.remove([new_file_path]) # suprimme le fichier
+    
+    new_file_path = os.path.join(repo.working_tree_dir, replaceFile+str(file.extension()))
+    fichier = open(new_file_path, 'wb')
+    fichier.write(content)
+    fichier.close()                            
+    repo.index.add([new_file_path])  # remet le fichier avec un nouveau nom
+    
+    author = Actor("Utilisateur", "mail@gmail.com")
+    committer = Actor("admin la maison des partitions", "lamaisondespartitions@gmail.com")
+        
+    repo.index.commit('Remplacement du fichier '+ file.name+' en '+replaceFile , author=author, committer=committer)
+    
+    repo.remotes.origin.push()
+    
+    return 1

@@ -19,7 +19,7 @@
       </div>
   
   {% endif %}
- {% if not commit.visible %}
+ {% if not commit.visible and commit %}
   
       <div class="alert alert-danger" role="alert">
           <span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span>
@@ -41,7 +41,9 @@
               {% endif %}
           </em></h4>
       {% endif %}
-      <p>[{{ commit.branch.name | capfirst}}] Commit du  {{ commit.date }} : {{ commit.message }}</p>
+      {% if commit %}
+        <p>[{{ commit.branch.name | capfirst}}] Commit du  {{ commit.date }} : {{ commit.message }}</p>
+      {% endif %}
       
     <br />
 
@@ -368,7 +370,7 @@ $(document).ready(function () {
         <form enctype="multipart/form-data" method="post">
 
             <p>Fichier de remplacement :</p>
-            <input type="file" name="file" accept="">
+            {{ replace_form.as_p }}
 
         </form>
       </div>
@@ -383,7 +385,23 @@ $(document).ready(function () {
 <script>
 $(document).ready(function () {
     $("input#submit_replace{{file.id}}").click(function(){
-        $(location).attr('href', '{% url 'repository-replaceFile' file.id %}');
+        //$(location).attr('href', '{% url 'repository-replaceFile' file.id %}');
+        //$.redirect('{% url 'repository-replaceFile' file.id %}', {'id_file': $('#id_file').val(),});
+        
+        var formData = new FormData();
+        formData.append('file', $('#id_file')[0].files[0]);
+
+        $.ajax({
+          url : '{% url 'repository-replaceFile' file.id %}',
+          type : 'POST',
+          data : formData,
+          processData: false,  
+          contentType: false,  
+          success : function(data) {
+              $(location).attr('href', '{% url 'repository-showRepositoryDeveloppement' file.commit.repository.id %}');
+          }
+        });
+        
        
     });
 });

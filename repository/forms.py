@@ -163,10 +163,20 @@ class DeleteRepositoryForm(forms.Form):
     pass
 
 ##
-# \brief editiot ndes fichiers markdown
+# \brief edition des fichiers markdown
 # \author A. H.
 #
 class EditFileMarkdownForm(forms.Form):
    
     source = forms.CharField(widget=forms.Textarea(attrs={'rows': 20, 'cols': 80}))
     
+##
+# \brief remplace un fichier par un autre
+# \author A. H.
+#
+class ReplaceFileForm(forms.Form):
+   
+    file = forms.FileField(
+        label = 'Sélectionner un fichier',
+        required = True,
+    )

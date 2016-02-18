@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 ##
 # \file views.py
 # \brief Liste des actions de base pour les logiciels
@@ -85,7 +84,7 @@ def createSoftware(request):
             name = form.cleaned_data['name']
             extension = form.cleaned_data['extension']
             licence = form.cleaned_data['licence']
-
+            print(licence)
 
             software = Software(name=name, extension=extension, licence=licence)
 
