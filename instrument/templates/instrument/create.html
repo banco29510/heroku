@@ -5,7 +5,7 @@
 <h1>Ajouter un instrument :</h1>
 
 
-    <form action="" method="post">{% csrf_token %}
+    <form action="" enctype="multipart/form-data" method="post">{% csrf_token %}
 
         {{ form.as_p }}
 

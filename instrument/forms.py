@@ -20,6 +20,8 @@ from instrument.models import Instrument
 class CreateInstrumentForm(forms.Form):
 
     name = forms.CharField(label="Nom", max_length=100, required=True, widget=forms.TextInput(attrs={'placeholder':'Nom','class':'form-control input-xlarge','onChange':'autoComplete()'}) )
+    image = forms.ImageField()
+
 
 ##
 # \brief Formulaire
@@ -28,7 +30,8 @@ class CreateInstrumentForm(forms.Form):
 class UpdateInstrumentForm(forms.Form):
 
     name = forms.CharField(label="Nom", max_length=100, required=True, widget=forms.TextInput(attrs={'placeholder':'Nom','class':'form-control input-xlarge','onChange':'autoComplete()'}) )
-
+    image = forms.ImageField()
+    
 ##
 # \brief Formulaire
 # \author A. H.

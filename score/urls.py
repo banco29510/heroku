@@ -16,6 +16,8 @@ Including another URLconf
 from django.conf.urls import include, url
 from django.contrib import admin
 from django.views.generic import TemplateView
+from django.conf.urls.static import static
+from django.conf import settings
 
 from main import views
 
@@ -36,7 +38,11 @@ urlpatterns = [
     url(r'^software/', include('software.urls')),
     url(r'^administration/', include('administration.urls')),
     url(r'^lilypondSoftware/', include('lilypondSoftware.urls')),
+    
 ]
+
+urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+
 
 handler404 = 'main.errors.error404'
 handler500 = 'main.errors.error500'

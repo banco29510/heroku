@@ -2,11 +2,11 @@
 
 {% block content %}
 
-<h1>Modification du nom de l'instrument :</h1>
+<h1>Modification de l'instrument :</h1>
 <br />
 
 
-    <form action="" method="post">{% csrf_token %}
+    <form action="" enctype="multipart/form-data" method="post">{% csrf_token %}
 
         {{ form.as_p }}
 

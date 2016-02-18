@@ -426,7 +426,6 @@ def ampq_updateDatabase(pk=None):
     
     return 1
 
-
 @app.task
 def ampq_replaceFile(id=None, file=None, replacefile=None):
     

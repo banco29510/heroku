@@ -1,14 +1,17 @@
 {% extends "main/layout.html" %}
-
+{% load staticfiles %}
 {% block content %}
 
-<h1>Instrument {{ instrument.name }} :</h1>
+<h1>Instrument {{ instrument.name | capfirst }} :</h1>
+
+
+<img src="{{ instrument.image.url }}" alt="{{ instrument.name | capfirst}}" class="img-responsive img-thumbnail" />
 
         <br>
         {% if user.is_staff %}
             <ul class="list-unstyled" >
 
-                <li><a href="{% url 'instrument-update' instrument.id %}"> <span class="glyphicon glyphicon-cog" aria-hidden="true"></span> Modifier informations sur l'instrument</a></li>
+                <li><a href="{% url 'instrument-update' instrument.id %}"> <span class="glyphicon glyphicon-cog" aria-hidden="true"></span> Modifier les informations sur l'instrument</a></li>
                 <li><a href="{% url 'instrument-delete' instrument.id %}"> <span class="glyphicon glyphicon-trash" aria-hidden="true"></span> Suprimmer l'instrument</a></li>
             </ul>
         {% endif %}

@@ -76,12 +76,13 @@ def detailInstrument(request, pk=None):
 def createInstrument(request):
 
     if request.method == 'POST':
-        form = CreateInstrumentForm(request.POST)
+        form = CreateInstrumentForm(request.POST, request.FILES)
 
         if form.is_valid():
             name = form.cleaned_data['name']
+            image = form.cleaned_data['image']
 
-            instrument = Instrument(name=name,)
+            instrument = Instrument(name=name, image=image)
 
             instrument.save()
 
@@ -114,8 +115,10 @@ def updateInstrument(request, pk=None):
 
         if form.is_valid():
             name = form.cleaned_data['name']
+            image = form.cleaned_data['image']
 
             instrument.name = name
+            instrument.image = image
 
             instrument.save()
 
@@ -126,7 +129,7 @@ def updateInstrument(request, pk=None):
             pass
 
     else:
-        form = UpdateInstrumentForm(initial={'name':instrument.name,})
+        form = UpdateInstrumentForm(initial={'name':instrument.name, 'image':instrument.image,})
 
 
     return render(request, "instrument/update.html", {'form': form,})
