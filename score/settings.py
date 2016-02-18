@@ -192,6 +192,7 @@ GITLAB_URL = 'https://gitlab.com/'
 GITLAB_TOKEN = 'zsyZdf3goQ4sCkxDVNTQ'
 GIT_USERNAME = "banco29510"
 GIT_PASSWORD = "antoine29510"
+TOKEN_CLOUDCONVERT = "GI7ghKswxOEU9BioxyKc3yVIFQ_Um_gbfYRZdwaP2s0vG-n5um3u0v6yqfKddpT-azj8s4tLr_RiYwRb1Ilq6w"
 
 SITE_ID = 1
 

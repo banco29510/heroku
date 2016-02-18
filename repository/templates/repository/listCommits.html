@@ -15,6 +15,7 @@
         <li role="new"><a href="#" aria-controls="" role="tab" data-target="#myModal" data-toggle="modal">Créer une branche </a></li>
         {% if branches %}
             <li role="new"><a href="#" aria-controls="" role="tab" data-target="#ModalDeleteBranch" data-toggle="modal">Supprimer une branche </a></li>
+            <li role="new"><a href="#" aria-controls="" role="tab" data-target="#ModalMergeBranch" data-toggle="modal">Fusionner une branche </a></li>
         {% endif %}
     </ul>
 
@@ -22,7 +23,7 @@
         <div role="tabpanel" class="tab-pane active" id="main">
             <ul class="list-group">
                 {% for commit in commits %}
-                    <li class="list-group-item" >[{{ commit.branch |capfirst }}] Commit du {{ commit.date }} : <a href="{% url 'repository-showRepositoryDeveloppement' repository.id %}?commit={{commit.id}}">{{ commit.message | capfirst }}</a> <a href="{% url 'repository-mergeCommit' %}"><span class="glyphicon glyphicon-random" aria-hidden="true"></span></a></li>
+                    <li class="list-group-item" >[{{ commit.branch |capfirst }}] Commit du {{ commit.date }} : <a href="{% url 'repository-showRepositoryDeveloppement' repository.id %}?commit={{commit.id}}">{{ commit.message | capfirst }}</a></li>
                 {% empty %}
 
                 {% endfor %}
@@ -48,7 +49,7 @@
                 
                 {% for commit in commits %}
                     {% if commit.branch = branch %}
-                        <li class="list-group-item" >Commit du {{ commit.date }} : <a href="{% url 'repository-showRepositoryDeveloppement' repository.id %}?commit={{commit.id}}">{{ commit.message | capfirst }}</a> <a href="{% url 'repository-deleteCommit' 1 %}">Suprimmer version</a>  <a href="{% url 'repository-mergeCommit' %}"><span class="glyphicon glyphicon-random" aria-hidden="true"></span></a></li>
+                        <li class="list-group-item" >Commit du {{ commit.date }} : <a href="{% url 'repository-showRepositoryDeveloppement' repository.id %}?commit={{commit.id}}">{{ commit.message | capfirst }}</a> <a href="{% url 'repository-deleteCommit' 1 %}">Suprimmer version</a> </li>
                     {% endif %}
                     
                     {% empty %}
@@ -136,6 +137,40 @@
             $("input#submit_delete").click(function(){
                 //alert($("#id_parent_branch").val());
                 $.redirect('{% url 'repository-deleteBranch' repository.id %}', {'branch': $("#id_branch").val()});
+            });
+        });
+    </script>
+    
+    <!-- Modal merge branch -->
+    <div class="modal fade" id="ModalMergeBranch" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title" id="myModalLabel">Fusionner une branche</h4>
+                </div>
+                <div class="modal-body">
+                    <form method="post" id="myForm" action="">{% csrf_token %}
+                        {{ form_mergeBranch.as_p }}
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <input class="btn btn-primary" type="submit" value="Fusionner" id="submit_merge">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Fermer</button>
+                </div>
+            </div>
+        </div>
+   </div>
+
+    <br /><br />
+    
+    <script src="https://raw.githubusercontent.com/mgalante/jquery.redirect/master/jquery.redirect.js"></script>
+    <script>
+        $(document).ready(function () {
+            $("input#submit_merge").click(function(){
+                
+                $.redirect('{% url 'repository-mergeCommit' repository.id %}', {'source_branch': $("#id_source_branch").val(), 'merge_branch': $("#id_merge_branch").val()});
+                alert('aa');
             });
         });
     </script>

@@ -138,7 +138,8 @@ def newScore(request):
             repository.name = name
             repository.scoreAuthor = scoreAuthor
             repository.url = 'https://'+settings.GIT_USERNAME+':'+settings.GIT_PASSWORD+'@github.com/banco29510/'+name+'.git'
-            repository.password = "antoine29510"
+            repository.username = settings.GIT_USERNAME
+            repository.password = settings.GIT_PASSWORD
             repository.save()
             
             repository = Repository.objects.get(name=name)
@@ -467,8 +468,14 @@ def listCommits(request, pk=None):
     form_deleteBranch = deleteBranchForm(initial='',)
     form_deleteBranch.fields['branch'].choices = form_branches
     form_deleteBranch.fields['branch'].initial = [0]
-
-
+    
+    # création form pour fusionner les branches
+    form_mergeBranch = MergeBranchForm(initial='',)
+    form_mergeBranch.fields['source_branch'].choices = form_branches
+    form_mergeBranch.fields['source_branch'].initial = [0]
+    form_mergeBranch.fields['merge_branch'].choices = form_branches
+    form_mergeBranch.fields['merge_branch'].initial = [1]
+    
     paginator = Paginator(commits, 20)
 
     page = request.GET.get('page', 1)
@@ -486,6 +493,7 @@ def listCommits(request, pk=None):
         'branches': branches, 
         'form': form,
         'form_deleteBranch': form_deleteBranch,
+        'form_mergeBranch' : form_mergeBranch,
     })
 
 ## \brief liste des contributeurs et statistiques
@@ -554,12 +562,19 @@ def restartRepositoryByOldCommit(request, pk=None):
 ## \brief merge deux commits
 # \author A. H.
 @login_required
-def mergeCommit(request,):
+@csrf_exempt
+def mergeCommit(request, pk=None):
 
-    #commit = get_object_or_404(Commit, pk=pk)
+    repository = get_object_or_404(Repository, pk=pk)
+    source_branch = request.POST.get('source_branch', None) 
+    merge_branch = request.POST.get('merge_branch', None) 
     
+    ampq_mergeBranch.delay(repository.id, source_branch, merge_branch)
+    ampq_updateDatabase.delay(repository.id)
+    
+    messages.add_message(request, messages.INFO, 'La fusion sera effectué à la prochaine mise à jour.')
 
-    return render(request, 'repository/mergeCommit.html', {})
+    return redirect('repository-listCommits', repository.id)
 
 ## \brief modifie le dépot
 # \author A. H.
@@ -606,10 +621,12 @@ def deleteRepository(request, pk=None):
 
         if form.is_valid():
             
-            #ampq_deleteRepository.delay(repository)
+            g = Github(settings.GIT_USERNAME, settings.GIT_PASSWORD)
+            user = g.get_user()
+            
+            user.get_repo(repository.name).delete()
             
             repository.delete()
-            
             
             messages.add_message(request, messages.INFO, 'Le dépot à été supprimé.')
 
@@ -832,31 +849,66 @@ def convertFile(request, pk=None, ):
             #    #extension_convert[:]
             #    i+=1
             
-    
-    
-    
-                        
+        
                         
     extension = file.extension()
     
     if request.method == 'POST':
-        form = ConvertFileForm(request.POST, request.FILES)
+        form = ConvertFileForm(request.POST)
+        form.fields['extension'].choices = extension_convert
 
         if form.is_valid():
 
-            form_extension = form.cleaned_data['extension']
-            form.fields['extension'].choices = extension_convert
-
+            form_extension = form.cleaned_data['extension'].replace('.', '') 
+            
+            # obtention du fichier
+            temp = tempfile.mkdtemp()
+    
+            repo = Repo.clone_from(repository.url, temp, branch=file.commit.branch.name) # clone du dépot
+    
+            repo.git.checkout(file.commit.hash)
+    
+            #fichier = open(temp+'/'+file.name, "rb")
+            #content = ContentFile(fichier.read())
+            #fichier.close()
+            
             # conversion ampq cloud convert
-            api = cloudconvert.Api('GI7ghKswxOEU9BioxyKc3yVIFQ_Um_gbfYRZdwaP2s0vG-n5um3u0v6yqfKddpT-azj8s4tLr_RiYwRb1Ilq6w')
-            process = api.convert({
-                'inputformat': extension,
-                'outputformat': form_extension,
-                'input': 'upload',
-                'file': open(file.file.path, 'rb')
+            api = cloudconvert.Api(settings.TOKEN_CLOUDCONVERT)
+           
+            #print(form_extension)
+            #print(file.extensionWithoutDot())
+            #print(open(temp+'/'+file.name, "rb"))
+            #print(file.name)
+            
+            process = api.createProcess({
+                'inputformat': file.extensionWithoutDot(),
+                'outputformat': form_extension
             })
+            process.start({
+                'input': 'upload',
+                'outputformat': form_extension,
+                'wait': True,
+                'file': open(temp+'/'+file.name, "rb")
+            
+            })
+            
             process.wait()
-            process.downloadAll()
+            process.download(temp+"/"+file.nameWithoutExtension()+'.'+form_extension)
+            process.delete()
+            
+            #print(file.nameWithoutExtension()+'.'+form_extension)
+            
+            # mise a jour du dépot
+            convert_file = open(temp+'/'+file.nameWithoutExtension()+'.'+form_extension, "rb")
+            TempFile = TemporaryFile()
+            TempFile.name = file.nameWithoutExtension()+'.'+form_extension
+            TempFile.file.name = file.nameWithoutExtension()+'.'+form_extension
+            TempFile.file.save(file.nameWithoutExtension()+'.'+form_extension, ContentFile(convert_file.read()), save=True)
+            convert_file.close()
+            TempFile.save() 
+            
+            ampq_addFile.delay(repository.id, TempFile, 'Conversion', file.commit.branch.name)
+            
             
             ampq_updateDatabase.delay(file.commit.repository.id)
             
@@ -864,6 +916,7 @@ def convertFile(request, pk=None, ):
             messages.add_message(request, messages.INFO, 'La conversion sera ajouté au dépot lors de la prochaine mise à jour.')
 
             return redirect('repository-search',)
+            #return render(request, 'repository/convert.html', {'file': file, 'form': form})
 
     else:
 

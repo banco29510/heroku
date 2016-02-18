@@ -110,6 +110,27 @@ class deleteBranchForm(forms.Form):
         )
     )
 
+##
+# \brief Formulaire suppression branche
+# \author A. H.
+#
+class MergeBranchForm(forms.Form):
+
+    source_branch = forms.ChoiceField(
+        label="Branche source",
+        required=True,
+        widget=forms.Select(
+            attrs={'placeholder':'Branche à fusionner','class':'form-control input-xlarge',}
+        )
+    )
+    
+    merge_branch = forms.ChoiceField(
+        label="Branche fusionner",
+        required=True,
+        widget=forms.Select(
+            attrs={'placeholder':'Branche qui va recevoir la fusion','class':'form-control input-xlarge',}
+        )
+    )
 
 ##
 # \brief Formulaire de ajout d'un fichier

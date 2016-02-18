@@ -46,14 +46,12 @@ def ampq_createRepository(id=None):
     remote = repo.create_remote('origin', repository.url)
     
     new_file_path = os.path.join(repo.working_tree_dir, 'readme.md')
-    open(new_file_path, 'wb').close()                            
+    fichier = open(new_file_path, 'wb')
+    fichier.write('Partition')
+    fichier.close()                            
     repo.index.add([new_file_path]) 
     
     new_file_path = os.path.join(repo.working_tree_dir, 'licence.txt')
-    open(new_file_path, 'wb').close()                            
-    repo.index.add([new_file_path]) 
-    
-    new_file_path = os.path.join(repo.working_tree_dir, '.gitignore')
     open(new_file_path, 'wb').close()                            
     repo.index.add([new_file_path]) 
     
@@ -311,6 +309,13 @@ def ampq_mergeBranch(id=None, source_branch=None, target_branch='master'):
     
     repo = Repo.clone_from(repository.url, temp, branch=source_branch) # clone du dépot
 
+    repo.git.checkout(source_branch)
+    
+    repo.merge_base(target_branch, source_branch)
+    
+    #repo.index.merge_tree(source_branch, base=target_branch)  
+
+
     return 1
 
 ## \brief remplit la BDD à partir du dépot
@@ -327,14 +332,27 @@ def ampq_updateDatabase(pk=None):
     
     # list des branches
     #print(cloned_repo.heads)
-    #print(cloned_repo.remotes)
+    #for head in cloned_repo.heads:
+    #    print('head '+ str(head))
+    #print(cloned_repo.refs)
     
-    cloned_repo.git.checkout('master')
-    pprint.pprint(cloned_repo.heads)
+    # liste les branches du dépot et réalise un checkout
+    for ref in cloned_repo.refs:
+        #print(ref.name)
+        if not ref.name.find("origin"):
+            if ref.name.replace('origin/','') != 'HEAD':
+                cloned_repo.git.checkout(ref.name.replace('origin/',''))
+        
+    #print(cloned_repo.remotes)
+    #for remote in cloned_repo.remotes:
+    #    print('remote '+str(remote))
+    
+    #cloned_repo.git.checkout('master')
+    #pprint.pprint(cloned_repo.heads)
     
     
     for branch in cloned_repo.heads:
-        print('branche : '+str(branch))
+        #print('branche : '+str(branch))
         cloned_repo.git.checkout(branch)
         
         if not Branche.objects.filter(name=str(branch), repository=repository).exists():
@@ -375,6 +393,7 @@ def ampq_updateDatabase(pk=None):
                 
                 
                 fileDatabase = File.objects.filter(hash=str(hashlib.sha256(tree.name.encode('utf8')).hexdigest()), commit=commitDatabase)
+                
                 for fileDatabase in fileDatabase:
                     #print(fileDatabase)
                     for software in softwares:
@@ -384,6 +403,8 @@ def ampq_updateDatabase(pk=None):
                     for licence in licences:
                             if licence.name == 'Copyright':
                                 fileDatabase.licence = licence
+                                
+                    
                             
                     fileDatabase.save()
                             
