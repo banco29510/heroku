@@ -115,12 +115,12 @@ WSGI_APPLICATION = '{{ project_name}}.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.mysql',  
-        'NAME': 'c9', 
-        'USER': 'banco29510',            
-        'PASSWORD': '',        
-        'HOST': '127.0.0.1',         
-        'PORT': '',                  
+        'ENGINE': 'django.db.backends.postgresql_psycopg2',  
+        'NAME': 'd90boa1g6127v1', 
+        'USER': 'lvxdbktibhkxtm',            
+        'PASSWORD': 'JGBVDFkS6T3VetvVgsH_L78K_Q',        
+        'HOST': 'ec2-54-83-198-111.compute-1.amazonaws.com',         
+        'PORT': '5432',                  
     }
 }
 
